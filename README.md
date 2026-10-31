@@ -1,5 +1,4 @@
-# Sawmill Layout
+# Turf Tek Layout Apps
 
-Turf Tek field layout app for Sawmill Intermediate (Commack, NY).
-
-Open: https://thepatrickreardon-sys.github.io/sawmill-layout/
+- Sawmill: https://thepatrickreardon-sys.github.io/sawmill-layout/
+- Hagedorn: https://thepatrickreardon-sys.github.io/sawmill-layout/hagedorn/
