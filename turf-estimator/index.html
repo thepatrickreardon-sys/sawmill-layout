@@ -1045,10 +1045,12 @@ body.crew-mode>*:not(#cw-root):not(#cw-sheet-bg):not(#cw-toast){display:none!imp
 .cw-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cw-fld span{display:block;font-size:12px;color:var(--cw-muted);margin-bottom:3px}
 .cw-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
 .cw-stat{background:#fff;border:1px solid var(--cw-line);border-radius:12px;padding:10px 12px}.cw-stat b{display:block;font-size:20px}.cw-stat span{font-size:12px;color:var(--cw-muted)}
-#cw-cv{width:100%;display:block;touch-action:manipulation;border-radius:8px;background:#eef1ea}
+.cw-main>*,#cw-work>*{min-width:0}
+#cw-cv{width:100%;max-width:100%;display:block;touch-action:manipulation;border-radius:8px;background:#eef1ea}
 .cw-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--cw-muted);margin-top:8px}
 .cw-legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
 .cw-tbl{width:100%;border-collapse:collapse;font-size:14px}.cw-tbl th,.cw-tbl td{padding:8px 6px;border-bottom:1px solid var(--cw-line);text-align:left;vertical-align:top}
+.cw-tbl td:first-child{white-space:normal}
 .cw-tbl th{font-size:12px;color:var(--cw-muted);font-weight:600}.cw-num{text-align:right!important;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cw-tbl tr[data-roll]{cursor:pointer}.cw-tbl tr[data-roll]:hover{background:#f6f8f3}
 .cw-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:#e7efe6;color:var(--cw-turf);margin:2px 4px 0 0;white-space:nowrap}
@@ -1074,6 +1076,7 @@ body.crew-mode>*:not(#cw-root):not(#cw-sheet-bg):not(#cw-toast){display:none!imp
       <div class="cw-stats" id="cw-stats"></div>
       <section class="cw-panel">
         <div class="cw-row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Layout</h2><div class="cw-row" style="gap:8px"><span class="cw-hint" style="margin:0">Tap a roll to change it</span><button class="cw-btn sm cw-pgbtn" id="cw-b-pg" aria-pressed="true" hidden>Playground</button></div></div>
+        <button class="cw-btn pri" id="cw-b-easy" hidden style="width:100%;margin-bottom:8px">Easiest cuts</button>
         <canvas id="cw-cv" aria-label="Turf roll layout, tap a roll to edit"></canvas>
         <div class="cw-legend"><span><i style="border-color:var(--cw-red)"></i>Head seam</span><span><i style="border-color:var(--cw-blue);border-top-style:dashed"></i>Split in half</span><span><i style="border-color:#17201a;border-top-width:1px"></i>Side seam</span><span id="cw-pg-leg" hidden><i style="border-color:#d97a00;border-top-style:dashed"></i>Playground · dots: footings</span><span id="cw-rc-leg" hidden><i style="border-color:#7b3fbf;border-top-width:2px"></i>Pole cut · green ring: pole on a seam · red box: low deck</span><span>Front edge at bottom</span></div>
       </section>
@@ -1269,8 +1272,8 @@ function render(){if(!document.body.classList.contains('crew-mode'))return;build
   const pcs=L.strips.reduce((a,s)=>a+s.pieces,0);
   $('#cw-stats').innerHTML=stat(L.strips.length,'rolls ('+fmt(L.SW)+' wide)')+stat(pcs,'pieces to cut')+stat(fmt(L.lf),'roll length used')+stat(Math.round(L.headLF)+' lf','head seams')+stat(Math.round(L.sideLF+L.ripLF)+' lf','side seams')+(L.relief?stat(Math.round(L.relief.lf)+' lf',`pole cuts (${L.relief.n}, longest ${fmt(L.relief.max)})`):'');
   renderBest();
-  $('#cw-cut-body').innerHTML=L.strips.map((st,k)=>{const tags=(st.half?'<span class="cw-tag rip">split in half</span>':'')+(st.cuts.length?`<span class="cw-tag hs">${st.cuts.length} head seam${st.cuts.length>1?'s':''}</span>`:'')+(st.warn.length?'<span class="cw-tag warn">stagger</span>':'')+(!st.full?'<span class="cw-tag">rip to width</span>':'')+(L.relief&&L.relief.per[k]&&L.relief.per[k].n?`<span class="cw-tag" style="background:#efe6f8;color:#7b3fbf">${L.relief.per[k].n} pole cut${L.relief.per[k].n>1?'s':''}, longest ${fmt(L.relief.per[k].max)}</span>`:'');
-    return st.segs.map((sg,i)=>`<tr data-roll="${k}">${i===0?`<td rowspan="${st.segs.length}"><b>R${k+1}</b>${tags?'<br>'+tags:''}</td><td rowspan="${st.segs.length}">${st.pieces}</td>`:''}<td class="cw-num"><b>${fmt(sg.order)}</b>${st.segs.length>1?` <span class="cw-hint">(${String.fromCharCode(97+i)})</span>`:''}</td><td class="cw-num">${st.half?'2 × ':''}${fmt(st.pw)}</td></tr>`).join('')}).join('')
+  $('#cw-cut-body').innerHTML=L.strips.map((st,k)=>{const tags=(st.half?'<span class="cw-tag rip">split in half</span>':'')+(st.cuts.length?`<span class="cw-tag hs">${st.cuts.length} head seam${st.cuts.length>1?'s':''}</span>`:'')+(st.warn.length?'<span class="cw-tag warn">stagger</span>':'')+(!st.full?'<span class="cw-tag">rip to width</span>':'')+(L.relief&&L.relief.per[k]&&L.relief.per[k].n?`<span class="cw-tag" style="background:#efe6f8;color:#7b3fbf">${L.relief.per[k].n} pole cut${L.relief.per[k].n>1?'s':''}</span><span class="cw-tag" style="background:#efe6f8;color:#7b3fbf">max ${fmt(L.relief.per[k].max)}</span>`:'');
+    return st.segs.map((sg,i)=>`<tr data-roll="${k}">${i===0?`<td rowspan="${st.segs.length}"><b>R${k+1}</b>${tags?'<br>'+tags.replace(/<\/span><span/g,'</span> <span'):''}</td><td rowspan="${st.segs.length}">${st.pieces}</td>`:''}<td class="cw-num"><b>${fmt(sg.order)}</b>${st.segs.length>1?` <span class="cw-hint">(${String.fromCharCode(97+i)})</span>`:''}</td><td class="cw-num">${st.half?'2 × ':''}${fmt(st.pw)}</td></tr>`).join('')}).join('')
     +`<tr><td><b>Total</b></td><td><b>${pcs}</b></td><td class="cw-num"><b>${fmt(L.lf)}</b></td><td class="cw-num">${Math.round(L.total).toLocaleString()} sf</td></tr>`;
   const g=new Map();L.strips.forEach(st=>st.segs.forEach(sg=>{const key=sg.order+'|'+st.pw;if(!g.has(key))g.set(key,{len:sg.order,w:st.pw,n:0});g.get(key).n+=st.half?2:1}));
   $('#cw-grp-body').innerHTML=[...g.values()].sort((a,b)=>b.len-a.len||b.w-a.w).map(e=>`<tr><td class="cw-num"><b>${fmt(e.len)}</b></td><td class="cw-num">${fmt(e.w)}</td><td class="cw-num"><b>${e.n}</b></td></tr>`).join('');
@@ -1359,7 +1362,7 @@ $('#cw-b-pg').addEventListener('click',()=>{if(!J||!J.pg)return;const id=J.ej.id
 /* ---------- best cuts ---------- */
 let HSP=LS.get('tcl.hsPref','bal'),BEST=null,UNDO=null;
 function lowDeckFt(){const v=LS.get('tcl.lowDeck',1);return isFinite(+v)?+v:1}
-function renderBest(){const on=!!(J&&J.pg&&!PGOFF[J.ej.id]&&L);$('#cw-best').hidden=!on;if(!on)return;
+function renderBest(){const on=!!(J&&J.pg&&!PGOFF[J.ej.id]&&L);$('#cw-best').hidden=!on;$('#cw-b-easy').hidden=!on;if(!on)return;
   $$('#cw-hsp button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===HSP));const lw=$('#cw-low');if(lw!==document.activeElement)lw.value=fmtIn(lowDeckFt());
   $('#cw-rc-now').textContent=L.relief?`Now: ${Math.round(L.relief.lf)} lf of pole cuts`:'';$('#cw-b-undo').hidden=!(UNDO&&UNDO.id===J.ej.id);
   if(!BEST||BEST.id!==J.ej.id){$('#cw-best-list').innerHTML='';return}
@@ -1367,14 +1370,19 @@ function renderBest(){const on=!!(J&&J.pg&&!PGOFF[J.ej.id]&&L);$('#cw-best').hid
   $('#cw-best-list').innerHTML=BEST.pick.map((r,i)=>`<div class="cw-opt${same(r)?' on':''}"><div class="t"><b>${esc(r.label)}</b><span>${Math.round(r.cutLF)} lf of pole cuts, longest ${fmt(r.max)} · ${r.hsN?r.hsN+' head seam'+(r.hsN>1?'s':''):'no head seams'}${r.halfN?' · '+r.halfN+' split in half':''}${BEST.dk?' · '+r.pulls+' low-deck pull'+(r.pulls===1?'':'s'):''}<br>${r.rolls} rolls, ${r.along==='x'?'left to right':'front to back'}, seams shifted ${fmt(r.off)} · ${Math.round(r.lf)} lf of roll</span></div>${same(r)?'<span class="cw-tag">In use</span>':`<button class="cw-btn sm pri" data-use="${i}">Use this</button>`}</div>`).join('')}
 $('#cw-hsp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;HSP=b.dataset.p;LS.set('tcl.hsPref',HSP);BEST=null;$('#cw-best-msg').textContent='';render()});
 $('#cw-low').addEventListener('change',e=>{const v=parseFt(e.target.value);if(isFinite(v)&&v>=0){LS.set('tcl.lowDeck',v);BEST=null;$('#cw-best-msg').textContent=''}render()});
+function useOpt(r){UNDO={id:J.ej.id,along:J.c.along,off:J.c.off,edits:JSON.parse(JSON.stringify(J.c.edits||{}))};
+  J.c.along=r.along;J.c.off=r.off;J.c.edits=JSON.parse(JSON.stringify(r.edits));J.c.sig=sigOf(J.P,J.S,r.along,r.off);touch()}
+$('#cw-b-easy').addEventListener('click',()=>{if(!J||!J.pg)return;const btn=$('#cw-b-easy');btn.disabled=true;btn.textContent='Working it out…';
+  setTimeout(()=>{try{const before=L&&L.relief?L.relief.lf:null;const R=findBest({hs:HSW[HSP]||15,low:lowDeckFt()});BEST={id:J.ej.id,...R};const r=R.pick[0];
+      if(r){useOpt(r);$('#cw-best-msg').textContent=`Loaded ${r.label.toLowerCase()}: ${Math.round(r.cutLF)} lf of pole cuts${before!=null?` (was ${Math.round(before)})`:''}. Other options are below, or Undo to go back.`;toast(`Easiest cuts loaded: ${Math.round(r.cutLF)} lf of pole cuts`)}}
+    catch(err){toast('Something went wrong working it out');console.error(err)}btn.disabled=false;btn.textContent='Easiest cuts';render()},30)});
 $('#cw-b-best').addEventListener('click',()=>{if(!J||!J.pg)return;const btn=$('#cw-b-best');btn.disabled=true;$('#cw-best-msg').textContent='Working it out…';
   setTimeout(()=>{try{const R=findBest({hs:HSW[HSP]||15,low:lowDeckFt()});BEST={id:J.ej.id,...R};
     const decks=(J.pg.decks||[]).length;
     $('#cw-best-msg').textContent=`Checked ${R.holes} poles inside the turf. `+(R.dk?`${R.dk} low deck${R.dk>1?'s':''} counted. `:decks?'No decks that low. ':'No deck heights in this playground file (re-copy it from the layout app to bring them in). ')+'Tap Use this to load one; you can still change any roll after.'}
     catch(err){$('#cw-best-msg').textContent='Something went wrong working it out.';console.error(err)}btn.disabled=false;render()},30)});
 $('#cw-best-list').addEventListener('click',e=>{const b=e.target.closest('[data-use]');if(!b||!BEST)return;const r=BEST.pick[+b.dataset.use];
-  UNDO={id:J.ej.id,along:J.c.along,off:J.c.off,edits:JSON.parse(JSON.stringify(J.c.edits||{}))};
-  J.c.along=r.along;J.c.off=r.off;J.c.edits=JSON.parse(JSON.stringify(r.edits));J.c.sig=sigOf(J.P,J.S,r.along,r.off);touch();toast(r.label+' loaded')});
+  useOpt(r);toast(r.label+' loaded')});
 $('#cw-b-undo').addEventListener('click',()=>{if(!UNDO||!J||UNDO.id!==J.ej.id)return;J.c.along=UNDO.along;J.c.off=UNDO.off;J.c.edits=UNDO.edits;J.c.sig=sigOf(J.P,J.S,UNDO.along||estDir(J.ej,J.P),UNDO.off);UNDO=null;touch();toast('Back to what you had')});
 $('#cw-s-off').addEventListener('change',e=>{if(!J)return;const v=parseFt(e.target.value);if(!isFinite(v)||v<0){render();return}const W=L?L.W:14+10/12,o=Math.round((v%W)*12)/12;if(Math.abs(o-J.off)<1/24){render();return}J.c.off=o;J.c.edits={};touch()});
 /* ---------- settings ---------- */
