@@ -1,0 +1,1294 @@
+<!doctype html><html><head><meta charset=utf8><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Turf Estimator"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Turf Sales Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: field-tool app — sticky job header, one task per tab, fixed bottom tab bar sized for gloved thumbs */
+:root{
+  --bg:#edf0ea; --surface:#fbfcf8; --sunk:#e3e8e0; --ink:#17251c; --muted:#5a6a60; --line:#d0d8cd;
+  --accent:#d4561c; --accent-ink:#ffffff; --turf:#3e8a4b; --turf2:#337a40;
+  --cut:#a9452c; --fill:#2c6ca6; --neutral:#c8d1c4; --good:#2f7d44; --warn:#b7791f;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111813; --surface:#19221c; --sunk:#141c16; --ink:#e3ebe3; --muted:#93a399; --line:#2b372f;
+  --accent:#f07a3e; --accent-ink:#1a0d05; --turf:#58a964; --turf2:#4b9857;
+  --cut:#d77259; --fill:#5d9ddb; --neutral:#38443b; --good:#5fbf78; --warn:#e0a84a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111813; --surface:#19221c; --sunk:#141c16; --ink:#e3ebe3; --muted:#93a399; --line:#2b372f;
+  --accent:#f07a3e; --accent-ink:#1a0d05; --turf:#58a964; --turf2:#4b9857;
+  --cut:#d77259; --fill:#5d9ddb; --neutral:#38443b; --good:#5fbf78; --warn:#e0a84a; color-scheme:dark}
+
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.top-in{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.jobname{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-id{min-width:0;flex:1}
+.chips{display:flex;gap:6px;flex-shrink:0}
+.chip{font-family:var(--f-display);font-weight:600;font-size:15px;background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip.price{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+
+main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px calc(96px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:980px;margin:0 auto;display:grid;gap:16px}
+section.tab{display:grid;gap:16px}
+h2{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1;margin:0;text-wrap:balance;letter-spacing:.01em}
+h3{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0;letter-spacing:.02em}
+.lede{color:var(--muted);margin:4px 0 0;max-width:62ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cols{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:820px){.cols{grid-template-columns:1.25fr 1fr}}
+
+.fld{display:grid;gap:4px;min-width:0}
+.fld>span{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fld .in{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:8px;min-height:44px}
+.fld .in:focus-within{border-color:var(--accent)}
+.fld input,.fld select,.fld textarea{border:0;background:transparent;padding:10px 10px;min-width:0;width:100%;outline:none;font-variant-numeric:tabular-nums}
+.fld em{font-style:normal;color:var(--muted);font-size:13px;padding-right:10px;white-space:nowrap}
+.fld textarea{min-height:90px;font-family:var(--f-mono);font-size:13px;resize:vertical}
+.hint{font-size:13px;color:var(--muted);margin:0;max-width:65ch}
+
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;min-height:44px;padding:0 14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:36px;padding:0 10px;font-size:14px}
+.btn.danger{color:var(--cut)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.seg button{border:0;background:transparent;min-height:40px;padding:0 12px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{background:var(--surface);padding:12px 14px;display:grid;gap:2px}
+.stat b{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.stat small{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stat i{font-style:normal;font-size:13px;color:var(--muted)}
+.stat.cut b{color:var(--cut)} .stat.fill b{color:var(--fill)} .stat.turf b{color:var(--turf)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right}
+td.sub{color:var(--muted);font-size:13px;white-space:normal;min-width:140px}
+tfoot td{font-weight:600}
+.pts input,.pts select{border:1px solid transparent;background:transparent;border-radius:6px;padding:6px 6px;width:86px;font-family:var(--f-mono);font-size:13.5px}
+.pts input:focus,.pts select:focus{border-color:var(--accent);background:var(--bg);outline:none}
+.pts select{width:auto;font-family:var(--f-body)}
+.pts td{padding:4px 6px}
+.pts .n{font-family:var(--f-display);font-weight:700;font-size:17px;color:var(--muted);width:30px}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--sunk);color:var(--muted)}
+.tag.sample{background:var(--warn);color:#fff}
+
+/* canvases */
+.cv{width:100%;display:block;border-radius:8px;background:var(--sunk);touch-action:none}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);align-items:center}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+details{border-top:1px solid var(--line);padding-top:10px}
+details>summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:18px;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:36px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"+";font-size:22px;color:var(--muted)}
+details[open]>summary::after{content:"–"}
+details .grid2{margin-top:10px}
+
+.pgchk{margin:8px 0;padding:0;list-style:none;display:grid;gap:4px;font-size:14px}.pgchk li{padding:6px 10px;border-radius:6px;background:var(--sunk);border-left:4px solid var(--good)}.pgchk li.bad{border-left-color:var(--warn)}
+.pg-tbl td,.pg-tbl th{white-space:nowrap;padding-left:6px;padding-right:6px}.pg-grid{display:grid;gap:10px;grid-template-columns:1fr}@media(min-width:700px){.pg-grid{grid-template-columns:1fr 1fr 1fr}}.pgchk li{overflow-wrap:anywhere}#pg-panel{min-width:0}
+.banner{border-left:4px solid var(--warn);background:var(--sunk);padding:10px 12px;border-radius:6px;font-size:14px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+
+.joblist{display:grid;gap:8px}
+.elev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ecard{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);display:grid;gap:6px;min-width:0}
+.ecard.zero{border-color:var(--accent)}
+.ecard .eh{display:grid;gap:0}
+.ecard b{font-family:var(--f-display);font-weight:700;font-size:17px}
+.ecard small{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+.ecard .in{background:var(--surface)}
+.ecard.blank .in{border-style:dashed}
+.spot-list{display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:auto 1fr 1fr 1fr auto;gap:8px;align-items:end;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)}
+.srow.bform{grid-template-columns:1.4fr 1fr 1fr auto;border-style:dashed}
+@media (max-width:520px){.srow.bform{grid-template-columns:1fr 1fr}.srow.bform>:first-child{grid-column:1/-1}}
+.srow .n.b{color:var(--accent)}
+.srow .n{font-family:var(--f-display);font-weight:700;font-size:17px;color:var(--fill);align-self:center}
+@media (max-width:520px){.srow{grid-template-columns:auto 1fr 1fr}.srow .fz{grid-column:2/3}.srow .rm{grid-column:3/4;justify-self:end}}
+.btn[aria-pressed="true"]{background:var(--fill);border-color:var(--fill);color:#fff}
+.selbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:2px solid var(--accent);border-radius:10px;padding:8px 10px;background:var(--bg)}
+.selbox .sl{display:grid;min-width:90px}.selbox .sl b{font-family:var(--f-display);font-weight:700;font-size:20px;line-height:1}.selbox .sl small{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.selbox input{font-size:18px}
+#cv-site{cursor:pointer}
+.cv.tapping{cursor:crosshair;outline:2px dashed var(--fill);outline-offset:-2px}
+.sync{font-size:13px;color:var(--muted)}.sync::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn);margin-right:6px}.sync[data-ok="1"]::before{background:var(--good)}
+.jobitem{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.jobitem.cur{border-color:var(--accent)}
+.jobitem .t{flex:1;min-width:160px}
+.jobitem .t b{display:block;font-weight:600}
+.jobitem .t span{font-size:13px;color:var(--muted)}
+
+.total{display:grid;gap:6px;background:var(--ink);color:var(--surface);border-radius:10px;padding:16px}
+.total .big{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.total .ln{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums;font-size:14px;opacity:.85}
+
+/* proposal sheet */
+.sheet{background:#fffffd;color:#1b231d;border-radius:10px;border:1px solid var(--line);padding:24px;display:grid;gap:16px}
+.sheet .hd{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid #d4561c;padding-bottom:12px}
+.sheet .co{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1;letter-spacing:.02em}
+.sheet .meta{font-size:13px;color:#56645a;text-align:right}
+.sheet h4{font-family:var(--f-display);font-weight:600;font-size:18px;margin:0;letter-spacing:.04em;text-transform:uppercase;color:#56645a}
+.sheet p{margin:0;max-width:68ch}
+.sheet ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.sheet img{width:100%;border:1px solid #d8ded5;border-radius:6px;background:#f2f5ef}
+.sheet .price{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:1px solid #d8ded5;padding-top:12px}
+.sheet .price b{font-family:var(--f-display);font-size:40px;font-weight:700;color:#d4561c}
+.sheet .fine{font-size:12px;color:#6a776e}
+
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--surface);border-top:1px solid var(--line);
+  padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr)}
+nav.tabs button{border:0;background:transparent;min-height:58px;display:grid;place-items:center;gap:2px;padding:6px 2px;cursor:pointer;color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.03em}
+nav.tabs button .k{font-family:var(--f-display);font-weight:700;font-size:18px;line-height:1}
+nav.tabs button[aria-current="page"]{color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-weight:600;z-index:20}
+@media (prefers-reduced-motion:no-preference){.panel,.stats{transition:border-color .15s}}
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="top-id"><div class="brand">Turf Sales Estimator</div><div class="jobname" id="hdr-name">—</div></div>
+  <div class="chips"><span class="chip" id="hdr-area">— sf</span><span class="chip price" id="hdr-price">$—</span></div>
+</div></header>
+
+<main><div class="wrap">
+
+<!-- JOB -->
+<section class="tab" id="tab-job">
+  <div><h2>Job</h2><p class="lede">Who it's for and what's going in. Every job saves on this phone or tablet as you type.</p></div>
+  <div class="banner" id="sample-banner" hidden>This is a sample job with made-up measurements and sample prices, so you can see how it all works. Start a new job for a real site.</div>
+  <div class="panel">
+    <div class="grid2">
+      <label class="fld"><span>Job name</span><div class="in"><input id="i-name" data-s="info" data-k="name"></div></label>
+      <label class="fld"><span>Customer</span><div class="in"><input id="i-customer" data-s="info" data-k="customer"></div></label>
+      <label class="fld"><span>Site address</span><div class="in"><input id="i-address" data-s="info" data-k="address"></div></label>
+      <label class="fld"><span>Date</span><div class="in"><input id="i-date" type="date" data-s="info" data-k="date"></div></label>
+      <label class="fld"><span>Sales rep</span><div class="in"><input id="i-rep" data-s="info" data-k="rep"></div></label>
+      <label class="fld"><span>Turf product</span><div class="in"><input id="i-product" data-s="info" data-k="product"></div></label>
+    </div>
+    <label class="fld"><span>Notes for the proposal</span><div class="in"><textarea id="i-notes" data-s="info" data-k="notes" style="font-family:var(--f-body);font-size:15px"></textarea></div></label>
+  </div>
+  <div class="panel">
+    <div class="row" style="justify-content:space-between;align-items:center"><div><h3>Saved jobs</h3><span class="sync" id="sync" data-ok="0">Checking…</span></div>
+      <div class="row"><button class="btn sm" id="b-dup">Duplicate this job</button><button class="btn sm primary" id="b-new">New job</button></div></div>
+    <div class="joblist" id="joblist"></div>
+  </div>
+</section>
+
+<!-- SITE -->
+<section class="tab" id="tab-site" hidden>
+  <div><h2>Site measurements</h2><p class="lede">Walk the edge in order, then add spot shots inside for high and low spots. Distances in feet (type <b>48 6</b> or <b>48'6</b> for 48'-6"). Elevations in inches, relative to your first shot.</p></div>
+  <div class="cols">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;align-items:center"><h3>Plan check</h3><div class="row" style="gap:6px;align-items:center"><button class="btn sm pg-tog" aria-pressed="true" hidden>Playground</button><span class="tag" id="site-count">0 points</span></div></div>
+      <canvas class="cv" id="cv-site" aria-label="Plan of measured points. Tap a corner to enter its elevation."></canvas>
+      <div class="selbox" id="selbox" hidden>
+        <div class="sl"><b id="sel-name">Corner 1</b><small id="sel-pos"></small></div>
+        <label class="fld" style="flex:1;min-width:120px"><div class="in"><input id="sel-z" inputmode="text" placeholder="elev" aria-label="Elevation of selected point" data-pk="z"><em>in</em></div></label>
+        <div class="row" style="gap:6px;flex-wrap:nowrap"><button class="btn sm" id="b-sel-prev" aria-label="Previous point">‹</button><button class="btn sm primary" id="b-sel-next">Next ›</button></div>
+      </div>
+      <p class="hint" id="sel-hint">Tap a corner on the plan to type its elevation.</p>
+      <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>Edge point</span><span><i class="sw" style="background:var(--fill)"></i>Spot shot</span><span id="pg-legend" hidden>Dashed: playground border · dots: footings (solid = posts)</span></div>
+    </div>
+    <div class="panel">
+      <h3>Import from Moasure</h3>
+      <p class="hint">In the Moasure app: File, Export, CSV. Load that file here. Units come from the file, and the biggest closed path becomes the turf edge. Any other paths or single points become spot shots for cut and fill.</p>
+      <div class="grid2">
+        <label class="fld"><span>File units</span><div class="in"><select id="imp-units"><option value="auto">Auto (from file)</option><option value="ft">Feet</option><option value="in">Inches</option><option value="m">Meters</option></select></div></label>
+        <label class="fld"><span>Points are</span><div class="in"><select id="imp-type"><option value="auto">Auto (biggest path = edge)</option><option value="e">All edge, in order</option><option value="s">All spot shots</option></select></div></label>
+      </div>
+      <label class="fld"><span>Paste CSV</span><div class="in"><textarea id="imp-text" placeholder="x,y,z&#10;0,0,0&#10;48,0,-0.55"></textarea></div></label>
+      <div class="row"><label class="btn sm" for="imp-file">Load CSV file</label><input id="imp-file" type="file" accept=".csv,.txt,text/csv" hidden>
+        <button class="btn sm primary" id="b-import-new">Import as new job</button><button class="btn sm" id="b-import">Add to this job</button><button class="btn sm ghost" id="b-replace">Replace this job's points</button></div>
+      <p class="hint" id="imp-msg"></p>
+    </div>
+  </div>
+  <div class="panel" id="elev-panel">
+    <div class="row" style="justify-content:space-between;align-items:center"><h3>Elevations</h3><span class="tag" id="elev-count"></span></div>
+    <p class="hint">Shoot the corners first. Corner 1 is your zero. Enter the others in inches above it (+) or below it (−), like <b>-3.5</b>, or feet and inches like <b>-1'2</b>. Leave a corner blank if you didn't shoot it.</p>
+    <div class="elev-grid" id="elev-corners"></div>
+    <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px"><h3 style="font-size:17px">Border elevations</h3>
+      <button class="btn sm" id="b-border-tap" aria-pressed="false">Tap border to place</button></div>
+    <p class="hint" id="border-hint">Pull a tape along an edge from a corner, shoot the elevation, and enter it here. Or turn on Tap border and tap the edge on the plan; it snaps to the line and shows the distance.</p>
+    <div class="srow bform">
+      <label class="fld"><span>Along edge</span><div class="in"><select id="bd-edge"></select></div></label>
+      <label class="fld"><span id="bd-dist-lbl">From corner</span><div class="in"><input id="bd-dist" inputmode="text" placeholder="12 6"><em>ft in</em></div></label>
+      <label class="fld"><span>Elevation</span><div class="in"><input id="bd-z" inputmode="text" placeholder="elev"><em>in</em></div></label>
+      <button class="btn sm primary" id="b-bd-add">Add</button>
+    </div>
+    <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px"><h3 style="font-size:17px">Extra spot elevations</h3>
+      <div class="row"><button class="btn sm" id="b-spot-tap" aria-pressed="false">Tap plan to place</button><button class="btn sm" id="b-spot-add">+ Add spot</button></div></div>
+    <p class="hint" id="spot-hint">Add these where the ground dips or humps between corners. Measure each spot's distance from corner 1 along X and Y.</p>
+    <div class="spot-list" id="elev-spots"></div>
+  </div>
+  <div class="panel">
+    <div class="row" style="justify-content:space-between;align-items:center"><h3>All points</h3>
+      <div class="row"><button class="btn sm" id="b-add-e">+ Edge point</button><button class="btn sm" id="b-add-s">+ Spot shot</button></div></div>
+    <div class="tbl-wrap"><table class="pts"><thead><tr><th>#</th><th>X (ft in)</th><th>Y (ft in)</th><th>Elev (in)</th><th>Type</th><th></th></tr></thead><tbody id="pts-body"></tbody></table></div>
+    <details>
+      <summary>Quick rectangle</summary>
+      <p class="hint">For a plain rectangular area: enter length, width and the four corner elevations. This replaces the points above.</p>
+      <div class="grid2">
+        <label class="fld"><span>Length (X)</span><div class="in"><input id="qr-l" inputmode="text" value="40'-0&quot;"><em>ft in</em></div></label>
+        <label class="fld"><span>Width (Y)</span><div class="in"><input id="qr-w" inputmode="text" value="25'-0&quot;"><em>ft in</em></div></label>
+        <label class="fld"><span>Front left elev</span><div class="in"><input id="qr-a" inputmode="decimal" value="0"><em>in</em></div></label>
+        <label class="fld"><span>Front right elev</span><div class="in"><input id="qr-b" inputmode="decimal" value="-4"><em>in</em></div></label>
+        <label class="fld"><span>Back right elev</span><div class="in"><input id="qr-c" inputmode="decimal" value="-6"><em>in</em></div></label>
+        <label class="fld"><span>Back left elev</span><div class="in"><input id="qr-d" inputmode="decimal" value="-1"><em>in</em></div></label>
+      </div>
+      <div class="row" style="margin-top:10px"><button class="btn sm primary" id="b-rect">Build rectangle</button><button class="btn sm" id="b-rect-pg" hidden>Use playground border size</button><button class="btn sm" data-flip="1">Flip elevations 180°</button></div>
+      <p class="hint">Flip turns your shots end for end (corner 1 trades with corner 3, corner 2 with corner 4, border and spot shots move to the opposite side). The rectangle and the playground stay put.</p>
+    </details>
+  </div>
+  <div class="panel" id="pg-panel">
+    <div class="row" style="justify-content:space-between;align-items:center"><h3>Playground</h3><span class="tag" id="pg-tag">None</span></div>
+    <div id="pg-load">
+      <p class="hint">In the playground layout app: Tapes, Points, <b>Copy playground file</b>. Paste it here. The playground border drops onto your turf rectangle and every footing gets its grade.</p>
+      <label class="fld"><span>Paste playground file</span><div class="in"><textarea id="pg-text" placeholder='{"kind":"turftek-playground",...}'></textarea></div></label>
+      <div class="row"><label class="btn sm" for="pg-file">Load from a file</label><input id="pg-file" type="file" accept=".json,.txt,application/json" hidden><button class="btn sm primary" id="b-pg-add">Add playground</button></div>
+      <p class="hint" id="pg-msg"></p>
+    </div>
+    <div id="pg-on" hidden>
+      <p class="hint" id="pg-what"></p>
+      <div class="pg-grid">
+        <label class="fld"><span>Plan corner on turf corner 1</span><div class="in"><select id="pg-corner">
+          <option value="BL">Bottom left of the plan</option><option value="TL">Top left of the plan</option><option value="TR">Top right of the plan</option><option value="BR">Bottom right of the plan</option></select></div></label>
+        <label class="fld"><span id="pg-d1-lbl">Border in from corner 1, toward corner 2</span><div class="in"><input id="pg-d1" inputmode="text" placeholder="0"><em>ft in</em></div></label>
+        <label class="fld"><span id="pg-d2-lbl">Border in from corner 1, toward the last corner</span><div class="in"><input id="pg-d2" inputmode="text" placeholder="0"><em>ft in</em></div></label>
+      </div>
+      <div class="row" style="margin:4px 0"><button class="btn sm" data-flip="1">Flip elevations 180°</button></div>
+      <p class="hint">Corner 1 is the zero (the first corner on the plan above). Leave the two "in from" boxes at 0 when your turf rectangle <i>is</i> the playground border.</p>
+      <ul class="pgchk" id="pg-checks"></ul>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px"><h3 style="font-size:17px">Footing grades</h3><span class="tag" id="pg-gsum"></span></div>
+      <p class="hint">Elevations in inches from corner 1. <b>Ground</b> is what's there now, <b>Finish</b> is the finished grade from the Grade tab, <b>+/−</b> is fill (+) or cut (−) at the hole. <b>Depth</b> is the plan depth from finished surface; <b>Dig</b> is how deep to dig from the ground that's there now. Posts are bold.</p>
+      <div class="tbl-wrap"><table class="pg-tbl"><thead><tr><th>Hole</th><th class="num">Ground</th><th class="num">Finish</th><th class="num">+/−</th><th class="num">Depth</th><th class="num">Dig</th></tr></thead><tbody id="pg-body"></tbody></table></div>
+      <div class="panel" style="margin-top:10px;background:var(--sunk)"><h3 style="font-size:17px">Send grades to the layout app</h3>
+        <p class="hint">Copies the ground, finished grade and dig depth at every hole, plus a grade map of the whole border. In the layout app: Tapes, Points, <b>Grades from the turf app</b>, paste.</p>
+        <div class="row"><button class="btn sm primary" id="b-pg-send">Copy grades for layout app</button></div>
+        <p class="hint" id="pg-send-msg"></p><textarea id="pg-send-text" readonly hidden style="width:100%;min-height:100px"></textarea></div>
+      <div class="panel" style="margin-top:10px;background:var(--sunk)"><h3 style="font-size:17px">Shots from the layout app</h3>
+        <p class="hint">Elevation shots you added on the layout map (orange F1, F2…). In the layout app: Layout map, ⛰ Elev, <b>Copy shots for turf app</b>. Paste here. Shots on the border line come in as border points, the rest as spot shots. Pasting again updates them.</p>
+        <label class="fld"><div class="in"><textarea id="fs-text" placeholder="Paste shots here"></textarea></div></label>
+        <div class="row"><button class="btn sm primary" id="b-fs-add">Add shots</button></div><p class="hint" id="fs-msg"></p></div>
+      <div class="row" style="margin-top:10px"><button class="btn sm ghost danger" id="b-pg-rm">Remove playground</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- GRADE & 3D -->
+<section class="tab" id="tab-grade" hidden>
+  <div><h2>Grade, cut &amp; fill</h2><p class="lede">Set the finished turf grade. The app digs the base depth below it and tells you how much dirt comes out or goes in. Drag the model to turn it.</p></div>
+  <div class="stats" id="grade-stats"></div>
+  <div class="cols">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div class="seg" role="group" aria-label="3D view"><button data-v="cut" aria-pressed="true">Cut / fill</button><button data-v="turf" aria-pressed="false">Finished turf</button></div>
+        <div class="row" style="gap:6px"><button class="btn sm pg-tog" aria-pressed="true" hidden>Playground</button><button class="btn sm ghost" id="b-3dreset">Reset view</button></div>
+      </div>
+      <canvas class="cv" id="cv-3d" aria-label="3D site model"></canvas>
+      <div class="legend" id="legend-3d"></div>
+      <label class="fld"><span>Height exaggeration <b id="ve-lbl">8×</b></span><input type="range" id="ve" min="1" max="25" step="1" value="8"></label>
+    </div>
+    <div class="panel">
+      <h3>Finished grade</h3>
+      <div class="seg" role="group" aria-label="Grade mode"><button data-mode="fit" aria-pressed="true">Follow existing</button><button data-mode="plane" aria-pressed="false">Set pitch</button></div>
+      <p class="hint" id="mode-hint"></p>
+      <div class="grid2">
+        <label class="fld" data-plane><span>Pitch</span><div class="in"><input id="g-slope" type="number" step="0.25" inputmode="decimal" data-s="grade" data-k="slope"><em>%</em></div></label>
+        <label class="fld" data-plane><span>Drains toward</span><div class="in"><select id="g-dir" data-s="grade" data-k="dir">
+          <option value="270">Front (bottom of plan)</option><option value="90">Back (top of plan)</option><option value="180">Left</option><option value="0">Right</option>
+          <option value="225">Front left</option><option value="315">Front right</option><option value="135">Back left</option><option value="45">Back right</option></select></div></label>
+        <label class="fld"><span>Raise / lower finish</span><div class="in"><input id="g-offset" type="number" step="0.5" inputmode="decimal" data-s="grade" data-k="offset"><em>in</em></div></label>
+        <label class="fld"><span>Stone base depth</span><div class="in"><input id="r-baseDepth" type="number" step="0.5" inputmode="decimal" data-s="R" data-k="baseDepth"><em>in</em></div></label>
+      </div>
+      <p class="hint" id="grade-note"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TURF -->
+<section class="tab" id="tab-turf" hidden>
+  <div><h2>Turf layout</h2><p class="lede">Rolls laid side by side across the area. Each roll is cut to its measured run plus the extra for cutting, rounded up to the next foot. Auto picks the direction with the least waste and seam.</p></div>
+  <div class="stats" id="turf-stats"></div>
+  <div class="cols">
+    <div class="panel"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><button class="btn sm pg-tog" aria-pressed="true" hidden>Playground</button></div><canvas class="cv" id="cv-plan" aria-label="Turf roll layout plan"></canvas>
+      <div class="legend"><span><i class="sw" style="background:var(--turf)"></i>Roll</span><span><i class="sw" style="background:var(--accent)"></i>Seam</span><span>Arrows show roll direction</span></div></div>
+    <div class="panel">
+      <h3>Roll settings</h3>
+      <label class="fld"><span>Roll direction</span><div class="in"><select id="l-dir" data-s="layout" data-k="dir"><option value="auto">Auto (least waste)</option><option value="x">Run left to right</option><option value="y">Run front to back</option></select></div></label>
+      <div class="grid2">
+        <label class="fld"><span>Roll width as sold</span><div class="in"><input id="r-rollWidth" type="text" data-ft="1" placeholder="15 0" data-s="R" data-k="rollWidth"><em>ft in</em></div></label>
+        <label class="fld"><span>Usable width after trimming</span><div class="in"><input id="r-useWidth" type="text" data-ft="1" placeholder="14 10" data-s="R" data-k="useWidth"><em>ft in</em></div></label>
+        <label class="fld"><span>Extra for cutting</span><div class="in"><input id="r-extra" type="text" data-ft="1" placeholder="1 0" data-s="R" data-k="extra"><em>ft in</em></div></label>
+      </div>
+      <p class="hint">Keep the grain running the same way on every piece. On a putting or play area, face the grain toward where people look at it from.</p>
+    </div>
+  </div>
+  <div class="panel"><div class="row" style="justify-content:space-between;align-items:center"><h3>Cut list</h3><span class="tag" id="cut-sum"></span></div>
+    <div class="row" style="margin:6px 0"><button class="btn sm primary" data-crew-open="1">Open crew cut list</button><button class="btn sm" id="b-crew">Send to turf crew</button><span class="hint" id="crew-msg">Open the crew cut list right here, or copy the site for the separate app.</span></div><textarea id="crew-text" hidden style="width:100%;min-height:90px"></textarea>
+    <div class="tbl-wrap"><table><thead><tr><th>Roll</th><th class="num">Cut length</th><th class="num">Width</th><th class="num">Measured</th></tr></thead><tbody id="rolls-body"></tbody></table></div>
+    <h3>How many of each</h3>
+    <div class="tbl-wrap"><table><thead><tr><th class="num">Cut length</th><th class="num">Width</th><th class="num">How many</th></tr></thead><tbody id="cut-body"></tbody></table></div></div>
+</section>
+
+<!-- MATERIALS -->
+<section class="tab" id="tab-mat" hidden>
+  <div><h2>Materials &amp; price</h2><p class="lede">Everything to order for the install, from the measurements and the rates below.</p></div>
+  <div class="banner" id="price-banner">Prices are samples. Set Turf Tek's real numbers under Unit prices and they'll apply to every job, on every device.</div>
+  <div class="cols">
+    <div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="num">Qty</th><th>Unit</th><th class="num">Cost</th></tr></thead><tbody id="mat-body"></tbody></table></div>
+    <div style="display:grid;gap:16px;align-content:start">
+      <div class="total" id="total-box"></div>
+      <div class="panel">
+        <details><summary>Unit prices</summary><div class="grid2" id="price-fields"></div></details>
+        <details><summary>Install rates</summary><div class="grid2" id="rate-fields"></div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPOSAL -->
+<section class="tab" id="tab-prop" hidden>
+  <div><h2>Proposal</h2><p class="lede">The customer-facing summary. Show it on screen, or copy the text into an email.</p></div>
+  <div class="row"><button class="btn primary" id="b-copy">Copy proposal text</button><span class="hint" id="copy-msg"></span></div>
+  <textarea id="copy-fallback" hidden style="width:100%;min-height:160px"></textarea>
+  <div class="sheet" id="sheet"></div>
+</section>
+
+</div></main>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <button data-tab="job" aria-current="page"><span class="k">Job</span>Info</button>
+  <button data-tab="site"><span class="k">Site</span>Measure</button>
+  <button data-tab="grade"><span class="k">Grade</span>Cut/Fill</button>
+  <button data-tab="turf"><span class="k">Turf</span>Rolls</button>
+  <button data-tab="mat"><span class="k">Order</span>Materials</button>
+  <button data-tab="prop"><span class="k">Send</span>Proposal</button>
+</div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+
+/* ---------- formatting ---------- */
+function fmtFtIn(v){if(!isFinite(v))return '—';const neg=v<0;let t=Math.round(Math.abs(v)*12);let f=Math.floor(t/12),i=t%12;return (neg?'-':'')+f+"'-"+i+'"'}
+const n0=v=>isFinite(v)?Math.round(v).toLocaleString('en-US'):'—';
+const n1=v=>isFinite(v)?(Math.round(v*10)/10).toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}):'—';
+const money=v=>isFinite(v)?'$'+Math.round(v).toLocaleString('en-US'):'$—';
+const inch=z=>{const v=Math.round(z*12*10)/10;return (v>0?'+':'')+v.toFixed(1)};
+/* parse "48", "48.5", "48 6", "48'6", "48'-6\"", "-0'3" -> feet */
+function parseFt(s){s=String(s).trim().replace(/[″]/g,'"').replace(/[′’]/g,"'");if(s==='')return NaN;
+  if(/^-?\d*\.?\d+$/.test(s))return parseFloat(s);
+  let m=s.match(/^(-)?\s*(\d+(?:\.\d+)?)\s*(?:'|\s)\s*-?\s*(\d+(?:\.\d+)?)?\s*"?$/);
+  if(m)return (m[1]?-1:1)*(parseFloat(m[2])+(m[3]?parseFloat(m[3]):0)/12);
+  m=s.match(/^(-)?\s*(\d+(?:\.\d+)?)\s*"$/); if(m)return (m[1]?-1:1)*parseFloat(m[2])/12;
+  return NaN}
+/* elevation field: plain number = inches; with ' = feet-inches */
+function parseElev(s){s=String(s).trim();if(s.includes("'"))return parseFt(s);const v=parseFloat(s.replace('"',''));return isFinite(v)?v/12:NaN}
+
+/* ---------- state ---------- */
+const DEFAULT_RATES={baseDepth:4,rollWidth:15,useWidth:14+10/12,extra:1,pad:0,sandLbs:2,rubberLbs:0,bagLbs:50,compaction:1.2,tonsPerCy:1.4,swell:1.25,truckCy:12,barrierOvg:10,barrierRoll:1800,tapeRoll:100,lfPerGal:25,boardLen:16,perimSpacing:6,seamSpacing:12};
+const DEFAULT_PRICES={turf:3.25,stone:42,haul:450,barrier:95,pad:1.1,sand:9,rubber:18,tape:65,glue:85,board:14,nails:0.35,labor:4.5,margin:35};
+const RATE_FIELDS=[['sandLbs','Sand infill','lbs/sf'],['rubberLbs','Second infill','lbs/sf'],['bagLbs','Infill bag size','lbs'],['pad','Shock pad (1 = yes)','0/1'],['compaction','Stone compaction factor','×'],['tonsPerCy','Stone weight','tons/cy'],['swell','Dirt swell factor','×'],['truckCy','Truck load','cy'],['barrierOvg','Weed barrier overlap','%'],['barrierRoll','Weed barrier roll','sf'],['tapeRoll','Seam tape roll','lf'],['lfPerGal','Glue coverage','lf/gal'],['boardLen','Nailer board length','ft'],['perimSpacing','Nail spacing, edge','in'],['seamSpacing','Nail spacing, seams','in']];
+const PRICE_FIELDS=[['turf','Turf','$/sf'],['stone','Stone base','$/ton'],['haul','Dirt haul-off','$/load'],['barrier','Weed barrier','$/roll'],['pad','Shock pad','$/sf'],['sand','Sand infill','$/bag'],['rubber','Second infill','$/bag'],['tape','Seam tape','$/roll'],['glue','Seam glue','$/gal'],['board','Nailer board','$/board'],['nails','Turf nails','$/ea'],['labor','Install labor','$/sf'],['margin','Margin','%']];
+
+function sampleJob(){return{id:uid(),sample:true,info:{name:'Sample backyard',customer:'Example customer',address:'12 Example Lane',date:todayStr(),rep:'',product:'Landscape turf, 1.75" pile',notes:''},
+  points:[{x:0,y:0,z:0,t:'e'},{x:48,y:0,z:-0.55,t:'e'},{x:48,y:24,z:-0.75,t:'e'},{x:36,y:32,z:-0.62,t:'e'},{x:0,y:32,z:-0.18,t:'e'},
+          {x:24,y:16,z:0.12,t:'s'},{x:36,y:12,z:-0.38,t:'s'},{x:12,y:24,z:-0.04,t:'s'},{x:12,y:8,z:0.04,t:'s'}],
+  grade:{mode:'fit',slope:1,dir:'270',offset:0},layout:{dir:'auto'}}}
+function blankJob(){return{id:uid(),info:{name:'New job',customer:'',address:'',date:todayStr(),rep:'',product:'',notes:''},points:[],grade:{mode:'fit',slope:1,dir:'270',offset:0},layout:{dir:'auto'}}}
+
+let selPt=-1,selJob='';
+let R=Object.assign({},DEFAULT_RATES,LS.get('tse.rates',{}));
+let PR=Object.assign({},DEFAULT_PRICES,LS.get('tse.prices',{}));
+let pricesTouched=LS.get('tse.pricesTouched',false);
+let jobs=LS.get('tse.jobs',null); if(!Array.isArray(jobs)||!jobs.length)jobs=[sampleJob()];
+/* blank elevations come back from storage as null; keep them blank, not 0 */
+jobs=jobs.map(j=>{try{return normJob(j)}catch(e){return j}});
+let job=jobs.find(j=>j.id===LS.get('tse.cur',''))||jobs[0];
+const scopes={info:()=>job.info,grade:()=>job.grade,layout:()=>job.layout,R:()=>R,PR:()=>PR};
+function save(){if(job&&!job.sample){job.updated=Date.now();dirty.add(job.id)}LS.set('tse.jobs',jobs);LS.set('tse.cur',job.id);LS.set('tse.rates',R);LS.set('tse.prices',PR);LS.set('tse.pricesTouched',pricesTouched);cloudSoon()}
+
+/* ---------- account sync (db capability) ---------- */
+let DB=null,canCfg=false,dirty=new Set(),gone=new Set(),cfgDirty=false,cloudT=0,syncing=false,lastCfg='';
+function setSync(t,ok){const el=$('#sync');if(!el)return;el.textContent=t;el.dataset.ok=ok?'1':'0'}
+function clean(o){return JSON.parse(JSON.stringify(o))}
+function normJob(d){const j=clean(d);j.points=(j.points||[]).map(p=>({x:p.x==null?NaN:p.x,y:p.y==null?NaN:p.y,z:p.z==null?NaN:p.z,t:p.t||'e',...(p.b?{b:{e:+p.b.e||0,d:+p.b.d||0}}:{}),...(p.src?{src:p.src}:{})}));j.info=j.info||{};j.grade=j.grade||{mode:'fit',slope:1,dir:'270',offset:0};j.layout=j.layout||{dir:'auto'};return j}
+function cloudSoon(){if(!DB)return;clearTimeout(cloudT);cloudT=setTimeout(flush,900)}
+async function flush(){if(!DB||syncing)return;syncing=true;let err=null;
+  try{for(const id of[...gone]){await DB.doc('jobs/'+id).delete();gone.delete(id)}
+    for(const id of[...dirty]){const j=jobs.find(x=>x.id===id);dirty.delete(id);if(j&&!j.sample)await DB.doc('jobs/'+id).set(clean(j))}
+    if(canCfg){const c=JSON.stringify({R,PR,pricesTouched});if(c!==lastCfg){await DB.doc('config/pricing').set(JSON.parse(c));lastCfg=c}}
+  }catch(e){err=e}
+  syncing=false;
+  if(err){setSync(err.code==='quota_exceeded'?'Account storage full':'Not saved to account yet, retrying',false);setTimeout(flush,4000)}
+  else if(dirty.size||gone.size)flush();else setSync('Saved to your account',true)}
+async function startCloud(){if(!window.claude||!claude.use){setSync('Saved on this device only',false);return}
+  let db=null,user=null;try{[db,user]=await Promise.all([claude.use('db'),claude.use('user')])}catch(e){}
+  if(!db){setSync('Saved on this device only',false);return}
+  DB=db;try{canCfg=user?!!(await user.canEdit()):false}catch(e){canCfg=false}
+  setSync('Syncing…',true);
+  DB.doc('config/pricing').onSnapshot(sn=>{if(!sn.exists){if(canCfg)cloudSoon();return}const d=sn.data();lastCfg=JSON.stringify(d);
+      R=Object.assign({},DEFAULT_RATES,d.R||{});PR=Object.assign({},DEFAULT_PRICES,d.PR||{});pricesTouched=!!d.pricesTouched;
+      if(!document.activeElement||!document.activeElement.closest('#tab-mat,#tab-grade,#tab-turf'))fillInputs();recompute()},()=>{});
+  let first=true;
+  DB.collection('jobs').onSnapshot(snap=>{const cloudIds=new Set();
+      for(const d of snap.docs){cloudIds.add(d.id);if(dirty.has(d.id)||gone.has(d.id))continue;
+        const nj=normJob(d.data());const i=jobs.findIndex(x=>x.id===d.id);
+        if(i<0)jobs.push(nj);else if((jobs[i].updated||0)<(nj.updated||0)){const editing=job.id===d.id&&document.activeElement&&document.activeElement.matches('input,textarea,select');
+          if(!editing){jobs[i]=nj;if(job.id===d.id){job=nj;fillInputs();renderPts()}}}}
+      if(first){first=false;for(const j of jobs)if(!j.sample&&!cloudIds.has(j.id))dirty.add(j.id);
+        const real=jobs.filter(j=>!j.sample);if(real.length&&job.sample)job=real[0];}
+      else{jobs=jobs.filter(j=>j.sample||cloudIds.has(j.id)||dirty.has(j.id));if(!jobs.includes(job))job=jobs[0]||blankJob()}
+      if(jobs.filter(j=>!j.sample).length)jobs=jobs.filter(j=>!j.sample||j===job);
+      jobs.sort((a,b)=>(b.updated||0)-(a.updated||0));if(!jobs.includes(job))jobs.unshift(job);
+      LS.set('tse.jobs',jobs);recompute();if(dirty.size)cloudSoon();else setSync('Saved to your account',true)},
+    e=>{setSync('Saved on this device only',false)});
+}
+
+/* ---------- geometry ---------- */
+const edgePts=()=>job.points.filter(p=>p.t==='e'&&isFinite(p.x)&&isFinite(p.y));
+const allPts=()=>job.points.filter(p=>isFinite(p.x)&&isFinite(p.y)&&isFinite(p.z));
+function polyArea(P){let a=0;for(let i=0,j=P.length-1;i<P.length;j=i++)a+=P[j].x*P[i].y-P[i].x*P[j].y;return Math.abs(a)/2}
+function polyPerim(P){let s=0;for(let i=0,j=P.length-1;i<P.length;j=i++)s+=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);return s}
+function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a.y>y)!==(b.y>y)&&x<(b.x-a.x)*(y-a.y)/(b.y-a.y)+a.x)c=!c}return c}
+function idw(x,y,pts){let sw=0,sz=0;for(const p of pts){const d=(x-p.x)**2+(y-p.y)**2;if(d<1e-6)return p.z;const w=1/d;sw+=w;sz+=w*p.z}return sz/sw}
+function fitPlane(pts){let n=pts.length,sx=0,sy=0,sz=0,sxx=0,syy=0,sxy=0,sxz=0,syz=0;
+  for(const p of pts){sx+=p.x;sy+=p.y;sz+=p.z;sxx+=p.x*p.x;syy+=p.y*p.y;sxy+=p.x*p.y;sxz+=p.x*p.z;syz+=p.y*p.z}
+  const A=[[n,sx,sy],[sx,sxx,sxy],[sy,sxy,syy]],B=[sz,sxz,syz];
+  const det=m=>m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+  const D=det(A);if(Math.abs(D)<1e-9)return{a:sz/n,b:0,c:0};
+  const col=(k)=>A.map((r,i)=>r.map((v,j)=>j===k?B[i]:v));
+  return{a:det(col(0))/D,b:det(col(1))/D,c:det(col(2))/D}}
+
+/* ---------- site model ---------- */
+let M=null,L=null,Q=null;
+function compute(){
+  const P=edgePts();let pts=allPts();const noElev=pts.length<3;
+  if(noElev)pts=job.points.filter(p=>isFinite(p.x)&&isFinite(p.y)).map(p=>({x:p.x,y:p.y,z:isFinite(p.z)?p.z:0,t:p.t}));
+  if(P.length<3||pts.length<3||polyArea(P)<1)return null;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;for(const p of P){minX=Math.min(minX,p.x);minY=Math.min(minY,p.y);maxX=Math.max(maxX,p.x);maxY=Math.max(maxY,p.y)}
+  const bb={minX,minY,maxX,maxY,w:maxX-minX,h:maxY-minY};
+  const c=Math.max(0.5,Math.sqrt(bb.w*bb.h/30000));
+  const cells=[];let zsum=0;
+  for(let x=minX+c/2;x<maxX;x+=c)for(let y=minY+c/2;y<maxY;y+=c)if(inPoly(x,y,P)){const ze=idw(x,y,pts);cells.push([x,y,ze]);zsum+=ze}
+  if(!cells.length)return null;
+  const zmean=zsum/cells.length,cx=(minX+maxX)/2,cy=(minY+maxY)/2,off=(+job.grade.offset||0)/12;
+  let F,slopeInfo;
+  if(job.grade.mode==='plane'){const s=(+job.grade.slope||0)/100,th=(+job.grade.dir||0)*Math.PI/180,ux=Math.cos(th),uy=Math.sin(th);
+    // set so the plane's mean over the area equals mean existing (+offset)
+    let m=0;for(const k of cells)m+=-s*((k[0]-cx)*ux+(k[1]-cy)*uy);m/=cells.length;
+    const h0=zmean+off-m;F=(x,y)=>h0-s*((x-cx)*ux+(y-cy)*uy);slopeInfo=s*100}
+  else{const pl=fitPlane(pts);F=(x,y)=>pl.a+pl.b*x+pl.c*y+off;slopeInfo=Math.hypot(pl.b,pl.c)*100}
+  const depth=(+R.baseDepth||0)/12;let cut=0,fill=0,maxCut=0,maxFill=0;const ca=c*c;
+  for(const k of cells){const d=k[2]-(F(k[0],k[1])-depth);k.push(d);if(d>0){cut+=d*ca;maxCut=Math.max(maxCut,d)}else{fill+=-d*ca;maxFill=Math.max(maxFill,-d)}}
+  const zs=pts.map(p=>p.z);
+  return{P,pts,bb,A:polyArea(P),Per:polyPerim(P),cells,c,F,depth,cut,fill,maxCut,maxFill,slope:slopeInfo,zmin:Math.min(...zs),zmax:Math.max(...zs),relief:Math.max(...zs)-Math.min(...zs)}}
+
+/* ---------- turf layout ---------- */
+function lineHits(Qp,v){const us=[];for(let i=0,j=Qp.length-1;i<Qp.length;j=i++){const a=Qp[i],b=Qp[j];if((a.v>v)!==(b.v>v))us.push(a.u+(v-a.v)*(b.u-a.u)/(b.v-a.v))}return us.sort((a,b)=>a-b)}
+function chordLen(us){let s=0;for(let i=0;i+1<us.length;i+=2)s+=us[i+1]-us[i];return s}
+function layoutDir(P,along){
+  const SW=Math.max(1,+R.rollWidth||15),W=Math.min(SW,Math.max(1,+R.useWidth||SW)),extra=Math.max(0,isFinite(+R.extra)&&R.extra!==''?+R.extra:1);
+  const Qp=P.map(p=>along==='x'?{u:p.x,v:p.y}:{u:p.y,v:p.x});
+  const vmin=Math.min(...Qp.map(q=>q.v)),vmax=Math.max(...Qp.map(q=>q.v));
+  const strips=[];
+  for(let v0=vmin;v0<vmax-0.01;v0+=W){const v1=v0+W;let lo=Infinity,hi=-Infinity;
+    for(let s=0;s<=24;s++){const v=Math.min(vmax-1e-4,Math.max(vmin+1e-4,v0+(v1-v0)*s/24));const us=lineHits(Qp,v);if(us.length){lo=Math.min(lo,us[0]);hi=Math.max(hi,us[us.length-1])}}
+    for(const q of Qp)if(q.v>=v0-1e-6&&q.v<=v1+1e-6){lo=Math.min(lo,q.u);hi=Math.max(hi,q.u)}
+    if(hi>lo){const len=hi-lo,order=Math.ceil(len+extra-0.001);
+      strips.push({v0,v1,used:Math.min(v1,vmax)-v0,lo,hi,len,order})}}
+  let seamLF=0;const seams=[];
+  for(let k=0;k+1<strips.length;k++){const us=lineHits(Qp,strips[k].v1);seamLF+=chordLen(us);seams.push({v:strips[k].v1,us})}
+  const bought=strips.reduce((a,s)=>a+SW*s.order,0);
+  return{along,W,SW,strips,seams,seamLF,bought,Qp}}
+function layoutBest(){if(!M)return null;const P=M.P,want=job.layout.dir;
+  const a=layoutDir(P,'x'),b=layoutDir(P,'y');const score=l=>l.bought+l.seamLF*1.5;
+  const best=want==='x'?a:want==='y'?b:(score(a)<=score(b)?a:b);best.waste=Math.max(0,1-M.A/best.bought);best.auto=want==='auto';return best}
+const uvToXY=(l,u,v)=>l.along==='x'?{x:u,y:v}:{x:v,y:u};
+
+/* ---------- materials ---------- */
+function materials(){if(!M||!L)return null;const A=M.A,Per=M.Per,lines=[];
+  const add=(item,qty,unit,price,sub)=>lines.push({item,qty,unit,cost:qty*price,sub});
+  add('Turf',L.bought,'sf',+PR.turf,`${L.strips.length} roll${L.strips.length===1?'':'s'} × ${fmtFtIn(+R.rollWidth||15)} roll · ${n0(L.strips.reduce((a,s)=>a+s.order,0))} lf`);
+  const stoneCy=A*M.depth/27*(+R.compaction||1),stoneT=stoneCy*(+R.tonsPerCy||1.4);
+  add('Stone base',Math.ceil(stoneT),'tons',+PR.stone,`${n1(stoneCy)} cy at ${+R.baseDepth}" compacted`);
+  const netCy=Math.max(0,M.cut-M.fill)/27*(+R.swell||1),loads=netCy>0?Math.ceil(netCy/(+R.truckCy||12)):0;
+  add('Dirt haul-off',loads,'loads',+PR.haul,`${n1(netCy)} cy loose after reusing ${n1(Math.min(M.cut,M.fill)/27)} cy as fill`);
+  const bsf=A*(1+(+R.barrierOvg||0)/100);add('Weed barrier',Math.ceil(bsf/(+R.barrierRoll||1800)),'rolls',+PR.barrier,`${n0(bsf)} sf with overlap`);
+  if(+R.pad)add('Shock pad',Math.ceil(A*1.05),'sf',+PR.pad,'Area + 5%');
+  if(+R.sandLbs>0){const lb=A*R.sandLbs;add('Sand infill',Math.ceil(lb/(+R.bagLbs||50)),'bags',+PR.sand,`${n0(lb)} lbs at ${R.sandLbs} lbs/sf`)}
+  if(+R.rubberLbs>0){const lb=A*R.rubberLbs;add('Second infill',Math.ceil(lb/(+R.bagLbs||50)),'bags',+PR.rubber,`${n0(lb)} lbs at ${R.rubberLbs} lbs/sf`)}
+  if(L.seamLF>0){add('Seam tape',Math.ceil(L.seamLF*1.1/(+R.tapeRoll||100)),'rolls',+PR.tape,`${n0(L.seamLF)} lf of seam + 10%`);add('Seam glue',Math.ceil(L.seamLF/(+R.lfPerGal||25)),'gal',+PR.glue,'')}
+  add('Nailer board',Math.ceil(Per*1.1/(+R.boardLen||16)),'boards',+PR.board,`${n0(Per)} lf of edge + 10%`);
+  const nails=Math.ceil(Per*12/(+R.perimSpacing||6)+L.seamLF*12/(+R.seamSpacing||12));add('Turf nails',nails,'ea',+PR.nails,`Every ${R.perimSpacing}" on edge, ${R.seamSpacing}" on seams`);
+  add('Install labor',Math.ceil(A),'sf',+PR.labor,'Excavate, base, install, infill');
+  const cost=lines.reduce((a,l)=>a+l.cost,0),m=Math.min(90,Math.max(0,+PR.margin||0))/100,sell=m<1?cost/(1-m):cost;
+  return{lines,cost,sell,profit:sell-cost,psf:sell/A}}
+
+/* ---------- colors / canvas ---------- */
+function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888'}
+function rgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return[n>>16&255,n>>8&255,n&255]}
+function mix(a,b,t,shade=1){const A=rgb(a),B=rgb(b);return`rgb(${A.map((v,i)=>Math.round((v+(B[i]-v)*t)*shade)).join(',')})`}
+function prepCanvas(cv,ratio,maxH){const dpr=window.devicePixelRatio||1,w=cv.clientWidth||cv.parentElement.clientWidth||320,h=Math.min(maxH||560,Math.round(w*ratio));
+  cv.style.height=h+'px';cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);return{ctx,w,h}}
+
+/* plan drawing, shared by site, turf and proposal */
+function drawPlan(cv,opt){opt=opt||{};const ratio=opt.ratio||0.7;const {ctx,w,h}=opt.fixed?opt.fixed:prepCanvas(cv,ratio);
+  const pts=job.points.filter(p=>isFinite(p.x)&&isFinite(p.y));const C={ink:tok('--ink'),muted:tok('--muted'),line:tok('--line'),accent:tok('--accent'),fill:tok('--fill'),turf:tok('--turf'),turf2:tok('--turf2'),surface:tok('--surface')};
+  if(opt.palette)Object.assign(C,opt.palette);
+  if(opt.bg){ctx.fillStyle=opt.bg;ctx.fillRect(0,0,w,h)}
+  if(!pts.length){ctx.fillStyle=C.muted;ctx.font='600 15px Barlow, system-ui';ctx.textAlign='center';ctx.fillText('No points yet. Add edge points below.',w/2,h/2);return}
+  const PGc=pgShown()?pgGeom():null;const bp=PGc?pts.concat(PGc.corners):pts;let minX=Math.min(...bp.map(p=>p.x)),maxX=Math.max(...bp.map(p=>p.x)),minY=Math.min(...bp.map(p=>p.y)),maxY=Math.max(...bp.map(p=>p.y));
+  const pad=38,sx=(w-2*pad)/Math.max(1,maxX-minX),sy=(h-2*pad)/Math.max(1,maxY-minY),s=Math.min(sx,sy);
+  const ox=(w-(maxX-minX)*s)/2,oy=(h-(maxY-minY)*s)/2;const T=(x,y)=>[ox+(x-minX)*s,h-oy-(y-minY)*s];if(!opt.fixed&&cv)cv._inv={minX,minY,s,ox,oy,h};
+  const P=edgePts();
+  // strips
+  if(opt.layout&&L){const l=L;ctx.save();if(P.length>2){ctx.beginPath();P.forEach((p,i)=>{const[a,b]=T(p.x,p.y);i?ctx.lineTo(a,b):ctx.moveTo(a,b)});ctx.closePath();ctx.clip()}
+    l.strips.forEach((st,k)=>{const c1=uvToXY(l,st.lo-1,st.v0),c2=uvToXY(l,st.hi+1,st.v1);const[a1,b1]=T(c1.x,c1.y),[a2,b2]=T(c2.x,c2.y);
+      ctx.fillStyle=k%2?C.turf2:C.turf;ctx.globalAlpha=k%2?0.55:0.4;ctx.fillRect(Math.min(a1,a2),Math.min(b1,b2),Math.abs(a2-a1),Math.abs(b2-b1))});
+    ctx.globalAlpha=1;ctx.restore();
+    // seams
+    ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    for(const sm of l.seams){for(let i=0;i+1<sm.us.length;i+=2){const p1=uvToXY(l,sm.us[i],sm.v),p2=uvToXY(l,sm.us[i+1],sm.v);const[a,b]=T(p1.x,p1.y),[c,d]=T(p2.x,p2.y);ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke()}}
+    ctx.setLineDash([]);
+    // labels + arrows
+    ctx.font='700 13px "Barlow Condensed", system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    l.strips.forEach((st,k)=>{const mid=uvToXY(l,(st.lo+st.hi)/2,st.v0+st.used/2);const[a,b]=T(mid.x,mid.y);
+      const lbl=`R${k+1} · ${fmtFtIn(st.order)}`;ctx.fillStyle=C.surface;const tw=ctx.measureText(lbl).width+10;ctx.globalAlpha=.9;ctx.fillRect(a-tw/2,b-9,tw,18);ctx.globalAlpha=1;ctx.fillStyle=C.ink;ctx.fillText(lbl,a,b);
+      const e=uvToXY(l,(st.lo+st.hi)/2+Math.min(6,st.len/4),st.v0+st.used/2);const[ea,eb]=T(e.x,e.y);const ang=Math.atan2(eb-b,ea-a);
+      const ax=a+Math.cos(ang)*(tw/2+6),ay=b+Math.sin(ang)*(tw/2+6);ctx.strokeStyle=C.ink;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+Math.cos(ang)*14,ay+Math.sin(ang)*14);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ax+Math.cos(ang)*18,ay+Math.sin(ang)*18);ctx.lineTo(ax+Math.cos(ang+2.6)*7+Math.cos(ang)*18,ay+Math.sin(ang+2.6)*7+Math.sin(ang)*18);ctx.lineTo(ax+Math.cos(ang-2.6)*7+Math.cos(ang)*18,ay+Math.sin(ang-2.6)*7+Math.sin(ang)*18);ctx.closePath();ctx.fillStyle=C.ink;ctx.fill()})}
+  // outline
+  if(P.length>1){ctx.beginPath();P.forEach((p,i)=>{const[a,b]=T(p.x,p.y);i?ctx.lineTo(a,b):ctx.moveTo(a,b)});if(P.length>2)ctx.closePath();ctx.strokeStyle=C.ink;ctx.lineWidth=2;ctx.stroke();
+    if(!opt.layout&&P.length>2){ctx.fillStyle=C.turf;ctx.globalAlpha=.12;ctx.fill();ctx.globalAlpha=1}
+    // edge dims
+    ctx.font='500 12px "IBM Plex Mono", monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    const cxp=P.reduce((a,p)=>a+p.x,0)/P.length,cyp=P.reduce((a,p)=>a+p.y,0)/P.length;
+    for(let i=0;i<P.length;i++){const j=(i+1)%P.length;if(P.length<3&&j===0)break;const a=P[i],b=P[j],len=Math.hypot(b.x-a.x,b.y-a.y);if(len<0.5)continue;
+      let mx=(a.x+b.x)/2,my=(a.y+b.y)/2;let nx=-(b.y-a.y)/len,ny=(b.x-a.x)/len;if((mx-cxp)*nx+(my-cyp)*ny<0){nx=-nx;ny=-ny}
+      const[pa,pb]=T(mx,my);const lbl=fmtFtIn(len);const tw=ctx.measureText(lbl).width+8;const px=pa+nx*16,py=pb-ny*16;
+      ctx.fillStyle=C.surface;ctx.fillRect(px-tw/2,py-8,tw,16);ctx.fillStyle=C.muted;ctx.fillText(lbl,px,py)}}
+  // playground border + footings
+  if(PGc){ctx.save();ctx.beginPath();PGc.corners.forEach((p,i)=>{const[a,b]=T(p.x,p.y);i?ctx.lineTo(a,b):ctx.moveTo(a,b)});ctx.closePath();ctx.setLineDash([7,5]);ctx.strokeStyle=C.fill;ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);
+    const[c0a,c0b]=T(PGc.corners[0].x,PGc.corners[0].y);ctx.beginPath();ctx.arc(c0a,c0b,4,0,7);ctx.fillStyle=C.fill;ctx.fill();
+    for(const hh of PGc.holes){const[a,b]=T(hh.x,hh.y);ctx.beginPath();ctx.arc(a,b,hh.post?3:2.6,0,7);if(hh.post){ctx.fillStyle=C.ink;ctx.fill()}else{ctx.strokeStyle=C.ink;ctx.lineWidth=1.2;ctx.stroke()}}
+    if(!opt.layout){ctx.font='700 11px "Barlow Condensed", system-ui';ctx.fillStyle=C.fill;ctx.textAlign='left';ctx.textBaseline='top';const lb=(job.pg.data.short||'Playground')+' border';ctx.fillText(lb,c0a+6,c0b+4)}
+    ctx.restore()}
+  // points
+  if(!opt.fixed&&cv)cv._pts=[];if(!opt.layout||opt.points){let ei=0,si=0,bi=0;job.points.forEach((p,idx)=>{if(!isFinite(p.x)||!isFinite(p.y))return;const lb=p.t==='e'?String(++ei):p.b?'B'+(++bi):'S'+(++si);const[a,b]=T(p.x,p.y);
+    if(!opt.fixed&&cv){(cv._pts=cv._pts||[]).push({i:idx,a,b})}
+    if(!opt.fixed&&cv&&cv.id==='cv-site'&&idx===selPt){ctx.beginPath();ctx.arc(a,b,13,0,7);ctx.strokeStyle=C.accent;ctx.lineWidth=3;ctx.stroke()}
+    ctx.beginPath();ctx.arc(a,b,p.t==='e'?6:5,0,7);ctx.fillStyle=p.t==='e'?C.accent:C.fill;ctx.fill();
+    ctx.font='700 12px "Barlow Condensed", system-ui';ctx.fillStyle=C.ink;ctx.textBaseline='bottom';const lt=lb+(isFinite(p.z)?'  '+inch(p.z)+'"':'');const right=a+8+ctx.measureText(lt).width>w-4;ctx.textAlign=right?'right':'left';ctx.fillText(lt,right?a-8:a+8,b-4)})}}
+
+/* ---------- 3D ---------- */
+const V3={yaw:-0.6,elev:0.62,view:'cut'};
+function draw3D(){const cv=$('#cv-3d');const {ctx,w,h}=prepCanvas(cv,0.72,560);
+  if(!M){ctx.fillStyle=tok('--muted');ctx.font='600 15px Barlow, system-ui';ctx.textAlign='center';ctx.fillText('Need at least 3 edge points with elevations.',w/2,h/2);return}
+  const C={cut:tok('--cut'),fill:tok('--fill'),neu:tok('--neutral'),turf:tok('--turf'),turf2:tok('--turf2'),ink:tok('--ink'),accent:tok('--accent'),muted:tok('--muted')};
+  const {bb,P,pts,F,depth}=M,ve=+$('#ve').value;const span=Math.max(bb.w,bb.h),g=Math.max(0.5,span/42);
+  const nx=Math.ceil(bb.w/g)+1,ny=Math.ceil(bb.h/g)+1;const gx=i=>bb.minX+Math.min(bb.w,i*g),gy=j=>bb.minY+Math.min(bb.h,j*g);
+  const ZE=[],ZF=[];for(let i=0;i<nx;i++){ZE[i]=[];ZF[i]=[];for(let j=0;j<ny;j++){const x=gx(i),y=gy(j);ZE[i][j]=idw(x,y,pts);ZF[i][j]=F(x,y)}}
+  const cx=(bb.minX+bb.maxX)/2,cy=(bb.minY+bb.maxY)/2,zm=(M.zmin+M.zmax)/2;
+  const cyw=Math.cos(V3.yaw),syw=Math.sin(V3.yaw),se=Math.sin(V3.elev),ce=Math.cos(V3.elev);
+  const pr=(x,y,z)=>{const dx=x-cx,dy=y-cy;const rx=dx*cyw-dy*syw,ry=dx*syw+dy*cyw;return[rx,-ry*se-(z-zm)*ve*ce,ry]};
+  // fit
+  let a0=Infinity,a1=-Infinity,b0=Infinity,b1=-Infinity;for(const[x,y]of[[bb.minX,bb.minY],[bb.maxX,bb.minY],[bb.maxX,bb.maxY],[bb.minX,bb.maxY]])for(const z of[M.zmin-depth-0.3,M.zmax+0.3]){const p=pr(x,y,z);a0=Math.min(a0,p[0]);a1=Math.max(a1,p[0]);b0=Math.min(b0,p[1]);b1=Math.max(b1,p[1])}
+  const sc=Math.min((w-30)/(a1-a0),(h-30)/(b1-b0)),ox=w/2-(a0+a1)/2*sc,oy=h/2-(b0+b1)/2*sc;const S=(x,y,z)=>{const p=pr(x,y,z);return[ox+p[0]*sc,oy+p[1]*sc,p[2]]};
+  const turfView=V3.view==='turf';const Z=turfView?ZF:ZE;const dmax=Math.max(M.maxCut,M.maxFill,2/12);
+  const cells=[];for(let i=0;i<nx-1;i++)for(let j=0;j<ny-1;j++){const x=(gx(i)+gx(i+1))/2,y=(gy(j)+gy(j+1))/2;if(!inPoly(x,y,P))continue;cells.push([i,j,x,y,pr(x,y,0)[2]])}
+  cells.sort((p,q)=>q[4]-p[4]);
+  const lx=-0.45,ly=0.35,lz=0.82;
+  for(const[i,j,x,y]of cells){const q=[S(gx(i),gy(j),Z[i][j]),S(gx(i+1),gy(j),Z[i+1][j]),S(gx(i+1),gy(j+1),Z[i+1][j+1]),S(gx(i),gy(j+1),Z[i][j+1])];
+    const dzx=((Z[i+1][j]+Z[i+1][j+1])-(Z[i][j]+Z[i][j+1]))/2/g*ve,dzy=((Z[i][j+1]+Z[i+1][j+1])-(Z[i][j]+Z[i+1][j]))/2/g*ve;const nl=Math.hypot(dzx,dzy,1);const sh=0.78+0.22*((-dzx*lx-dzy*ly+lz)/nl);
+    let col;if(turfView){let k=0;if(L){const v=L.along==='x'?y:x;const v0=Math.min(...L.Qp.map(q=>q.v));k=Math.floor((v-v0)/L.W)%2}col=mix(k?C.turf2:C.turf,k?C.turf2:C.turf,0,sh)}
+    else{const d=ZE[i][j]+ZE[i+1][j]+ZE[i+1][j+1]+ZE[i][j+1];const dd=d/4-(F(x,y)-depth);const t=Math.min(1,Math.abs(dd)/dmax);const base=dd>=0?C.cut:C.fill;col=mix(C.neu,base,0.25+0.75*t,sh)}
+    ctx.beginPath();ctx.moveTo(q[0][0],q[0][1]);for(let k=1;k<4;k++)ctx.lineTo(q[k][0],q[k][1]);ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=0.6;ctx.stroke()}
+  // outlines
+  const ring=(fz,color,dash,lw)=>{ctx.beginPath();for(let i=0;i<=P.length;i++){const a=P[i%P.length],b=P[(i+1)%P.length];for(let s=0;s<6;s++){const t=s/6,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;const p=S(x,y,fz(x,y));(i||s)?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])}if(i===P.length-1)break}ctx.closePath();ctx.setLineDash(dash);ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.stroke();ctx.setLineDash([])};
+  if(turfView){ring((x,y)=>idw(x,y,pts),C.muted,[4,4],1.2);ring(F,C.ink,[],2);
+    if(L){ctx.strokeStyle=C.accent;ctx.lineWidth=1.6;ctx.setLineDash([5,4]);for(const sm of L.seams)for(let i=0;i+1<sm.us.length;i+=2){ctx.beginPath();for(let s=0;s<=12;s++){const u=sm.us[i]+(sm.us[i+1]-sm.us[i])*s/12;const p0=uvToXY(L,u,sm.v);const p=S(p0.x,p0.y,F(p0.x,p0.y)+0.01);s?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])}ctx.stroke()}ctx.setLineDash([])}}
+  else{ring((x,y)=>idw(x,y,pts),C.ink,[],2);ring((x,y)=>F(x,y)-depth,C.muted,[4,4],1.2)}
+  // playground on the grade map
+  const PG3=pgShown()?pgGeom():null;
+  if(PG3){const zf=turfView?F:(x,y)=>idw(x,y,pts);const cs=PG3.corners;ctx.beginPath();
+    for(let i=0;i<=4;i++){const a=cs[i%4],b=cs[(i+1)%4];for(let k=0;k<10;k++){const t=k/10,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;const p=S(x,y,zf(x,y)+0.02);(i||k)?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])}if(i===3)break}
+    ctx.closePath();ctx.setLineDash([7,5]);ctx.strokeStyle=tok('--warn');ctx.lineWidth=2.4;ctx.stroke();ctx.setLineDash([]);
+    const tall=Math.max(bb.w,bb.h)/60/ve;
+    for(const hh of PG3.holes){const z=zf(hh.x,hh.y);const s0=S(hh.x,hh.y,z);
+      if(hh.post){const s1=S(hh.x,hh.y,z+tall*6);ctx.strokeStyle=C.ink;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s0[0],s0[1]);ctx.lineTo(s1[0],s1[1]);ctx.stroke();ctx.beginPath();ctx.arc(s1[0],s1[1],2.4,0,7);ctx.fillStyle=C.ink;ctx.fill()}
+      else{ctx.beginPath();ctx.arc(s0[0],s0[1],2.6,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=0.8;ctx.stroke()}}}
+  // points
+  if(!turfView)for(const p of pts){const s=S(p.x,p.y,p.z);ctx.beginPath();ctx.arc(s[0],s[1],3,0,7);ctx.fillStyle=p.t==='e'?C.accent:C.ink;ctx.fill()}}
+function bind3D(){const cv=$('#cv-3d');let drag=null;
+  cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId)});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;V3.yaw+=(e.clientX-drag.x)*0.01;V3.elev=Math.min(1.5,Math.max(0.2,V3.elev-(e.clientY-drag.y)*0.006));drag={x:e.clientX,y:e.clientY};req3D()});
+  const end=()=>drag=null;cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end)}
+let raf3=0;function req3D(){if(raf3)return;raf3=requestAnimationFrame(()=>{raf3=0;draw3D()})}
+
+/* ---------- rendering ---------- */
+function renderHeader(){$('#hdr-name').textContent=job.info.name||'Untitled job';$('#hdr-area').textContent=M?n0(M.A)+' sf':'— sf';$('#hdr-price').textContent=Q?money(Q.sell):'$—';
+  $('#sample-banner').hidden=!job.sample;$('#price-banner').hidden=pricesTouched}
+function stat(label,val,sub,cls){return`<div class="stat ${cls||''}"><small>${label}</small><b>${val}</b>${sub?`<i>${sub}</i>`:''}</div>`}
+function renderGrade(){
+  $$('#tab-grade [data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===job.grade.mode)));
+  $$('#tab-grade [data-plane]').forEach(el=>el.style.opacity=job.grade.mode==='plane'?1:.45);
+  $('#g-slope').disabled=$('#g-dir').disabled=job.grade.mode!=='plane';
+  $('#mode-hint').textContent=job.grade.mode==='fit'?'Finished turf follows the general lay of the ground (best-fit plane through your shots). Least dirt moved.':'Finished turf is one flat plane pitched the way you choose. Use this when water has to go somewhere specific.';
+  if(!M){$('#grade-stats').innerHTML=stat('Cut','—','cu yd','cut')+stat('Fill','—','cu yd','fill');$('#grade-note').textContent='';return}
+  const cy=v=>n1(v/27);
+  $('#grade-stats').innerHTML=stat('Cut',cy(M.cut),'cu yd dug out','cut')+stat('Fill',cy(M.fill),'cu yd into low spots','fill')+stat('Haul off',n1(Math.max(0,M.cut-M.fill)/27*(+R.swell||1)),'cu yd loose')+stat('Deepest dig',n1(M.maxCut*12)+'"','below existing')+stat('Pitch',n1(M.slope)+'%',job.grade.mode==='fit'?'follows ground':'as set','turf');
+  const notes=[];if(M.slope<0.5)notes.push('Pitch is under 0.5%. Turf drains through, but water can sit on the base. Consider Set pitch at 1% or more.');
+  if(M.maxFill>2/12)notes.push(`Some low spots need up to ${n1(M.maxFill*12)}" of fill before the stone goes down.`);
+  notes.push(`Ground relief across the shots: ${n1(M.relief*12)}".`);$('#grade-note').textContent=notes.join(' ');
+  $('#ve-lbl').textContent=$('#ve').value+'×';
+  $('#legend-3d').innerHTML=V3.view==='cut'?'<span><i class="sw" style="background:var(--cut)"></i>Cut (dig)</span><span><i class="sw" style="background:var(--fill)"></i>Fill</span><span>Solid line: existing edge · dashed: subgrade</span>'+(pgShown()?'<span>Yellow dashes: playground · sticks: posts · white dots: footings</span>':''):'<span><i class="sw" style="background:var(--turf)"></i>Turf rolls</span><span><i class="sw" style="background:var(--accent)"></i>Seams</span><span>Dashed: existing ground edge</span>'+(pgShown()?'<span>Yellow dashes: playground · sticks: posts · white dots: footings</span>':'');pgSyncTog()}
+function renderTurf(){if(!M||!L){$('#turf-stats').innerHTML=stat('Rolls','—');$('#rolls-body').innerHTML='<tr><td colspan="4" class="sub">Add at least 3 edge points on the Site tab.</td></tr>';$('#cut-body').innerHTML='';$('#cut-sum').textContent='';return}
+  $('#turf-stats').innerHTML=stat('Turf area',n0(M.A),'sq ft','turf')+stat('Order',n0(L.bought),'sq ft')+stat('Waste',n0(L.waste*100)+'%',L.auto?'auto direction':'your direction')+stat('Seams',n0(L.seamLF),'lin ft')+stat('Rolls',L.strips.length,`${fmtFtIn(+R.rollWidth||15)} roll, run ${L.along==='x'?'left–right':'front–back'}`);
+  const tot=L.strips.reduce((a,s)=>a+s.order,0);
+  $('#rolls-body').innerHTML=L.strips.map((st,k)=>`<tr><td><b>R${k+1}</b></td><td class="num"><b>${fmtFtIn(st.order)}</b></td><td class="num">${fmtFtIn(st.used>=L.W-0.05?L.W:Math.round(st.used*12)/12)}${st.used<L.W-0.05?' <span class="tag">rip</span>':''}</td><td class="num">${fmtFtIn(st.len)}</td></tr>`).join('')
+   +`<tr><td><b>Total</b></td><td class="num"><b>${fmtFtIn(tot)}</b></td><td class="num">${n0(L.bought)} sf</td><td></td></tr>`;
+  const g=new Map();L.strips.forEach(st=>{const full=st.used>=L.W-0.05;const w=full?L.W:Math.round(st.used*12)/12;const key=st.order+'|'+w;
+    if(!g.has(key))g.set(key,{len:st.order,w,full,n:0});g.get(key).n++});
+  const rows=[...g.values()].sort((a,b)=>b.len-a.len||b.w-a.w);
+  $('#cut-body').innerHTML=rows.map(e=>`<tr><td class="num"><b>${fmtFtIn(e.len)}</b></td><td class="num">${fmtFtIn(e.w)}${e.full?'':' <span class="tag">rip</span>'}</td><td class="num"><b>${e.n}</b></td></tr>`).join('')
+   +`<tr><td><b>Total</b></td><td></td><td class="num"><b>${L.strips.length}</b></td></tr>`;
+  $('#cut-sum').textContent=`${L.strips.length} roll${L.strips.length===1?'':'s'} · ${fmtFtIn(tot)} total`}
+function renderMat(){if(!Q){$('#mat-body').innerHTML='<tr><td colspan="4" class="sub">Measurements needed first.</td></tr>';$('#total-box').innerHTML='<div class="big">$—</div>';return}
+  $('#mat-body').innerHTML=Q.lines.map(l=>`<tr><td><b>${esc(l.item)}</b>${l.sub?`<div class="sub">${esc(l.sub)}</div>`:''}</td><td class="num">${n0(l.qty)}</td><td>${l.unit}</td><td class="num">${money(l.cost)}</td></tr>`).join('');
+  $('#total-box').innerHTML=`<div class="ln"><span>Proposal price</span><span>${n0(M.A)} sf</span></div><div class="big">${money(Q.sell)}</div><div class="ln"><span>Per sq ft</span><span>$${Q.psf.toFixed(2)}</span></div><div class="ln"><span>Job cost</span><span>${money(Q.cost)}</span></div><div class="ln"><span>Margin ${+PR.margin}%</span><span>${money(Q.profit)}</span></div>`}
+function renderJobs(){$('#joblist').innerHTML=jobs.map(j=>`<div class="jobitem ${j.id===job.id?'cur':''}"><div class="t"><b>${esc(j.info.name||'Untitled job')} ${j.sample?'<span class="tag sample">Sample</span>':''}</b><span>${esc(j.info.customer||'No customer')} · ${esc(j.info.date||'')}</span></div>
+   ${j.id===job.id?'<span class="tag">Open</span>':`<button class="btn sm" data-open="${j.id}">Open</button>`}<button class="btn sm ghost danger" data-del="${j.id}">${delArm===j.id?'Tap again to delete':'Delete'}</button></div>`).join('')}
+function edgeList(){return job.points.map((p,i)=>({p,i})).filter(o=>o.p.t==='e'&&isFinite(o.p.x)&&isFinite(o.p.y))}
+function edgeSeg(k){const E=edgeList();if(E.length<2)return null;k=((k%E.length)+E.length)%E.length;const a=E[k].p,b=E[(k+1)%E.length].p;return{a,b,len:Math.hypot(b.x-a.x,b.y-a.y),from:k+1,to:(k+1)%E.length+1}}
+function placeBorder(p){const sg=edgeSeg(p.b.e);if(!sg)return;p.b.d=Math.max(0,Math.min(sg.len,+p.b.d||0));const t=sg.len?p.b.d/sg.len:0;p.x=sg.a.x+(sg.b.x-sg.a.x)*t;p.y=sg.a.y+(sg.b.y-sg.a.y)*t}
+function updateBorderPts(){for(const p of job.points)if(p.b)placeBorder(p)}
+function updBdLbl(){const sg=edgeSeg(+$('#bd-edge').value||0);$('#bd-dist-lbl').textContent=sg?`From corner ${sg.from}`:'From corner'}
+function fmtPt(p,k){const v=p[k];return isFinite(v)?(k==='z'?inch(v):fmtFtIn(v)):''}
+function syncPtInputs(){$$('[data-pi][data-pk]').forEach(el=>{if(el.tagName==='SELECT')return;const p=job.points[+el.dataset.pi];if(p&&el!==document.activeElement)el.value=el.dataset.pk==='bd'?(p.b?fmtFtIn(p.b.d):''):fmtPt(p,el.dataset.pk)});
+  $$('#elev-corners .ecard').forEach(c=>{const p=job.points[+c.dataset.i];if(p)c.classList.toggle('blank',!isFinite(p.z))});elevCount();renderSel();drawPlan($('#cv-site'))}
+function elevCount(){const E=job.points.filter(p=>p.t==='e'),S=job.points.filter(p=>p.t==='s');$('#elev-count').textContent=`${E.filter(p=>isFinite(p.z)).length} of ${E.length} corners · ${S.length} spot${S.length===1?'':'s'}`}
+function renderElev(){const ce=$('#elev-corners'),se=$('#elev-spots');if(!ce)return;let n=0,first=true;
+  const corners=job.points.map((p,i)=>({p,i})).filter(o=>o.p.t==='e');
+  ce.innerHTML=corners.length?corners.map(({p,i})=>{n++;const z0=first;first=false;return`<label class="fld ecard ${z0?'zero':''} ${isFinite(p.z)?'':'blank'}" data-i="${i}"><div class="eh"><b>Corner ${n}${z0?' · zero':''}</b><small>${esc(fmtFtIn(p.x))}, ${esc(fmtFtIn(p.y))}</small></div>
+    <div class="in"><input id="ez-${i}" inputmode="text" placeholder="${z0?'0':'elev'}" aria-label="Elevation of corner ${n}" data-pi="${i}" data-pk="z" value="${esc(fmtPt(p,'z'))}"><em>in</em></div></label>`}).join('')
+    :'<div class="empty" style="grid-column:1/-1">Add the corners first (import, quick rectangle, or + Edge point below). Their elevation boxes show up here.</div>';
+  let m=0,bn=0;const spots=job.points.map((p,i)=>({p,i})).filter(o=>o.p.t==='s');const E=edgeList();
+  const edgeOpts=sel=>E.map((o,k)=>{const sg=edgeSeg(k);return`<option value="${k}"${k===sel?' selected':''}>Corner ${sg.from} → ${sg.to} (${esc(fmtFtIn(sg.len))})</option>`}).join('');
+  const bsel=$('#bd-edge');if(bsel){const cur=+bsel.value||0;bsel.innerHTML=E.length>1?edgeOpts(Math.min(cur,E.length-1)):'<option>Add corners first</option>';updBdLbl()}
+  se.innerHTML=spots.map(({p,i})=>{if(p.b){bn++;const sg=edgeSeg(p.b.e);return`<div class="srow"><span class="n b">B${bn}</span>
+    <label class="fld"><span>Along edge</span><div class="in"><select data-pi="${i}" data-pk="be" aria-label="Edge for border point B${bn}">${edgeOpts(p.b.e%Math.max(1,E.length))}</select></div></label>
+    <label class="fld"><span>From corner ${sg?sg.from:''}</span><div class="in"><input id="sb-${i}" inputmode="text" data-pi="${i}" data-pk="bd" value="${esc(fmtFtIn(p.b.d))}"><em>ft in</em></div></label>
+    <label class="fld fz"><span>Elevation</span><div class="in"><input id="sz-${i}" inputmode="text" placeholder="elev" data-pi="${i}" data-pk="z" value="${esc(fmtPt(p,'z'))}"><em>in</em></div></label>
+    <button class="btn sm ghost danger rm" data-rm="${i}" aria-label="Remove border point B${bn}">✕</button></div>`}
+    m++;return`<div class="srow"><span class="n">S${m}</span>
+    <label class="fld"><span>X from corner 1</span><div class="in"><input id="sx-${i}" inputmode="text" data-pi="${i}" data-pk="x" value="${esc(fmtPt(p,'x'))}"><em>ft in</em></div></label>
+    <label class="fld"><span>Y from corner 1</span><div class="in"><input id="sy-${i}" inputmode="text" data-pi="${i}" data-pk="y" value="${esc(fmtPt(p,'y'))}"><em>ft in</em></div></label>
+    <label class="fld fz"><span>Elevation</span><div class="in"><input id="sz-${i}" inputmode="text" placeholder="elev" data-pi="${i}" data-pk="z" value="${esc(fmtPt(p,'z'))}"><em>in</em></div></label>
+    <button class="btn sm ghost danger rm" data-rm="${i}" aria-label="Remove spot S${m}">✕</button></div>`}).join('');
+  elevCount()}
+function renderPts(){renderElev();if(typeof renderSel==='function'&&$('#selbox'))try{renderSel()}catch(e){}const body=$('#pts-body');$('#site-count').textContent=`${edgePts().length} edge · ${job.points.filter(p=>p.t==='s').length} spot`;
+  if(!job.points.length){body.innerHTML='<tr><td colspan="6"><div class="empty">No points yet. Import from the Moasure, add points by hand, or build a quick rectangle.</div></td></tr>';return}
+  body.innerHTML=job.points.map((p,i)=>`<tr><td class="n">${i+1}</td>
+   <td><input inputmode="text" aria-label="X of point ${i+1}" data-pi="${i}" data-pk="x" value="${isFinite(p.x)?esc(fmtFtIn(p.x)):''}"></td>
+   <td><input inputmode="text" aria-label="Y of point ${i+1}" data-pi="${i}" data-pk="y" value="${isFinite(p.y)?esc(fmtFtIn(p.y)):''}"></td>
+   <td><input inputmode="text" aria-label="Elevation of point ${i+1}" data-pi="${i}" data-pk="z" value="${isFinite(p.z)?inch(p.z):''}"></td>
+   <td><select data-pi="${i}" data-pk="t" aria-label="Type of point ${i+1}"><option value="e"${p.t==='e'?' selected':''}>Edge</option><option value="s"${p.t==='s'?' selected':''}>Spot</option></select></td>
+   <td><button class="btn sm ghost" data-up="${i}" aria-label="Move point ${i+1} up"${i?'':' disabled'}>↑</button><button class="btn sm ghost danger" data-rm="${i}" aria-label="Remove point ${i+1}">✕</button></td></tr>`).join('')}
+let planImg='';
+function renderProposal(){const I=job.info;
+  if(M&&L){const c=document.createElement('canvas');const w=900,h=560;c.width=w*2;c.height=h*2;const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);
+    drawPlan(c,{layout:true,fixed:{ctx,w,h},bg:'#f2f5ef',palette:{ink:'#1b231d',muted:'#56645a',accent:'#d4561c',turf:'#3e8a4b',turf2:'#337a40',surface:'#ffffff',fill:'#2c6ca6'}});try{planImg=c.toDataURL('image/png')}catch(e){planImg=''}}else planImg='';
+  const d=I.date?new Date(I.date+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'';
+  const scope=M&&L?[`Excavate approx. ${n1(M.cut/27)} cu yd and haul off ${Math.max(0,Math.ceil(Math.max(0,M.cut-M.fill)/27*(+R.swell||1)/(+R.truckCy||12)))} truck load(s)`,
+    `Grade and pitch the area (${n1(M.slope)}%) for drainage`,`Install weed barrier and ${+R.baseDepth}" of compacted stone base`,+R.pad?'Install shock pad':null,
+    `Install ${n0(M.A)} sq ft of ${I.product||'synthetic turf'} in ${L.strips.length} roll${L.strips.length===1?'':'s'}, seamed and glued`,
+    `Secure ${n0(M.Per)} lin ft of edge with nailer board`,+R.sandLbs>0?'Brush in infill and groom':null,'Clean up and remove debris'].filter(Boolean):[];
+  $('#sheet').innerHTML=`<div class="hd"><div><div class="co">Turf Tek</div><div class="fine">Synthetic turf proposal</div></div><div class="meta">${esc(d)}${I.rep?'<br>'+esc(I.rep):''}</div></div>
+   <div><h4>Prepared for</h4><p><b>${esc(I.customer||'Customer')}</b><br>${esc(I.address||'')}</p></div>
+   ${planImg?`<img src="${planImg}" alt="Turf layout plan">`:'<div class="empty">Plan appears once the site is measured.</div>'}
+   <div><h4>Scope of work</h4><ul>${scope.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>
+   ${I.notes?`<div><h4>Notes</h4><p>${esc(I.notes)}</p></div>`:''}
+   <div class="price"><div><h4>Total installed</h4><span class="fine">${M?n0(M.A)+' sq ft · $'+(Q?Q.psf.toFixed(2):'—')+' per sq ft':''}</span></div><b>${Q?money(Q.sell):'$—'}</b></div>
+   <p class="fine">Based on site measurements taken ${esc(d)}. Final price confirmed after site review. Quantities include normal trim and overlap.</p>`;
+  return scope}
+function proposalText(){const I=job.info,scope=renderProposal();return[`Turf Tek — Synthetic turf proposal`,`${I.customer||'Customer'}${I.address?', '+I.address:''}`,I.date||'','',`Area: ${M?n0(M.A):'—'} sq ft`,'','Scope of work:',...scope.map(s=>'• '+s),'',I.notes?'Notes: '+I.notes+'\n':'',`Total installed: ${Q?money(Q.sell):'—'}${Q?` ($${Q.psf.toFixed(2)}/sq ft)`:''}`,'','Final price confirmed after site review.'].join('\n')}
+
+let cur='job';
+function recompute(){updateBorderPts();M=compute();L=layoutBest();Q=materials();renderAll()}
+function renderAll(){renderHeader();pgSyncTog();if(cur==='site'){drawPlan($('#cv-site'));renderPG()}if(cur==='grade'){renderGrade();req3D()}if(cur==='turf'){renderTurf();drawPlan($('#cv-plan'),{layout:true})}if(cur==='mat')renderMat();if(cur==='prop')renderProposal();if(cur==='job')renderJobs()}
+let tmr=0;function changed(){clearTimeout(tmr);tmr=setTimeout(()=>{save();recompute()},120)}
+
+
+/* ---------- inputs ---------- */
+function fillInputs(){$$('[data-s]').forEach(el=>{if(el===document.activeElement&&el.dataset.ft)return;const o=scopes[el.dataset.s]();const v=o[el.dataset.k];el.value=el.dataset.ft?(v===''||v==null||!isFinite(+v)?'':fmtFtIn(+v)):(v??'')})}
+function buildSettings(){$('#price-fields').innerHTML=PRICE_FIELDS.map(([k,l,u])=>`<label class="fld"><span>${l}</span><div class="in"><input id="p-${k}" type="number" step="any" inputmode="decimal" data-s="PR" data-k="${k}"><em>${u}</em></div></label>`).join('');
+  $('#rate-fields').innerHTML=RATE_FIELDS.map(([k,l,u])=>`<label class="fld"><span>${l}</span><div class="in"><input id="rr-${k}" ${u==='ft'?'type="text" data-ft="1"':'type="number" step="any" inputmode="decimal"'} data-s="R" data-k="${k}"><em>${u==='ft'?'ft in':u}</em></div></label>`).join('')+
+   `<div class="row" style="grid-column:1/-1"><button class="btn sm ghost" id="b-reset-rates">Reset rates to defaults</button></div>`}
+document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||!el.dataset.s||el.dataset.ft)return;const o=scopes[el.dataset.s]();
+  o[el.dataset.k]=el.type==='number'?(el.value===''?'':parseFloat(el.value)):el.value;if(el.dataset.s==='PR')pricesTouched=true;
+  if(el.dataset.s==='R')$$(`[data-s="R"][data-k="${el.dataset.k}"]`).forEach(x=>{if(x!==el)x.value=el.value});changed()});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.s&&el.dataset.ft){const v=parseFt(el.value);if(isFinite(v)&&v>=0){scopes[el.dataset.s]()[el.dataset.k]=v;el.value=fmtFtIn(v);$$(`[data-s="${el.dataset.s}"][data-k="${el.dataset.k}"]`).forEach(x=>{if(x!==el)x.value=fmtFtIn(v)});changed()}else{toast('Type feet and inches like 15 6 or 15\'6');fillInputs()}return}if(el.dataset&&el.dataset.s&&el.tagName==='SELECT'){scopes[el.dataset.s]()[el.dataset.k]=el.value;changed()}
+  if(el.dataset&&el.dataset.pi!=null){const p=job.points[+el.dataset.pi],k=el.dataset.pk;
+    if(k==='t'){p.t=el.value;delete p.b;renderPts();save();recompute();return}
+    if(k==='be'&&p.b){p.b.e=+el.value;placeBorder(p);job.sample=false;renderPts();save();recompute();return}
+    if(k==='bd'&&p.b){const v=parseFt(el.value);if(isFinite(v)&&v>=0){p.b.d=v;placeBorder(p);job.sample=false}else toast('Type feet and inches like 12 6');el.value=fmtFtIn(p.b.d);syncPtInputs();save();recompute();return}
+    const raw=el.value.trim();const v=raw===''?NaN:(k==='z'?parseElev(raw):parseFt(raw));
+    if(raw!==''&&!isFinite(v)){toast(k==='z'?'Type inches like -3.5, or feet and inches like -1\'2':'Type feet and inches like 48 6 or 48\'6');el.value=isFinite(p[k])?(k==='z'?inch(p[k]):fmtFtIn(p[k])):'';return}
+    if(k!=='z'&&!isFinite(v)){el.value=isFinite(p[k])?fmtFtIn(p[k]):'';return}
+    p[k]=v;job.sample=false;
+    if(k==='z'&&isFinite(v)){const f=job.points.find(q=>q.t==='e');if(f&&f!==p&&!isFinite(f.z))f.z=0}
+    syncPtInputs();save();recompute()}});
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.tab)return go(t.dataset.tab);
+  if(t.dataset.mode){job.grade.mode=t.dataset.mode;changed();renderGrade();return}
+  if(t.dataset.v){V3.view=t.dataset.v;$$('[data-v]').forEach(b=>b.setAttribute('aria-pressed',String(b===t)));renderGrade();req3D();return}
+  if(t.dataset.rm!=null||t.dataset.up!=null||t.id==='b-add-e'||t.id==='b-add-s'||t.id==='b-rect'||t.id==='b-spot-add')job.sample=false;
+  if(t.dataset.rm!=null){job.points.splice(+t.dataset.rm,1);renderPts();save();recompute();return}
+  if(t.dataset.up!=null){const i=+t.dataset.up;if(i>0){[job.points[i-1],job.points[i]]=[job.points[i],job.points[i-1]];renderPts();save();recompute()}return}
+  if(t.dataset.open){job=jobs.find(j=>j.id===t.dataset.open)||job;delArm=null;fillInputs();renderPts();save();recompute();toast('Opened '+(job.info.name||'job'));return}
+  if(t.dataset.del){const id=t.dataset.del;if(delArm!==id){delArm=id;renderJobs();return}delArm=null;gone.add(id);dirty.delete(id);jobs=jobs.filter(j=>j.id!==id);if(!jobs.length)jobs=[blankJob()];if(job.id===id)job=jobs[0];fillInputs();renderPts();save();recompute();toast('Job deleted');return}
+  switch(t.id){
+   case 'b-new':{const j=blankJob();jobs.unshift(j);job=j;fillInputs();renderPts();save();recompute();go('site');toast('New job started');break}
+   case 'b-dup':{const j=JSON.parse(JSON.stringify(job));j.id=uid();j.sample=false;j.info.name=(j.info.name||'Job')+' (copy)';jobs.unshift(j);job=j;fillInputs();save();recompute();toast('Duplicated');break}
+   case 'b-add-e':case 'b-add-s':{const last=job.points[job.points.length-1];job.points.push({x:last?last.x:0,y:last?last.y:0,z:NaN,t:t.id==='b-add-e'?'e':'s'});renderPts();save();recompute();const ins=$$('#pts-body input[data-pk="x"]');ins[ins.length-1]?.focus();break}
+   case 'b-rect':{const Lr=parseFt($('#qr-l').value),Wr=parseFt($('#qr-w').value);const z=id=>{const r=$(id).value.trim();const v=r===''?NaN:parseElev(r);return isFinite(v)?v:NaN};
+     if(!(Lr>0&&Wr>0)){toast('Enter a length and width');break}
+     job.points=[{x:0,y:0,z:z('#qr-a'),t:'e'},{x:Lr,y:0,z:z('#qr-b'),t:'e'},{x:Lr,y:Wr,z:z('#qr-c'),t:'e'},{x:0,y:Wr,z:z('#qr-d'),t:'e'}];renderPts();save();recompute();toast('Rectangle built');break}
+   case 'b-sel-next':stepSel(1);break;
+   case 'b-sel-prev':stepSel(-1);break;
+   case 'b-spot-add':{const E=edgePts();let x=0,y=0;if(E.length){x=E.reduce((a,p)=>a+p.x,0)/E.length;y=E.reduce((a,p)=>a+p.y,0)/E.length}
+     job.points.push({x:Math.round(x*12)/12,y:Math.round(y*12)/12,z:NaN,t:'s'});const i=job.points.length-1;renderPts();save();recompute();$('#sx-'+i)?.focus();break}
+   case 'b-border-tap':case 'b-bd-add':break;
+   case 'b-spot-tap':{tapMode=tapMode==='spot'?false:'spot';setTapUI();
+     $('#spot-hint').textContent=tapMode==='spot'?'Tap the plan where you took the shot, then type its elevation. Tap the button again when done.':'Add these where the ground dips or humps between corners. Measure each spot\'s distance from corner 1 along X and Y.';break}
+   case 'b-import-new':doImport('new');break;case 'b-import':doImport('add');break;case 'b-replace':doImport('replace');break;
+   case 'b-3dreset':V3.yaw=-0.6;V3.elev=0.62;req3D();break;
+   case 'b-reset-rates':R=Object.assign({},DEFAULT_RATES);fillInputs();save();recompute();toast('Rates reset');break;
+   case 'b-copy':{const txt=proposalText();const fb=()=>{const ta=$('#copy-fallback');ta.hidden=false;ta.value=txt;ta.focus();ta.select();$('#copy-msg').textContent='Selected below. Copy it from there.'};
+     try{navigator.clipboard.writeText(txt).then(()=>{$('#copy-msg').textContent='Copied. Paste into an email or text.';toast('Proposal copied')},fb)}catch(err){fb()}break}
+  }});
+let delArm=null;
+$('#ve').addEventListener('input',()=>{$('#ve-lbl').textContent=$('#ve').value+'×';req3D()});
+$('#imp-file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#imp-text').value=r.result;impName=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ');$('#imp-msg').textContent=`Loaded ${f.name}. Tap Import as new job.`;e.target.value=''};r.readAsText(f)});
+
+/* ---------- Moasure / CSV import ---------- */
+/* Moasure CSV header looks like: "Layer","Path","Point","X:m","Y:m","Z:m",...,"Point-Type","Area:m²" */
+let impName='';
+const UNIT_FT={m:3.28084,cm:0.0328084,mm:0.00328084,ft:1,in:1/12,yd:3};
+function parseCSV(text){const lines=text.replace(/^﻿/,'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean);const res={pts:[],unit:null,area:NaN,areaUnit:null};if(!lines.length)return res;
+  const split=l=>l.split(/[,;\t]/).map(s=>s.trim().replace(/^"|"$/g,''));let ix=-1,iy=-1,iz=-1,ip=-1,il=-1,ia=-1,start=0;
+  const hdr=split(lines[0]).map(h=>h.toLowerCase());
+  if(hdr.some(h=>/[a-z]/.test(h)&&!/^-?[\d.]+$/.test(h))){const find=re=>hdr.findIndex(h=>re.test(h));
+    ix=find(/^x\b|east|^x[ _(]/);iy=find(/^y\b|north|^y[ _(]/);iz=find(/^z\b|elev|height|^z[ _(]|^h$|alt/);
+    ip=find(/^path$/);il=find(/^layer$/);ia=find(/^area/);start=1;
+    const um=ix>=0&&hdr[ix].match(/[:(\[ ]\s*(mm|cm|m|ft|in|yd)\b/);if(um)res.unit=um[1];
+    if(ia>=0){const am=hdr[ia].match(/[:(\[ ]\s*(mm|cm|m|ft|in|yd)/);if(am)res.areaUnit=am[1]}}
+  for(let k=start;k<lines.length;k++){const c=split(lines[k]);let x,y,z;
+    if(ix>=0&&iy>=0){x=parseFt(c[ix]);y=parseFt(c[iy]);z=iz>=0?parseFt(c[iz]):0}
+    else{const nums=c.map(parseFt).filter(isFinite);if(nums.length<2)continue;const s=nums.length>=4?nums.slice(-3):nums;x=s[0];y=s[1];z=s[2]??0}
+    if(ia>=0&&!isFinite(res.area)){const a=parseFloat(c[ia]);if(isFinite(a))res.area=a}
+    if(isFinite(x)&&isFinite(y))res.pts.push({x,y,z:isFinite(z)?z:0,g:(il>=0?c[il]:'1')+'|'+(ip>=0?c[ip]:'1')})}
+  return res}
+function cleanPath(arr,tol){const out=[];for(const p of arr){const q=out[out.length-1];if(q&&Math.hypot(p.x-q.x,p.y-q.y)<tol)continue;out.push(p)}
+  if(out.length>2&&Math.hypot(out[0].x-out[out.length-1].x,out[0].y-out[out.length-1].y)<tol)out.pop();return out}
+function doImport(how){let replace=how==='replace';const r=parseCSV($('#imp-text').value);if(!r.pts.length){$('#imp-msg').textContent='No points found. Check the file has X, Y and Z columns.';return}
+  if(how==='new'||job.sample){const j=blankJob();const nm=impName||'Moasure import';const same=jobs.filter(x=>(x.info.name||'').startsWith(nm)).length;j.info.name=same?nm+' '+(same+1):nm;jobs.unshift(j);job=j;replace=true;fillInputs()}
+  let u=$('#imp-units').value;if(u==='auto')u=r.unit||'ft';const f=UNIT_FT[u]||1,mode=$('#imp-type').value;
+  const groups=new Map();for(const p of r.pts){const q={x:p.x*f,y:p.y*f,z:p.z*f};if(!groups.has(p.g))groups.set(p.g,[]);groups.get(p.g).push(q)}
+  const tol=0.08;let pts=[];
+  if(mode==='auto'){let best=null,bestA=0;for(const[g,arr]of groups){const c=cleanPath(arr,tol);const a=c.length>2?polyArea(c):0;if(a>bestA){bestA=a;best=g}}
+    for(const[g,arr]of groups){if(g===best)cleanPath(arr,tol).forEach(p=>pts.push({...p,t:'e'}));else arr.forEach(p=>pts.push({...p,t:'s'}))}
+    pts.sort((a,b)=>(a.t==='e'?0:1)-(b.t==='e'?0:1))}
+  else{const all=[...groups.values()].flat();pts=(mode==='e'?cleanPath(all,tol):all).map(p=>({...p,t:mode}))}
+  if(!pts.length){$('#imp-msg').textContent='No usable points found.';return}
+  // shift so the plan starts near 0,0 and the first shot is elevation 0
+  const base=replace||!job.points.length?{x:Math.min(...pts.map(p=>p.x)),y:Math.min(...pts.map(p=>p.y)),z:pts[0].z}:{x:0,y:0,z:0};
+  pts.forEach(p=>{p.x-=base.x;p.y-=base.y;p.z-=base.z});
+  job.points=replace?pts:job.points.concat(pts);
+  const ne=pts.filter(p=>p.t==='e').length,ns=pts.length-ne,E=edgePts();
+  const unitName={m:'meters',cm:'centimeters',mm:'millimeters',ft:'feet',in:'inches',yd:'yards'}[u];
+  let msg=`Read in ${unitName}. Added ${ne} edge point${ne===1?'':'s'} and ${ns} spot shot${ns===1?'':'s'}.`;
+  if(E.length>2){msg+=` Area here: ${n1(polyArea(E))} sf.`;if(isFinite(r.area)&&r.areaUnit){const af=(UNIT_FT[r.areaUnit]||1)**2;msg+=` Moasure says ${n1(r.area*af)} sf.`}}
+  if(!ns)msg+=' No spot shots inside the area, so cut and fill only uses the edge elevations.';
+  $('#imp-msg').textContent=msg;renderPts();save();recompute()}
+
+
+/* ---------- playground (from the layout app) ---------- */
+const PG_CORNERS={BL:{c:['L','B'],a:[1,0],b:[0,1]},BR:{c:['R','B'],a:[-1,0],b:[0,1]},TR:{c:['R','T'],a:[-1,0],b:[0,-1]},TL:{c:['L','T'],a:[1,0],b:[0,-1]}};
+/* plan (inches, plan axes) -> turf (feet). Always a pure rotation + shift, never mirrored. */
+function pgGeom(){const pg=job&&job.pg;if(!pg||!pg.data)return null;const E=edgePts();if(E.length<3)return null;
+  const D=pg.data,fp=D.fp,O=E[0],e1=E[1],eN=E[E.length-1];
+  const l1=Math.hypot(e1.x-O.x,e1.y-O.y),lN=Math.hypot(eN.x-O.x,eN.y-O.y);if(l1<0.1||lN<0.1)return null;
+  const u={x:(e1.x-O.x)/l1,y:(e1.y-O.y)/l1},w={x:(eN.x-O.x)/lN,y:(eN.y-O.y)/lN};
+  const st=Math.sign(u.x*w.y-u.y*w.x)||1;const K=PG_CORNERS[pg.corner]||PG_CORNERS.BL;
+  const sp=Math.sign(K.a[0]*K.b[1]-K.a[1]*K.b[0]);
+  // plan X runs along corner 1->2 when handedness matches, else plan Y does
+  const xAlong1=sp===st;const src=xAlong1?K.a:K.b;
+  const th=Math.atan2(u.y,u.x)-Math.atan2(src[1],src[0]),ct=Math.cos(th),s=Math.sin(th);
+  const cx=fp[K.c[0]],cy=fp[K.c[1]];const d1=+pg.d1||0,d2=+pg.d2||0;
+  // second axis direction actually used (perpendicular to u on the inside)
+  const v={x:-u.y*st,y:u.x*st};
+  const ox=O.x+u.x*d1+v.x*d2,oy=O.y+u.y*d1+v.y*d2;
+  const tf=(px,py)=>{const dx=(px-cx)/12,dy=(py-cy)/12;return{x:ox+dx*ct-dy*s,y:oy+dx*s+dy*ct}};
+  const corners=[[cx,cy],[fp[K.c[0]==='L'?'R':'L'],cy],[fp[K.c[0]==='L'?'R':'L'],fp[K.c[1]==='B'?'T':'B']],[cx,fp[K.c[1]==='B'?'T':'B']]].map(([a,b])=>tf(a,b));
+  const holes=(D.holes||[]).map(hh=>({...hh,...tf(hh.x,hh.y)}));
+  const W=(fp.R-fp.L)/12,H=(fp.T-fp.B)/12;
+  const inv=(X,Y)=>{const dx=X-ox,dy=Y-oy;return{x:cx+12*(dx*ct+dy*s),y:cy+12*(-dx*s+dy*ct)}};
+  return{tf,inv,corners,holes,xAlong1,len1:xAlong1?W:H,lenN:xAlong1?H:W,edge1:l1,edgeN:lN,E,d1,d2,u,v}}
+const pgShown=()=>!!(job.pg&&job.pg.data&&job.pg.show!==false);
+function pgSyncTog(){const on=!!(job.pg&&job.pg.data);$$('.pg-tog').forEach(b=>{b.hidden=!on;b.setAttribute('aria-pressed',String(pgShown()))})}
+function pgSet(data){job.pg={data,corner:(job.pg&&job.pg.corner)||'BL',d1:0,d2:0};job.sample=false;save();recompute();renderPG()}
+function pgParse(text){let d;try{d=JSON.parse(String(text).trim())}catch(e){return null}
+  if(!d||d.kind!=='turftek-playground'||!d.fp||!Array.isArray(d.holes))return null;return d}
+const sgnIn=v=>{const r=Math.round(v*12*10)/10;return(r>0?'+':'')+r.toFixed(1)+'"'};
+function renderPG(){const pg=job.pg,on=!!(pg&&pg.data);$('#pg-load').hidden=on;$('#pg-on').hidden=!on;$('#pg-legend').hidden=!pgShown();$('#b-rect-pg').hidden=!on;
+  if(!on){$('#pg-tag').textContent='None';return}
+  const D=pg.data;$('#pg-tag').textContent=(D.holes||[]).length+' holes';
+  $('#pg-what').innerHTML=`<b>${esc(D.job||'Playground')}</b>${D.place?' · '+esc(D.place):''} · border ${esc(D.footprint||fmtFtIn((D.fp.R-D.fp.L)/12)+' × '+fmtFtIn((D.fp.T-D.fp.B)/12))}`;
+  const cs=$('#pg-corner');if(cs!==document.activeElement)cs.value=pg.corner||'BL';
+  for(const k of['d1','d2']){const el=$('#pg-'+k);if(el!==document.activeElement)el.value=+pg[k]?fmtFtIn(+pg[k]):''}
+  const G=pgGeom();const chk=[];const body=$('#pg-body');
+  if(!G){$('#pg-checks').innerHTML='<li class="bad">Build the turf rectangle first (Quick rectangle above, or import the Moasure). Corner 1 is where the playground starts.</li>';body.innerHTML='';$('#pg-gsum').textContent='';return}
+  const nE=G.E.length;
+  $('#pg-d1-lbl').textContent='Border in from corner 1, toward corner 2';$('#pg-d2-lbl').textContent=`Border in from corner 1, toward corner ${nE}`;
+  const side=(planLen,edge,off,name)=>{const room=edge-off-planLen,ri=Math.round(room*12*4)/4;
+    if(off===0&&Math.abs(ri)<=2)chk.push([`Corner 1 → ${name}: border ${fmtFtIn(planLen)}, turf edge ${fmtFtIn(edge)}${Math.abs(ri)>=0.25?` (${Math.abs(ri)}" ${ri>0?'long':'short'})`:''}. Matches.`,0]);
+    else if(ri<-1)chk.push([`Corner 1 → ${name}: the border runs ${fmtFtIn(-room)} past the turf edge (${fmtFtIn(planLen)} border on a ${fmtFtIn(edge)} edge). Check the length, the corner pick, or the "in from" distance.`,1]);
+    else if(off===0)chk.push([`Corner 1 → ${name}: turf edge is ${fmtFtIn(room)} longer than the ${fmtFtIn(planLen)} border. Fine if the turf runs past the playground; otherwise re-check the measurement.`,1]);
+    else chk.push([`Corner 1 → ${name}: ${fmtFtIn(room)} of turf left past the border.`,0])};
+  side(G.len1,G.edge1,G.d1,'corner 2');side(G.lenN,G.edgeN,G.d2,'corner '+nE);
+  if(nE===4){const E=G.E,d1=Math.hypot(E[2].x-E[0].x,E[2].y-E[0].y),d2=Math.hypot(E[3].x-E[1].x,E[3].y-E[1].y),df=Math.abs(d1-d2)*12;
+    chk.push([df<=1?`Square: diagonals ${fmtFtIn(d1)} and ${fmtFtIn(d2)}.`:`Out of square: diagonals ${fmtFtIn(d1)} and ${fmtFtIn(d2)}, ${Math.round(df*4)/4}" apart. Footings at the far corners will be off; re-shoot the corners.`,df>1?1:0])}
+  const P=edgePts(),out=G.holes.filter(hh=>!inPoly(hh.x,hh.y,P)).length;
+  if(out)chk.push([`${out} of ${G.holes.length} holes land outside the turf edge. Try another plan corner.`,1]);
+  const hasZ=allPts().length>=3;if(!hasZ)chk.push(['No elevations yet. Enter the corner shots above and the footing grades fill in.',1]);
+  $('#pg-checks').innerHTML=chk.map(([t,b])=>`<li class="${b?'bad':''}">${esc(t)}</li>`).join('');
+  if(!M||!hasZ){body.innerHTML='<tr><td colspan="6" class="sub">Grades show up once the turf area has elevations.</td></tr>';$('#pg-gsum').textContent='';return}
+  let lo=Infinity,hi=-Infinity;
+  body.innerHTML=G.holes.slice().sort((a,b)=>a.h-b.h).map(hh=>{const ex=idw(hh.x,hh.y,M.pts),fin=M.F(hh.x,hh.y),df=fin-ex;lo=Math.min(lo,df);hi=Math.max(hi,df);
+    const dep=hh.foot&&isFinite(+hh.foot.depth)?(+hh.foot.depth)/12:NaN;const dig=dep-df;
+    return`<tr><td title="${esc(hh.d||'')}">${hh.post?'<b>'+hh.h+'</b>':hh.h}</td><td class="num">${sgnIn(ex)}</td><td class="num">${sgnIn(fin)}</td><td class="num">${Math.abs(df)<1/48?'0':sgnIn(df)}</td><td class="num">${isFinite(dep)?fmtFtIn(dep):'—'}</td><td class="num"><b>${isFinite(dep)?fmtFtIn(dig):'—'}</b></td></tr>`}).join('');
+  $('#pg-gsum').textContent=isFinite(lo)?`fill/cut ${n1(lo*12)}" to ${n1(hi*12)}"`:''}
+$('#pg-file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#pg-text').value=r.result;e.target.value='';$('#b-pg-add').click()};r.readAsText(f)});
+$('#b-pg-add').addEventListener('click',()=>{const d=pgParse($('#pg-text').value);if(!d){$('#pg-msg').textContent='That isn\'t a playground file. In the layout app use Copy playground file, then paste the whole thing here.';return}
+  $('#pg-text').value='';$('#pg-msg').textContent='';pgSet(d);toast(`Added ${d.short||'playground'}: ${d.holes.length} holes`)});
+document.addEventListener('click',e=>{const b=e.target.closest('.pg-tog');if(!b||!job.pg)return;job.pg.show=!pgShown();save();pgSyncTog();renderAll();if(cur==='grade'){renderGrade();req3D()}toast(pgShown()?'Playground shown':'Playground hidden')});
+$('#pg-corner').addEventListener('change',e=>{if(!job.pg)return;job.pg.corner=e.target.value;save();recompute()});
+['d1','d2'].forEach(k=>$('#pg-'+k).addEventListener('change',e=>{if(!job.pg)return;const r=e.target.value.trim();const v=r===''?0:parseFt(r);
+  if(!isFinite(v)||v<0){toast('Type feet and inches like 4 6');e.target.value=+job.pg[k]?fmtFtIn(+job.pg[k]):'';return}job.pg[k]=v;save();recompute()}));
+
+function pgGradesFile(){const G=pgGeom();if(!G||!M||allPts().length<3)return null;const D=job.pg.data,fp=D.fp;
+  const r1=v=>Math.round(v*12*10)/10;
+  const holes=G.holes.map(hh=>{const ex=idw(hh.x,hh.y,M.pts),fin=M.F(hh.x,hh.y),dep=hh.foot&&isFinite(+hh.foot.depth)?+hh.foot.depth:null;
+    return{h:hh.h,g:r1(ex),f:r1(fin),dig:dep==null?null:Math.round((dep-(fin-ex)*12)*4)/4}});
+  const step=24,nx=Math.floor((fp.R-fp.L)/step)+2,ny=Math.floor((fp.T-fp.B)/step)+2;const g=[],f=[];
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const px=Math.min(fp.R,fp.L+i*step),py=Math.min(fp.T,fp.B+j*step);const q=G.tf(px,py);g.push(r1(idw(q.x,q.y,M.pts)));f.push(r1(M.F(q.x,q.y)))}
+  const pad=60,shots=[];job.points.forEach((pt,i)=>{const hasZ=Number.isFinite(pt.z);if(!Number.isFinite(pt.x)||!Number.isFinite(pt.y)||(!hasZ&&pt.t==='s'&&!pt.b))return;const q=G.inv(pt.x,pt.y);
+    if(q.x<fp.L-pad||q.x>fp.R+pad||q.y<fp.B-pad||q.y>fp.T+pad)return;const nm=ptName(i);
+    shots.push({k:pt.t==='e'?nm.replace('Corner ','C'):nm.replace('Border ','').replace('Spot ',''),t:pt.t==='e'?'c':pt.b?'b':'s',x:Math.round(q.x*10)/10,y:Math.round(q.y*10)/10,z:hasZ?r1(pt.z):null,...(pt.src?{from:String(pt.src).replace('layout:','')}:{})})});
+  return{kind:'turftek-grades',v:1,shots,job:D.job||'',order:D.order||'',turfJob:job.info.name||'',date:todayStr(),units:'in',zero:'turf corner 1',
+    grid:{x0:fp.L,y0:fp.B,step,nx,ny,g,f},holes}}
+$('#b-pg-send').addEventListener('click',()=>{const d=pgGradesFile();const msg=$('#pg-send-msg');if(!d){msg.textContent='Need the turf rectangle with elevations first.';return}
+  const t=JSON.stringify(d);const fb=()=>{const ta=$('#pg-send-text');ta.hidden=false;ta.value=t;ta.focus();ta.select();msg.textContent='Copy didn\'t go through. It\'s selected below; copy it from there.'};
+  try{navigator.clipboard.writeText(t).then(()=>{const nz=d.shots.filter(x=>x.z==null).map(x=>x.k);msg.textContent=`Copied grades for ${d.holes.length} holes and ${d.shots.length} shots (${d.shots.map(x=>x.k).join(', ')}). Paste them into the layout app.`+(nz.length?` No elevation yet on ${nz.join(', ')}.`:'');toast('Grades copied')},fb)}catch(e){fb()}});
+
+$('#b-fs-add').addEventListener('click',()=>{const msg=$('#fs-msg');let d=null;try{d=JSON.parse($('#fs-text').value.trim())}catch(e){}
+  if(!d||d.kind!=='turftek-shots'||!Array.isArray(d.shots)){msg.textContent='That isn\'t a shots file. In the layout app use Copy shots for turf app, then paste the whole thing.';return}
+  const G=pgGeom();if(!G){msg.textContent='Build the turf rectangle first.';return}
+  const E=edgeList();let nb=0,ns=0;
+  for(const f of d.shots){if(f.z==null||!isFinite(+f.z))continue;const q=G.tf(f.x,f.y),src='layout:'+f.k;
+    job.points=job.points.filter(p=>p.src!==src);let np;
+    if(f.edge&&E.length>1){let bk=-1,bdist=Infinity,bt=0;for(let k=0;k<E.length;k++){const sg=edgeSeg(k);if(!sg.len)continue;const ux=(sg.b.x-sg.a.x)/sg.len,uy=(sg.b.y-sg.a.y)/sg.len;
+        let t=(q.x-sg.a.x)*ux+(q.y-sg.a.y)*uy;t=Math.max(0,Math.min(sg.len,t));const dd=Math.hypot(sg.a.x+ux*t-q.x,sg.a.y+uy*t-q.y);if(dd<bdist){bdist=dd;bk=k;bt=t}}
+      if(bk>=0&&bdist<1.5){np={x:0,y:0,z:+f.z/12,t:'s',b:{e:bk,d:Math.round(bt*12)/12},src};placeBorder(np);nb++}}
+    if(!np){np={x:Math.round(q.x*12)/12,y:Math.round(q.y*12)/12,z:+f.z/12,t:'s',src};ns++}
+    job.points.push(np)}
+  if(!nb&&!ns){msg.textContent='No shots with an elevation in that paste.';return}
+  job.sample=false;$('#fs-text').value='';msg.textContent=`Added ${nb} border point${nb===1?'':'s'} and ${ns} spot shot${ns===1?'':'s'} from the layout app. Grades updated.`;
+  renderPts();save();recompute();toast('Shots added')});
+
+/* turn the shots 180° inside the same rectangle: corner 1 stays at 0,0, elevations swap ends */
+function flipElev180(){const E=edgeList();if(E.length<3){toast('Build the rectangle first');return}
+  const P=E.map(o=>o.p);const minX=Math.min(...P.map(p=>p.x)),maxX=Math.max(...P.map(p=>p.x)),minY=Math.min(...P.map(p=>p.y)),maxY=Math.max(...P.map(p=>p.y));
+  const sx=minX+maxX,sy=minY+maxY,n=E.length;
+  // corners: rotate, then start the list again at the corner nearest the old corner 1 spot
+  const start={x:P[0].x,y:P[0].y};const rot=P.map(p=>({...p,x:sx-p.x,y:sy-p.y}));
+  let k=0,bd=Infinity;rot.forEach((p,i)=>{const d=Math.hypot(p.x-start.x,p.y-start.y);if(d<bd){bd=d;k=i}});
+  const newE=rot.map((_,i)=>rot[(i+k)%n]);
+  const others=job.points.filter(p=>p.t!=='e').map(p=>{if(p.src)return p;const q={...p};
+    if(q.b){q.b={e:((q.b.e-k)%n+n)%n,d:q.b.d}}else{q.x=sx-q.x;q.y=sy-q.y}return q});
+  job.points=newE.concat(others);job.sample=false;selPt=-1;updateBorderPts();renderPts();save();recompute();toast('Elevations flipped 180°')}
+document.addEventListener('click',e=>{if(e.target.closest('[data-flip]'))flipElev180()});
+let pgRmArm=false;$('#b-pg-rm').addEventListener('click',e=>{if(!pgRmArm){pgRmArm=true;e.target.textContent='Tap again to remove';setTimeout(()=>{pgRmArm=false;e.target.textContent='Remove playground'},3000);return}
+  pgRmArm=false;e.target.textContent='Remove playground';delete job.pg;save();recompute();renderPG()});
+$('#b-rect-pg').addEventListener('click',()=>{const D=job.pg&&job.pg.data;if(!D)return;const W=(D.fp.R-D.fp.L)/12,H=(D.fp.T-D.fp.B)/12;$('#qr-l').value=fmtFtIn(W);$('#qr-w').value=fmtFtIn(H);toast('Length and width set to the playground border. Add the corner elevations, then Build rectangle.')});
+
+/* ---------- nav ---------- */
+function go(tab){cur=tab;$$('section.tab').forEach(s=>s.hidden=s.id!=='tab-'+tab);$$('nav.tabs button').forEach(b=>b.dataset.tab===tab?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+  if(tab==='site')renderPts();window.scrollTo(0,0);renderAll()}
+let toastT=0;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,1800)}
+let rz=0;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(renderAll,120)});
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderAll)}catch(e){}
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+let tapMode=false;
+function setTapUI(){$('#b-spot-tap').setAttribute('aria-pressed',String(tapMode==='spot'));$('#b-border-tap').setAttribute('aria-pressed',String(tapMode==='border'));$('#cv-site').classList.toggle('tapping',!!tapMode);
+  $('#border-hint').textContent=tapMode==='border'?'Tap the edge on the plan where you shot it. It snaps to the line and shows the distance from the corner. Tap the button again when done.':'Pull a tape along an edge from a corner, shoot the elevation, and enter it here. Or turn on Tap border and tap the edge on the plan; it snaps to the line and shows the distance.';
+  if(tapMode)$('#cv-site').scrollIntoView({block:'nearest',behavior:'smooth'})}
+$('#b-border-tap').addEventListener('click',()=>{tapMode=tapMode==='border'?false:'border';setTapUI();if(tapMode)$('#spot-hint').textContent='Add these where the ground dips or humps between corners. Measure each spot\'s distance from corner 1 along X and Y.'});
+$('#bd-edge').addEventListener('change',updBdLbl);
+function addBorderFromForm(){const E=edgeList();if(E.length<2){toast('Add the corners first');return}const k=+$('#bd-edge').value||0,sg=edgeSeg(k);
+  const d=parseFt($('#bd-dist').value),zr=$('#bd-z').value.trim(),z=zr===''?NaN:parseElev(zr);
+  if(!isFinite(d)||d<0){toast('Type the distance from the corner, like 12 6');$('#bd-dist').focus();return}
+  if(d>sg.len+0.01){toast(`That edge is only ${fmtFtIn(sg.len)} long`);$('#bd-dist').focus();return}
+  if(zr!==''&&!isFinite(z)){toast('Type inches like -3.5');$('#bd-z').focus();return}
+  const np={x:0,y:0,z,t:'s',b:{e:k,d}};placeBorder(np);job.points.push(np);
+  if(isFinite(z)){const f=job.points.find(q=>q.t==='e');if(f&&!isFinite(f.z))f.z=0}
+  job.sample=false;$('#bd-dist').value='';$('#bd-z').value='';renderPts();save();recompute();toast(`Added ${fmtFtIn(d)} from corner ${sg.from}`);$('#bd-dist').focus()}
+$('#b-bd-add').addEventListener('click',addBorderFromForm);
+['#bd-dist','#bd-z'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(id==='#bd-dist')$('#bd-z').focus();else addBorderFromForm()}}));
+function ptName(i){const p=job.points[i];if(!p)return'';const kind=q=>q.t==='e'?'e':q.b?'b':'s';let n=0;for(let k=0;k<=i;k++)if(kind(job.points[k])===kind(p))n++;return p.t==='e'?'Corner '+n:p.b?'Border B'+n:'Spot S'+n}
+function renderSel(){const box=$('#selbox');if(selJob!==job.id){selJob=job.id;selPt=-1}const p=job.points[selPt];if(!p){selPt=-1;box.hidden=true;$('#sel-hint').hidden=false;return}
+  box.hidden=false;$('#sel-hint').hidden=true;const first=job.points.findIndex(q=>q.t==='e');
+  $('#sel-name').textContent=ptName(selPt)+(selPt===first?' · zero':'');$('#sel-pos').textContent=p.b?(()=>{const sg=edgeSeg(p.b.e);return sg?`${fmtFtIn(p.b.d)} from corner ${sg.from} toward ${sg.to}`:''})():fmtFtIn(p.x)+', '+fmtFtIn(p.y);
+  const z=$('#sel-z');z.dataset.pi=selPt;if(z!==document.activeElement)z.value=fmtPt(p,'z');z.placeholder=selPt===first?'0':'elev'}
+function selectPt(i,focus){selPt=i;renderSel();drawPlan($('#cv-site'));if(focus){const z=$('#sel-z');z.focus({preventScroll:true});z.select()}}
+function stepSel(d){const order=job.points.map((p,i)=>i).filter(i=>isFinite(job.points[i].x));if(!order.length)return;let k=order.indexOf(selPt);k=k<0?0:(k+d+order.length)%order.length;selectPt(order[k],true)}
+$('#sel-z').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();stepSel(1)}});
+$('#cv-site').addEventListener('click',e=>{const cv=e.currentTarget,iv=cv._inv;if(!iv)return;const r=cv.getBoundingClientRect();
+  const mx=e.clientX-r.left,my=e.clientY-r.top;let best=-1,bd=26;for(const q of cv._pts||[]){const d=Math.hypot(q.a-mx,q.b-my);if(d<bd){bd=d;best=q.i}}
+  if(best>=0){selectPt(best,true);return}
+  if(!tapMode)return;
+  const x=iv.minX+(e.clientX-r.left-iv.ox)/iv.s,y=iv.minY+(iv.h-iv.oy-(e.clientY-r.top))/iv.s;
+  if(tapMode==='border'){const E=edgeList();if(E.length<2){toast('Add the corners first');return}let bk=-1,bdist=Infinity,bt=0;
+    for(let k=0;k<E.length;k++){const sg=edgeSeg(k);if(!sg.len)continue;const ux=(sg.b.x-sg.a.x)/sg.len,uy=(sg.b.y-sg.a.y)/sg.len;let d=(x-sg.a.x)*ux+(y-sg.a.y)*uy;d=Math.max(0,Math.min(sg.len,d));
+      const px=sg.a.x+ux*d,py=sg.a.y+uy*d,dd=Math.hypot(px-x,py-y);if(dd<bdist){bdist=dd;bk=k;bt=d}}
+    if(bk<0)return;const np={x:0,y:0,z:NaN,t:'s',b:{e:bk,d:Math.round(bt*12)/12}};placeBorder(np);job.points.push(np);const i=job.points.length-1;job.sample=false;renderPts();save();recompute();
+    selectPt(i,true);const sg=edgeSeg(bk);toast(`${fmtFtIn(np.b.d)} from corner ${sg.from}. Type the elevation.`);return}
+  job.points.push({x:Math.round(x*12)/12,y:Math.round(y*12)/12,z:NaN,t:'s'});const i=job.points.length-1;job.sample=false;renderPts();save();recompute();
+  selectPt(i,true);toast('Spot placed. Type its elevation.')});
+$('#b-crew').addEventListener('click',()=>{const msg=$('#crew-msg');if(!M||!L){msg.textContent='Add the turf edge on the Site tab first.';return}
+  const d={kind:'turftek-turfsite',v:1,jobId:job.id,name:job.info.name||'',customer:job.info.customer||'',address:job.info.address||'',product:job.info.product||'',date:todayStr(),P:M.P.map(p=>({x:Math.round(p.x*1000)/1000,y:Math.round(p.y*1000)/1000})),rollWidth:+R.rollWidth||15,useWidth:+R.useWidth||+R.rollWidth||15,extra:isFinite(+R.extra)?+R.extra:1,along:L.along};
+  const t=JSON.stringify(d);const fb=()=>{const ta=$('#crew-text');ta.hidden=false;ta.value=t;ta.focus();ta.select();msg.textContent='Copy didn\'t go through. It\'s selected below; copy it from there.'};
+  try{navigator.clipboard.writeText(t).then(()=>{$('#crew-text').hidden=true;msg.textContent=`Copied ${L.strips.length} rolls. In the Turf Cut List app: Jobs, paste, Import site.`;toast('Copied for the crew')},fb)}catch(e){fb()}});
+buildSettings();fillInputs();bind3D();renderPts();recompute();startCloud();
+})();
+</script>
+
+
+<!-- ================= CREW CUT LIST (opened with #crew) ================= -->
+<style>
+body.crew-mode>*:not(#cw-root):not(#cw-sheet-bg):not(#cw-toast){display:none!important}
+#cw-root,#cw-sheet-bg,#cw-toast{--cw-bg:#f4f5f1;--cw-line:#d9ddd5;--cw-ink:#17201a;--cw-muted:#5f6b62;--cw-turf:#2f7a3b;--cw-red:#d2462e;--cw-blue:#1f5fbf;--cw-warn:#a96a00;--cw-dark:#16341d;font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--cw-ink)}
+#cw-root{background:var(--cw-bg);min-height:100vh}
+#cw-root *,#cw-sheet-bg *{box-sizing:border-box}
+.cw-head{background:var(--cw-dark);color:#fff;padding:12px 16px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:5}
+.cw-head h1{font-size:17px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cw-head h1 small{display:block;font-size:12px;opacity:.75;font-weight:400}
+.cw-main{max-width:980px;margin:0 auto;padding:14px;display:grid;gap:14px}
+.cw-panel{background:#fff;border:1px solid var(--cw-line);border-radius:12px;padding:14px}
+.cw-panel h2{font-size:16px;margin:0 0 8px}.cw-h3{font-size:13px;margin:12px 0 6px;color:var(--cw-muted);text-transform:uppercase;letter-spacing:.04em}
+.cw-hint{color:var(--cw-muted);font-size:13px;margin:4px 0 8px}
+.cw-btn{appearance:none;border:1px solid var(--cw-line);background:#fff;color:var(--cw-ink);border-radius:10px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
+.cw-btn.sm{padding:6px 10px;min-height:36px;font-size:14px}.cw-btn.pri{background:var(--cw-turf);border-color:var(--cw-turf);color:#fff}
+.cw-btn.ghost{background:transparent}.cw-btn.danger{color:var(--cw-red)}
+.cw-pgbtn[aria-pressed="true"]{background:#d97a00;border-color:#d97a00;color:#fff}
+.cw-head .cw-btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+.cw-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cw-seg{display:flex;border:1px solid var(--cw-line);border-radius:10px;overflow:hidden}
+.cw-seg button{flex:1;border:0;background:#fff;color:var(--cw-ink);font:inherit;font-weight:600;padding:10px 8px;min-height:44px;cursor:pointer;border-right:1px solid var(--cw-line)}
+.cw-seg button:last-child{border-right:0}.cw-seg button[aria-pressed="true"]{background:var(--cw-dark);color:#fff}
+#cw-root input,#cw-root select,#cw-sheet-bg input{font:inherit;border:1px solid var(--cw-line);border-radius:8px;padding:9px 10px;background:#fff;color:var(--cw-ink);min-height:42px;width:100%}
+.cw-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cw-fld span{display:block;font-size:12px;color:var(--cw-muted);margin-bottom:3px}
+.cw-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.cw-stat{background:#fff;border:1px solid var(--cw-line);border-radius:12px;padding:10px 12px}.cw-stat b{display:block;font-size:20px}.cw-stat span{font-size:12px;color:var(--cw-muted)}
+#cw-cv{width:100%;display:block;touch-action:manipulation;border-radius:8px;background:#eef1ea}
+.cw-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--cw-muted);margin-top:8px}
+.cw-legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
+.cw-tbl{width:100%;border-collapse:collapse;font-size:14px}.cw-tbl th,.cw-tbl td{padding:8px 6px;border-bottom:1px solid var(--cw-line);text-align:left;vertical-align:top}
+.cw-tbl th{font-size:12px;color:var(--cw-muted);font-weight:600}.cw-num{text-align:right!important;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cw-tbl tr[data-roll]{cursor:pointer}.cw-tbl tr[data-roll]:hover{background:#f6f8f3}
+.cw-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:#e7efe6;color:var(--cw-turf);margin:2px 4px 0 0;white-space:nowrap}
+.cw-tag.rip{background:#e3ecfa;color:var(--cw-blue)}.cw-tag.hs{background:#fbe7e3;color:var(--cw-red)}.cw-tag.warn{background:#fdf0d8;color:var(--cw-warn)}
+.cw-job{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--cw-line);cursor:pointer}.cw-job .t{flex:1;min-width:0}.cw-job .t span{display:block;font-size:12px;color:var(--cw-muted)}
+#cw-sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.cw-sheet{background:#fff;width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
+@media(min-width:700px){#cw-sheet-bg{align-items:center}.cw-sheet{border-radius:16px}}
+.cw-sheet h2{display:flex;align-items:center;gap:8px;font-size:17px;margin:0 0 4px}.cw-sheet h2 span{flex:1}
+.cw-piece{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--cw-line);border-radius:8px;padding:8px 10px;font-variant-numeric:tabular-nums;margin-top:6px}.cw-piece b{font-size:17px}
+.cw-cut{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--cw-line)}.cw-cut span{flex:1}
+.cw-warnbox{background:#fdf0d8;color:#6b4400;border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px}
+#cw-toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--cw-dark);color:#fff;padding:10px 16px;border-radius:99px;font-weight:600;z-index:60;font-size:14px}
+#cw-root [hidden],#cw-sheet-bg[hidden],#cw-toast[hidden]{display:none!important}
+</style>
+<div id="cw-root" hidden>
+  <div class="cw-head"><h1 id="cw-title">Turf Cut List<small id="cw-sub">Pick a job</small></h1><button class="cw-btn sm" id="cw-b-jobs">Jobs</button><button class="cw-btn sm" id="cw-b-est">Estimator</button></div>
+  <div class="cw-main">
+    <section class="cw-panel" id="cw-jobs"><h2>Jobs from the estimator</h2><p class="cw-hint">Every job saved in the Turf Sales Estimator. Tap one to open its cut list.</p><div id="cw-joblist"></div><p class="cw-hint" id="cw-sync"></p></section>
+    <div id="cw-work" hidden style="display:grid;gap:14px">
+      <div class="cw-stats" id="cw-stats"></div>
+      <section class="cw-panel">
+        <div class="cw-row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Layout</h2><div class="cw-row" style="gap:8px"><span class="cw-hint" style="margin:0">Tap a roll to change it</span><button class="cw-btn sm cw-pgbtn" id="cw-b-pg" aria-pressed="true" hidden>Playground</button></div></div>
+        <canvas id="cw-cv" aria-label="Turf roll layout, tap a roll to edit"></canvas>
+        <div class="cw-legend"><span><i style="border-color:var(--cw-red)"></i>Head seam</span><span><i style="border-color:var(--cw-blue);border-top-style:dashed"></i>Split in half</span><span><i style="border-color:#17201a;border-top-width:1px"></i>Side seam</span><span id="cw-pg-leg" hidden><i style="border-color:#d97a00;border-top-style:dashed"></i>Playground · dots: footings</span><span>Front edge at bottom</span></div>
+      </section>
+      <section class="cw-panel">
+        <div class="cw-row" style="justify-content:space-between"><h2 style="margin:0">Cut list</h2><button class="cw-btn sm pri" id="cw-b-copy">Copy cut list</button></div>
+        <p class="cw-hint" id="cw-copy-msg"></p><textarea id="cw-copy-fb" hidden style="width:100%;min-height:120px"></textarea>
+        <table class="cw-tbl"><thead><tr><th>Roll</th><th>Pieces</th><th class="cw-num">Cut length</th><th class="cw-num">Width</th></tr></thead><tbody id="cw-cut-body"></tbody></table>
+        <div class="cw-h3">How many of each</div>
+        <table class="cw-tbl"><thead><tr><th class="cw-num">Cut length</th><th class="cw-num">Width</th><th class="cw-num">How many</th></tr></thead><tbody id="cw-grp-body"></tbody></table>
+      </section>
+      <section class="cw-panel">
+        <h2>Roll settings</h2>
+        <div class="cw-seg" id="cw-dir" style="margin-bottom:10px"><button data-dir="x">Run left to right</button><button data-dir="y">Run front to back</button></div>
+        <div class="cw-grid3">
+          <label class="cw-fld"><span>Roll width</span><input id="cw-s-rw" data-k="rollWidth"></label>
+          <label class="cw-fld"><span>Usable width</span><input id="cw-s-uw" data-k="useWidth"></label>
+          <label class="cw-fld"><span>Extra per piece</span><input id="cw-s-ex" data-k="extra"></label>
+        </div>
+        <p class="cw-hint" id="cw-set-hint">Starts from the estimator's settings. Feet and inches like 14 10. Extra goes on every piece for trimming, then rounds up to the next foot. Changing the direction or width clears the splits.</p>
+        <div class="cw-row"><button class="cw-btn sm" id="cw-b-default">Back to estimator settings</button><button class="cw-btn sm ghost danger" id="cw-b-clear">Clear all splits</button></div>
+      </section>
+    </div>
+  </div>
+</div>
+<div id="cw-sheet-bg" hidden><div class="cw-sheet" role="dialog" aria-modal="true" aria-labelledby="cw-sh-title">
+  <h2><span id="cw-sh-title">Roll</span><button class="cw-btn sm ghost" id="cw-sh-prev" aria-label="Previous roll">‹</button><button class="cw-btn sm ghost" id="cw-sh-next" aria-label="Next roll">›</button><button class="cw-btn sm" id="cw-sh-close">Done</button></h2>
+  <p class="cw-hint" id="cw-sh-info"></p>
+  <div class="cw-h3">Width</div>
+  <div class="cw-seg" id="cw-sh-w"><button data-w="0">Full roll</button><button data-w="1">Split in half</button></div>
+  <div class="cw-h3">Length</div>
+  <div class="cw-seg" id="cw-sh-l"><button data-n="1">One piece</button><button data-n="2">Cut in half</button><button data-n="3">3 pieces</button></div>
+  <p class="cw-hint" id="cw-sh-from" style="margin-top:10px"></p>
+  <div class="cw-row"><input id="cw-sh-pos" placeholder="e.g. 20 6" style="flex:1;width:auto"><button class="cw-btn" id="cw-sh-add">Add head seam</button></div>
+  <div id="cw-sh-cuts"></div><div id="cw-sh-warn"></div>
+  <div class="cw-h3">Pieces to cut</div><div id="cw-sh-pieces"></div>
+  <div class="cw-row" style="margin-top:12px"><button class="cw-btn sm ghost danger" id="cw-sh-reset">Back to one full piece</button></div>
+</div></div>
+<div id="cw-toast" hidden></div>
+<script>
+(function(){
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmt(v){if(!isFinite(v))return'—';let t=Math.round(Math.abs(v)*12),f=Math.floor(t/12),i=t%12;return(v<0?'-':'')+f+"'-"+i+'"'}
+const fmtIn=v=>fmt(v).replace("'-",' ').replace('"','');
+function parseFt(s){s=String(s).trim().replace(/[″]/g,'"').replace(/[′’]/g,"'");if(s==='')return NaN;
+  if(/^-?\d*\.?\d+$/.test(s))return parseFloat(s);
+  let m=s.match(/^(-)?\s*(\d+(?:\.\d+)?)\s*(?:'|\s)\s*-?\s*(\d+(?:\.\d+)?)?\s*"?$/);if(m)return(m[1]?-1:1)*(parseFloat(m[2])+(m[3]?parseFloat(m[3]):0)/12);
+  m=s.match(/^(-)?\s*(\d+(?:\.\d+)?)\s*"$/);if(m)return(m[1]?-1:1)*parseFloat(m[2])/12;return NaN}
+let toastT=0;function toast(t){const el=$('#cw-toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2200)}
+const STAGGER=3;
+const DEF={rollWidth:15,useWidth:14+10/12,extra:1};
+
+/* ---------- data: estimator jobs + estimator roll settings + crew splits ---------- */
+let EJ=[],ER=Object.assign({},DEF),CREW={},DB=null,curId=LS.get('tcl.curEst',''),dirty=new Set(),T=0,syncing=false;
+function readLocal(){const j=LS.get('tse.jobs',[]);if(Array.isArray(j))EJ=j.filter(x=>x&&!x.sample);const r=LS.get('tse.rates',{});ER=pickS(r);CREW=LS.get('tcl.crew',{})||{}}
+function pickS(r){r=r||{};return{rollWidth:+r.rollWidth||DEF.rollWidth,useWidth:+r.useWidth||+r.rollWidth||DEF.useWidth,extra:isFinite(+r.extra)&&r.extra!==''&&r.extra!=null?+r.extra:DEF.extra}}
+const edgeOf=ej=>(ej.points||[]).filter(p=>p&&p.t==='e'&&p.x!=null&&p.y!=null&&isFinite(p.x)&&isFinite(p.y)).map(p=>({x:+p.x,y:+p.y}));
+
+/* ---------- layout (same method as the estimator's Turf tab) ---------- */
+function lineHits(Q,v){const us=[];for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a.v>v)!==(b.v>v))us.push(a.u+(v-a.v)*(b.u-a.u)/(b.v-a.v))}return us.sort((a,b)=>a-b)}
+function polyArea(P){let a=0;for(let i=0,j=P.length-1;i<P.length;j=i++)a+=(P[j].x+P[i].x)*(P[j].y-P[i].y);return Math.abs(a/2)}
+function strips(P,S,along){const SW=Math.max(1,+S.rollWidth||15),W=Math.min(SW,Math.max(1,+S.useWidth||SW)),extra=Math.max(0,+S.extra||0);
+  const Q=P.map(p=>along==='x'?{u:p.x,v:p.y}:{u:p.y,v:p.x});const vmin=Math.min(...Q.map(q=>q.v)),vmax=Math.max(...Q.map(q=>q.v));const out=[];
+  for(let v0=vmin;v0<vmax-0.01;v0+=W){const v1=v0+W;let lo=Infinity,hi=-Infinity;
+    for(let s=0;s<=24;s++){const v=Math.min(vmax-1e-4,Math.max(vmin+1e-4,v0+(v1-v0)*s/24));const us=lineHits(Q,v);if(us.length){lo=Math.min(lo,us[0]);hi=Math.max(hi,us[us.length-1])}}
+    for(const q of Q)if(q.v>=v0-1e-6&&q.v<=v1+1e-6){lo=Math.min(lo,q.u);hi=Math.max(hi,q.u)}
+    if(hi>lo)out.push({v0,v1,used:Math.min(v1,vmax)-v0,lo,hi,len:hi-lo})}
+  let sideLF=0;const seams=[];for(let k=0;k+1<out.length;k++){const us=lineHits(Q,out[k].v1);let s=0;for(let i=0;i+1<us.length;i+=2)s+=us[i+1]-us[i];sideLF+=s;seams.push({v:out[k].v1,us})}
+  const ceilFt=x=>Math.ceil(x+extra-0.001);const bought=out.reduce((a,s)=>a+SW*ceilFt(s.len),0);
+  return{along,SW,W,extra,strips:out,seams,sideLF,bought,ceilFt}}
+function estDir(ej,P){const want=ej.layout&&ej.layout.dir;if(want==='x'||want==='y')return want;const a=strips(P,ER,'x'),b=strips(P,ER,'y');return(a.bought+a.sideLF*1.5)<=(b.bought+b.sideLF*1.5)?'x':'y'}
+
+/* ---------- playground from the layout app (same placement as the estimator) ---------- */
+const PGK={BL:{c:['L','B'],a:[1,0],b:[0,1]},BR:{c:['R','B'],a:[-1,0],b:[0,1]},TR:{c:['R','T'],a:[-1,0],b:[0,-1]},TL:{c:['L','T'],a:[1,0],b:[0,-1]}};
+let PGOFF=LS.get('tcl.pgOff',{})||{};
+function pgOf(ej,E){const pg=ej&&ej.pg;if(!pg||!pg.data||!pg.data.fp||E.length<3)return null;
+  const D=pg.data,fp=D.fp,O=E[0],e1=E[1],eN=E[E.length-1];const l1=Math.hypot(e1.x-O.x,e1.y-O.y),lN=Math.hypot(eN.x-O.x,eN.y-O.y);if(l1<0.1||lN<0.1)return null;
+  const u={x:(e1.x-O.x)/l1,y:(e1.y-O.y)/l1},w={x:(eN.x-O.x)/lN,y:(eN.y-O.y)/lN};const st=Math.sign(u.x*w.y-u.y*w.x)||1;const K=PGK[pg.corner]||PGK.BL;
+  const sp=Math.sign(K.a[0]*K.b[1]-K.a[1]*K.b[0]);const src=sp===st?K.a:K.b;const th=Math.atan2(u.y,u.x)-Math.atan2(src[1],src[0]),ct=Math.cos(th),s=Math.sin(th);
+  const cx=fp[K.c[0]],cy=fp[K.c[1]],d1=+pg.d1||0,d2=+pg.d2||0,v={x:-u.y*st,y:u.x*st};const ox=O.x+u.x*d1+v.x*d2,oy=O.y+u.y*d1+v.y*d2;
+  const tf=(px,py)=>{const dx=(px-cx)/12,dy=(py-cy)/12;return{x:ox+dx*ct-dy*s,y:oy+dx*s+dy*ct}};const ox2=K.c[0]==='L'?'R':'L',oy2=K.c[1]==='B'?'T':'B';
+  return{name:D.short||'Playground',corners:[[cx,cy],[fp[ox2],cy],[fp[ox2],fp[oy2]],[cx,fp[oy2]]].map(([a,b])=>tf(a,b)),holes:(D.holes||[]).map(h=>({post:!!h.post,...tf(h.x,h.y)}))}}
+
+/* ---------- current job ---------- */
+let J=null,L=null,cur=-1;
+function crewOf(id){return CREW[id]||(CREW[id]={edits:{},along:null,S:null})}
+function sigOf(P,S,along){return JSON.stringify([P.map(p=>[Math.round(p.x*100),Math.round(p.y*100)]),+(+S.rollWidth).toFixed(3),+(+S.useWidth).toFixed(3),along])}
+function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}
+  const P=edgeOf(ej);if(P.length<3||polyArea(P)<1){J={ej,P,bad:true};L=null;return}
+  const c=crewOf(ej.id),S=c.S?Object.assign({},ER,c.S):Object.assign({},ER),along=c.along||estDir(ej,P);
+  const sig=sigOf(P,S,along);if(c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}c.sig=sig;
+  J={ej,P,S,along,c,pg:pgOf(ej,P)};const lay=strips(P,S,along);
+  lay.strips.forEach((st,k)=>{const e=(c.edits||{})[k]||{};const full=st.used>=lay.W-0.05;st.full=full;st.w=full?lay.W:Math.round(st.used*12)/12;
+    st.half=!!e.half;st.cuts=(e.cuts||[]).filter(x=>x>0.25&&x<st.len-0.25).sort((a,b)=>a-b);
+    const b=[0,...st.cuts,st.len];st.segs=[];for(let i=0;i+1<b.length;i++)st.segs.push({a:b[i],b:b[i+1],len:b[i+1]-b[i],order:lay.ceilFt(b[i+1]-b[i])});
+    st.pw=st.half?(full?lay.SW/2:Math.round(st.w*6)/12):(full?lay.SW:st.w);st.pieces=st.segs.length*(st.half?2:1);st.lf=st.segs.reduce((a,s)=>a+s.order,0);st.orig=lay.ceilFt(st.len);st.warn=[]});
+  for(let k=0;k+1<lay.strips.length;k++){const A=lay.strips[k],B=lay.strips[k+1];for(const ca of A.cuts)for(const cb of B.cuts)if(Math.abs((A.lo+ca)-(B.lo+cb))<STAGGER){A.warn.push(k+2);B.warn.push(k+1)}}
+  lay.strips.forEach(st=>st.warn=[...new Set(st.warn)]);
+  lay.headLF=lay.strips.reduce((a,st)=>a+st.cuts.length*st.used,0);lay.ripLF=lay.strips.reduce((a,st)=>a+(st.half?st.len:0),0);
+  lay.lf=lay.strips.reduce((a,s)=>a+s.lf,0);lay.total=lay.lf*lay.SW;L=lay}
+
+/* ---------- render ---------- */
+const stat=(v,l)=>`<div class="cw-stat"><b>${v}</b><span>${l}</span></div>`;
+function render(){if(!document.body.classList.contains('crew-mode'))return;build();
+  const ej=J&&J.ej;$('#cw-title').firstChild.textContent=ej?(ej.info&&ej.info.name)||'Untitled job':'Turf Cut List';
+  $('#cw-sub').textContent=ej?[ej.info&&ej.info.customer,ej.info&&ej.info.address].filter(Boolean).join(' · ')||' ':'Pick a job';
+  renderJobs();$('#cw-jobs').hidden=!!(J&&!jobsOpen);$('#cw-work').hidden=!J;
+  if(!J)return;
+  if(J.bad){$('#cw-stats').innerHTML='';$('#cw-cut-body').innerHTML='<tr><td colspan="4" class="cw-hint">This job has no turf edge yet. Add the corners on the estimator\'s Site tab.</td></tr>';$('#cw-grp-body').innerHTML='';draw();return}
+  $$('#cw-dir button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dir===J.along));
+  [['#cw-s-rw','rollWidth'],['#cw-s-uw','useWidth'],['#cw-s-ex','extra']].forEach(([id,k])=>{const el=$(id);if(el!==document.activeElement)el.value=fmtIn(+J.S[k])});
+  $('#cw-b-default').hidden=!(J.c.S||J.c.along);const pgOn=!!J.pg&&!PGOFF[J.ej.id];$('#cw-b-pg').hidden=!J.pg;$('#cw-b-pg').setAttribute('aria-pressed',String(pgOn));$('#cw-pg-leg').hidden=!pgOn;
+  const pcs=L.strips.reduce((a,s)=>a+s.pieces,0);
+  $('#cw-stats').innerHTML=stat(L.strips.length,'rolls ('+fmt(L.SW)+' wide)')+stat(pcs,'pieces to cut')+stat(fmt(L.lf),'roll length used')+stat(Math.round(L.headLF)+' lf','head seams')+stat(Math.round(L.sideLF+L.ripLF)+' lf','side seams');
+  $('#cw-cut-body').innerHTML=L.strips.map((st,k)=>{const tags=(st.half?'<span class="cw-tag rip">split in half</span>':'')+(st.cuts.length?`<span class="cw-tag hs">${st.cuts.length} head seam${st.cuts.length>1?'s':''}</span>`:'')+(st.warn.length?'<span class="cw-tag warn">stagger</span>':'')+(!st.full?'<span class="cw-tag">rip to width</span>':'');
+    return st.segs.map((sg,i)=>`<tr data-roll="${k}">${i===0?`<td rowspan="${st.segs.length}"><b>R${k+1}</b>${tags?'<br>'+tags:''}</td><td rowspan="${st.segs.length}">${st.pieces}</td>`:''}<td class="cw-num"><b>${fmt(sg.order)}</b>${st.segs.length>1?` <span class="cw-hint">(${String.fromCharCode(97+i)})</span>`:''}</td><td class="cw-num">${st.half?'2 × ':''}${fmt(st.pw)}</td></tr>`).join('')}).join('')
+    +`<tr><td><b>Total</b></td><td><b>${pcs}</b></td><td class="cw-num"><b>${fmt(L.lf)}</b></td><td class="cw-num">${Math.round(L.total).toLocaleString()} sf</td></tr>`;
+  const g=new Map();L.strips.forEach(st=>st.segs.forEach(sg=>{const key=sg.order+'|'+st.pw;if(!g.has(key))g.set(key,{len:sg.order,w:st.pw,n:0});g.get(key).n+=st.half?2:1}));
+  $('#cw-grp-body').innerHTML=[...g.values()].sort((a,b)=>b.len-a.len||b.w-a.w).map(e=>`<tr><td class="cw-num"><b>${fmt(e.len)}</b></td><td class="cw-num">${fmt(e.w)}</td><td class="cw-num"><b>${e.n}</b></td></tr>`).join('');
+  draw();if(cur>=0)renderSheet()}
+let jobsOpen=false;
+function renderJobs(){const list=[...EJ].sort((a,b)=>(b.updated||0)-(a.updated||0));
+  $('#cw-joblist').innerHTML=list.length?list.map(j=>{const c=CREW[j.id],n=c&&c.edits?Object.keys(c.edits).length:0;return`<div class="cw-job" data-open="${esc(j.id)}"><div class="t"><b>${esc((j.info&&j.info.name)||'Untitled job')}</b><span>${esc([j.info&&j.info.customer,j.info&&j.info.address,j.info&&j.info.date].filter(Boolean).join(' · ')||'—')}</span></div>${n?`<span class="cw-tag hs">${n} roll${n>1?'s':''} changed</span>`:''}${j.id===curId?'<span class="cw-tag">Open</span>':''}</div>`}).join('')
+    :'<p class="cw-hint">No jobs saved in the estimator yet. Make one there and it shows up here.</p>'}
+
+/* canvas */
+function draw(){const cv=$('#cw-cv'),dpr=window.devicePixelRatio||1,w=cv.clientWidth||600;
+  if(!L||!J||J.bad){cv.style.height='60px';cv.width=w*dpr;cv.height=60*dpr;return}
+  const uv=(u,v)=>L.along==='x'?[u,v]:[v,u];
+  const xs=J.P.map(p=>p.x),ys=J.P.map(p=>p.y);let minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+  const PGd=J.pg&&!PGOFF[J.ej.id]?J.pg:null;if(PGd)PGd.corners.forEach(p=>{minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y)});
+  L.strips.forEach(st=>{const a=uv(st.lo,st.v0),b=uv(st.hi,st.v1);minX=Math.min(minX,a[0],b[0]);maxX=Math.max(maxX,a[0],b[0]);minY=Math.min(minY,a[1],b[1]);maxY=Math.max(maxY,a[1],b[1])});
+  const pad=28,bw=maxX-minX||1,bh=maxY-minY||1;let s=(w-pad*2)/bw,h=bh*s+pad*2;if(h>560){s=(560-pad*2)/bh;h=560}
+  const ox=(w-bw*s)/2;cv.style.height=h+'px';cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  const T=(x,y)=>[ox+(x-minX)*s,h-pad-(y-minY)*s];cv._T={ox,minX,minY,s,h,pad};
+  const rect=(u0,u1,v0,v1)=>{const a=T(...uv(u0,v0)),b=T(...uv(u1,v1));return[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1])]};
+  const line=(u0,v0,u1,v1)=>{const a=T(...uv(u0,v0)),b=T(...uv(u1,v1));ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()};
+  const edge=()=>{ctx.beginPath();J.P.forEach((p,i)=>{const q=T(p.x,p.y);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.closePath()};
+  ctx.save();edge();ctx.clip();
+  L.strips.forEach((st,k)=>st.segs.forEach((sg,i)=>{ctx.fillStyle=(k+i)%2?'#3f8f4a':'#5aa863';ctx.globalAlpha=k===cur?0.9:0.55;ctx.fillRect(...rect(st.lo+sg.a,st.lo+sg.b,st.v0,st.v0+st.used))}));
+  ctx.globalAlpha=1;ctx.restore();
+  L.strips.forEach((st,k)=>{ctx.strokeStyle=k===cur?'#16341d':'rgba(23,32,26,.35)';ctx.lineWidth=k===cur?2.5:1;ctx.strokeRect(...rect(st.lo,st.hi,st.v0,st.v0+st.used))});
+  ctx.strokeStyle='#17201a';ctx.lineWidth=2;edge();ctx.stroke();
+  ctx.lineWidth=1;for(const sm of L.seams)for(let i=0;i+1<sm.us.length;i+=2)line(sm.us[i],sm.v,sm.us[i+1],sm.v);
+  ctx.strokeStyle='#1f5fbf';ctx.lineWidth=2;ctx.setLineDash([6,4]);L.strips.forEach(st=>{if(st.half){const vm=st.v0+st.used/2;line(st.lo,vm,st.hi,vm)}});ctx.setLineDash([]);
+  L.strips.forEach(st=>{ctx.strokeStyle=st.warn.length?'#a96a00':'#d2462e';ctx.lineWidth=3;st.cuts.forEach(c=>line(st.lo+c,st.v0,st.lo+c,st.v0+st.used))});
+  if(PGd){ctx.save();ctx.beginPath();PGd.corners.forEach((p,i)=>{const q=T(p.x,p.y);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.closePath();ctx.fillStyle='rgba(217,122,0,.10)';ctx.fill();ctx.setLineDash([7,5]);ctx.strokeStyle='#d97a00';ctx.lineWidth=2.5;ctx.stroke();ctx.setLineDash([]);
+    for(const hh of PGd.holes){const q=T(hh.x,hh.y);ctx.beginPath();ctx.arc(q[0],q[1],hh.post?3.2:2.6,0,7);if(hh.post){ctx.fillStyle='#17201a';ctx.fill()}else{ctx.strokeStyle='#17201a';ctx.lineWidth=1.2;ctx.stroke()}}
+    const c0=T(PGd.corners[0].x,PGd.corners[0].y);ctx.font='700 11px -apple-system,sans-serif';ctx.fillStyle='#a85d00';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(PGd.name,c0[0]+5,c0[1]+4);ctx.restore()}
+  ctx.font='600 12px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  L.strips.forEach((st,k)=>st.segs.forEach((sg,i)=>{const p=T(...uv(st.lo+(sg.a+sg.b)/2,st.v0+st.used/2));
+    const lbl=`R${k+1}${st.segs.length>1?String.fromCharCode(97+i):''} · ${fmt(sg.order)}`;const tw=ctx.measureText(lbl).width+10;
+    ctx.fillStyle='rgba(255,255,255,.92)';ctx.fillRect(p[0]-tw/2,p[1]-9,tw,18);ctx.fillStyle='#17201a';ctx.fillText(lbl,p[0],p[1])}));
+  ctx.fillStyle='#5f6b62';ctx.font='12px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText(L.along==='x'?'Rolls run left ⟷ right':'Rolls run front ⟷ back',8,12)}
+$('#cw-cv').addEventListener('click',e=>{if(!L)return;const cv=e.currentTarget,t=cv._T,r=cv.getBoundingClientRect();
+  const x=t.minX+(e.clientX-r.left-t.ox)/t.s,y=t.minY+(t.h-t.pad-(e.clientY-r.top))/t.s;const u=L.along==='x'?x:y,v=L.along==='x'?y:x;
+  const k=L.strips.findIndex(st=>v>=st.v0-0.3&&v<=st.v0+st.used+0.3&&u>=st.lo-1&&u<=st.hi+1);if(k>=0)openSheet(k)});
+window.addEventListener('resize',()=>{if(document.body.classList.contains('crew-mode'))draw()});
+
+/* ---------- saving crew splits ---------- */
+function touch(){J.c.updated=Date.now();dirty.add(J.ej.id);LS.set('tcl.crew',CREW);soon();render()}
+function soon(){LS.set('tcl.crew',CREW);if(!DB)return;clearTimeout(T);T=setTimeout(flush,800)}
+async function flush(){if(!DB||syncing)return;syncing=true;let err=null;
+  try{for(const id of[...dirty]){dirty.delete(id);const c=CREW[id];if(c)await DB.doc('crew/'+id).set(JSON.parse(JSON.stringify(c)))}}catch(e){err=e}
+  syncing=false;if(err){$('#cw-sync').textContent='Splits not saved to the account yet, retrying';setTimeout(flush,4000)}else if(dirty.size)flush();else $('#cw-sync').textContent='Splits saved to the account. The crew sees the same thing.'}
+
+/* ---------- roll sheet ---------- */
+function ed(k){const E=J.c.edits||(J.c.edits={});return E[k]||(E[k]={half:false,cuts:[]})}
+function openSheet(k){cur=k;$('#cw-sheet-bg').hidden=false;$('#cw-sh-pos').value='';renderSheet();draw()}
+function closeSheet(){cur=-1;$('#cw-sheet-bg').hidden=true;draw()}
+function renderSheet(){const st=L&&L.strips[cur];if(!st){closeSheet();return}
+  $('#cw-sh-title').textContent=`Roll R${cur+1}`;
+  $('#cw-sh-info').textContent=`Measured run ${fmt(st.len)} · planned as one ${fmt(st.orig)} cut · ${st.full?fmt(L.SW)+' wide':'ripped to '+fmt(st.w)}`;
+  $$('#cw-sh-w button').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.w==='1')===st.half));
+  const n=st.segs.length,even=n>1&&st.cuts.every((c,i)=>Math.abs(c-st.len*(i+1)/n)<1/12);
+  $$('#cw-sh-l button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.n===n&&(n===1||even)));
+  const fw=L.along==='x'?'left end':'front end';
+  $('#cw-sh-from').textContent=`Or put a head seam exactly where you want it: distance from the ${fw} of the roll.`;
+  $('#cw-sh-cuts').innerHTML=st.cuts.map((c,i)=>`<div class="cw-cut"><span>Head seam ${i+1}: <b>${fmt(c)}</b> from the ${fw}</span><button class="cw-btn sm ghost danger" data-rmcut="${i}">Remove</button></div>`).join('');
+  $('#cw-sh-warn').innerHTML=st.warn.length?`<div class="cw-warnbox">Head seam is within ${STAGGER}' of one on R${st.warn.join(' and R')}. Stagger them so the seams don't line up.</div>`:'';
+  $('#cw-sh-pieces').innerHTML=st.segs.map((sg,i)=>`<div class="cw-piece"><span>${n>1?'Piece '+String.fromCharCode(97+i)+' · covers '+fmt(sg.len):'Covers '+fmt(sg.len)}</span><span><b>${fmt(sg.order)}</b> × ${st.half?'2 @ ':''}${fmt(st.pw)}</span></div>`).join('')
+    +`<p class="cw-hint">${st.pieces} piece${st.pieces>1?'s':''}, ${fmt(st.lf)} off the roll${st.lf>st.orig?` (${fmt(st.lf-st.orig)} more than one piece, for trim on each end)`:''}.</p>`}
+$('#cw-sh-w').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ed(cur).half=b.dataset.w==='1';touch()});
+$('#cw-sh-l').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const st=L.strips[cur],n=+b.dataset.n;ed(cur).cuts=[...Array(n-1)].map((_,i)=>Math.round(st.len*(i+1)/n*12)/12);touch()});
+function addCut(){const st=L.strips[cur],v=parseFt($('#cw-sh-pos').value);if(!isFinite(v)){toast('Type a distance like 20 6');return}
+  if(v<=0.25||v>=st.len-0.25){toast(`Has to be between 0 and ${fmt(st.len)}`);return}
+  const e=ed(cur);if(e.cuts.some(c=>Math.abs(c-v)<0.25)){toast('Already a seam there');return}e.cuts.push(Math.round(v*12)/12);$('#cw-sh-pos').value='';touch()}
+$('#cw-sh-add').addEventListener('click',addCut);$('#cw-sh-pos').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addCut()}});
+$('#cw-sh-cuts').addEventListener('click',e=>{const b=e.target.closest('[data-rmcut]');if(!b)return;const c=L.strips[cur].cuts[+b.dataset.rmcut];const E=ed(cur);E.cuts=E.cuts.filter(x=>Math.abs(x-c)>1e-6);touch()});
+$('#cw-sh-reset').addEventListener('click',()=>{delete J.c.edits[cur];touch()});
+$('#cw-sh-close').addEventListener('click',closeSheet);$('#cw-sheet-bg').addEventListener('click',e=>{if(e.target.id==='cw-sheet-bg')closeSheet()});
+$('#cw-sh-prev').addEventListener('click',()=>{if(cur>0)openSheet(cur-1)});$('#cw-sh-next').addEventListener('click',()=>{if(L&&cur<L.strips.length-1)openSheet(cur+1)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&cur>=0)closeSheet()});
+$('#cw-cut-body').addEventListener('click',e=>{const r=e.target.closest('[data-roll]');if(r)openSheet(+r.dataset.roll)});
+
+$('#cw-b-pg').addEventListener('click',()=>{if(!J||!J.pg)return;const id=J.ej.id;if(PGOFF[id])delete PGOFF[id];else PGOFF[id]=1;LS.set('tcl.pgOff',PGOFF);render();toast(PGOFF[id]?'Playground hidden':'Playground shown')});
+/* ---------- settings ---------- */
+$('#cw-dir').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!J||b.dataset.dir===J.along)return;J.c.along=b.dataset.dir;J.c.edits={};touch();toast('Direction changed, splits cleared')});
+$$('#cw-root [data-k]').forEach(el=>el.addEventListener('change',()=>{if(!J)return;const v=parseFt(el.value);if(!isFinite(v)||v<0){render();return}const k=el.dataset.k;
+  if(+J.S[k]===v)return;const S=Object.assign({},J.c.S||{});S[k]=v;J.c.S=S;if(k!=='extra')J.c.edits={};touch()}));
+$('#cw-b-default').addEventListener('click',()=>{if(!J)return;J.c.S=null;J.c.along=null;J.c.edits={};touch();toast('Back to the estimator settings')});
+let clrArm=0;$('#cw-b-clear').addEventListener('click',e=>{if(!J)return;if(!clrArm){clrArm=1;e.target.textContent='Tap again to clear';setTimeout(()=>{clrArm=0;e.target.textContent='Clear all splits'},3000);return}clrArm=0;e.target.textContent='Clear all splits';J.c.edits={};touch()});
+
+/* ---------- jobs, copy, mode ---------- */
+$('#cw-joblist').addEventListener('click',e=>{const o=e.target.closest('[data-open]');if(!o)return;curId=o.dataset.open;LS.set('tcl.curEst',curId);jobsOpen=false;cur=-1;render();window.scrollTo(0,0)});
+$('#cw-b-jobs').addEventListener('click',()=>{jobsOpen=!jobsOpen;if(!J)jobsOpen=true;render();if(jobsOpen)$('#cw-jobs').scrollIntoView({behavior:'smooth'})});
+$('#cw-b-est').addEventListener('click',()=>{location.hash='';setMode()});
+$('#cw-b-copy').addEventListener('click',()=>{if(!L)return;const fw=L.along==='x'?'left':'front';const nm=(J.ej.info&&J.ej.info.name)||'Turf job';
+  const lines=[`${nm} — turf cut list`,`${L.strips.length} rolls, ${fmt(L.SW)} wide, run ${L.along==='x'?'left to right':'front to back'}`,''];
+  L.strips.forEach((st,k)=>lines.push(`R${k+1}: ${st.segs.map((sg,i)=>`${st.segs.length>1?String.fromCharCode(97+i)+') ':''}${fmt(sg.order)}`).join(', ')}${st.half?' — split in half, 2 @ '+fmt(st.pw):st.full?'':' — rip to '+fmt(st.w)}${st.cuts.length?` (head seam${st.cuts.length>1?'s':''} at ${st.cuts.map(fmt).join(', ')} from ${fw})`:''}`));
+  lines.push('',`Total: ${L.strips.reduce((a,s)=>a+s.pieces,0)} pieces, ${fmt(L.lf)} of roll`);const t=lines.join('\n');
+  const fb=()=>{const ta=$('#cw-copy-fb');ta.hidden=false;ta.value=t;ta.focus();ta.select();$('#cw-copy-msg').textContent="Copy didn't go through. It's selected below."};
+  try{navigator.clipboard.writeText(t).then(()=>{toast('Cut list copied');$('#cw-copy-fb').hidden=true;$('#cw-copy-msg').textContent=''},fb)}catch(e){fb()}});
+function setMode(){const on=location.hash==='#crew';document.body.classList.toggle('crew-mode',on);$('#cw-root').hidden=!on;if(!on){closeSheet();window.dispatchEvent(new Event('resize'));return}
+  readLocalIfNoDB();if(!EJ.find(j=>j.id===curId))jobsOpen=true;render();window.scrollTo(0,0)}
+function readLocalIfNoDB(){if(!DB)readLocal()}
+window.addEventListener('hashchange',setMode);
+document.addEventListener('click',e=>{const a=e.target.closest('[data-crew-open]');if(a){e.preventDefault();location.hash='crew';setMode()}});
+
+/* ---------- account data ---------- */
+async function startCloud(){$('#cw-sync').textContent='Showing jobs saved on this device.';if(!window.claude||!claude.use)return;let db=null;try{db=await claude.use('db')}catch(e){}if(!db)return;DB=db;
+  $('#cw-sync').textContent='Loading jobs from the account…';
+  DB.collection('jobs').onSnapshot(snap=>{EJ=snap.docs.map(d=>Object.assign({id:d.id},d.data())).filter(j=>!j.sample);$('#cw-sync').textContent='Jobs from the account. Splits save for the whole crew.';render()},()=>{});
+  DB.doc('config/pricing').onSnapshot(sn=>{if(sn.exists){const d=sn.data();ER=pickS(d.R)}render()},()=>{});
+  DB.collection('crew').onSnapshot(snap=>{for(const d of snap.docs){if(dirty.has(d.id))continue;const c=d.data();if(!CREW[d.id]||(CREW[d.id].updated||0)<(c.updated||0))CREW[d.id]=c}LS.set('tcl.crew',CREW);render()},()=>{})}
+readLocal();setMode();startCloud();
+})();
+</script>
+
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});</script>
+</body></html>
