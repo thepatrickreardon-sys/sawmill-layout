@@ -2027,7 +2027,8 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
         foot:f?{type:f.t,shape:f.T.shape,dia:f.T.dia,depth:f.depth}:(g?{type:g.g.type,label:g.g.foot}:null)}});
     const pts={};for(const [k,p] of Object.entries(points()))pts[k]=[p.x,p.y];
     return {kind:'turftek-playground',v:1,job:JOB.name,short:JOB.short,place:JOB.place,order:JOB.order,footprint:JOB.footprint,
-      units:'in',surf:(JOB.footing&&JOB.footing.surf)||null,fp:{L:FP.L,R:FP.R,T:FP.T,B:FP.B},pts,holes};
+      units:'in',surf:(JOB.footing&&JOB.footing.surf)||null,fp:{L:FP.L,R:FP.R,T:FP.T,B:FP.B},pts,holes,
+      decks:(JOB.decks||[]).map(d=>({t:d.t,pts:(d.p||[]).map(n=>BYH[n]).filter(Boolean).map(h=>[h.x,h.y])})).filter(d=>d.pts.length>=3)};
   }
   const msg=t=>{document.getElementById('ttMsg').textContent=t};
   const txt=()=>JSON.stringify(pgFile());

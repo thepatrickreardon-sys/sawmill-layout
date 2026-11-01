@@ -1060,6 +1060,8 @@ body.crew-mode>*:not(#cw-root):not(#cw-sheet-bg):not(#cw-toast){display:none!imp
 .cw-sheet h2{display:flex;align-items:center;gap:8px;font-size:17px;margin:0 0 4px}.cw-sheet h2 span{flex:1}
 .cw-piece{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--cw-line);border-radius:8px;padding:8px 10px;font-variant-numeric:tabular-nums;margin-top:6px}.cw-piece b{font-size:17px}
 .cw-cut{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--cw-line)}.cw-cut span{flex:1}
+.cw-opt{border:1px solid var(--cw-line);border-radius:10px;padding:10px 12px;margin-top:8px;display:flex;gap:10px;align-items:center}.cw-opt .t{flex:1;min-width:0}.cw-opt .t b{display:block}.cw-opt .t span{font-size:13px;color:var(--cw-muted)}
+.cw-opt.on{border-color:var(--cw-turf);background:#f2f8f1}
 .cw-warnbox{background:#fdf0d8;color:#6b4400;border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px}
 #cw-toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--cw-dark);color:#fff;padding:10px 16px;border-radius:99px;font-weight:600;z-index:60;font-size:14px}
 #cw-root [hidden],#cw-sheet-bg[hidden],#cw-toast[hidden]{display:none!important}
@@ -1073,7 +1075,16 @@ body.crew-mode>*:not(#cw-root):not(#cw-sheet-bg):not(#cw-toast){display:none!imp
       <section class="cw-panel">
         <div class="cw-row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Layout</h2><div class="cw-row" style="gap:8px"><span class="cw-hint" style="margin:0">Tap a roll to change it</span><button class="cw-btn sm cw-pgbtn" id="cw-b-pg" aria-pressed="true" hidden>Playground</button></div></div>
         <canvas id="cw-cv" aria-label="Turf roll layout, tap a roll to edit"></canvas>
-        <div class="cw-legend"><span><i style="border-color:var(--cw-red)"></i>Head seam</span><span><i style="border-color:var(--cw-blue);border-top-style:dashed"></i>Split in half</span><span><i style="border-color:#17201a;border-top-width:1px"></i>Side seam</span><span id="cw-pg-leg" hidden><i style="border-color:#d97a00;border-top-style:dashed"></i>Playground · dots: footings</span><span>Front edge at bottom</span></div>
+        <div class="cw-legend"><span><i style="border-color:var(--cw-red)"></i>Head seam</span><span><i style="border-color:var(--cw-blue);border-top-style:dashed"></i>Split in half</span><span><i style="border-color:#17201a;border-top-width:1px"></i>Side seam</span><span id="cw-pg-leg" hidden><i style="border-color:#d97a00;border-top-style:dashed"></i>Playground · dots: footings</span><span id="cw-rc-leg" hidden><i style="border-color:#7b3fbf;border-top-width:2px"></i>Pole cut · green ring: pole on a seam · red box: low deck</span><span>Front edge at bottom</span></div>
+      </section>
+      <section class="cw-panel" id="cw-best" hidden>
+        <div class="cw-row" style="justify-content:space-between"><h2 style="margin:0">Best cuts</h2><span class="cw-tag" id="cw-rc-now"></span></div>
+        <p class="cw-hint">Tries every seam position both ways and finds the layouts with the least cutting around the poles. Vertical seams first; a head seam only goes in where it saves real cutting or a long pull under a low deck.</p>
+        <div class="cw-h3">Head seams</div>
+        <div class="cw-seg" id="cw-hsp"><button data-p="avoid">Avoid</button><button data-p="bal">Balanced</button><button data-p="free">Use when it helps</button></div>
+        <div class="cw-row" style="margin-top:10px"><label class="cw-fld" style="flex:1"><span>Low deck (hard to pull under) at or below</span><input id="cw-low"></label><button class="cw-btn pri" id="cw-b-best" style="align-self:flex-end">Find best cuts</button></div>
+        <p class="cw-hint" id="cw-best-msg"></p><div id="cw-best-list"></div>
+        <div class="cw-row" style="margin-top:8px"><button class="cw-btn sm ghost" id="cw-b-undo" hidden>Undo last pick</button></div>
       </section>
       <section class="cw-panel">
         <div class="cw-row" style="justify-content:space-between"><h2 style="margin:0">Cut list</h2><button class="cw-btn sm pri" id="cw-b-copy">Copy cut list</button></div>
@@ -1089,8 +1100,9 @@ body.crew-mode>*:not(#cw-root):not(#cw-sheet-bg):not(#cw-toast){display:none!imp
           <label class="cw-fld"><span>Roll width</span><input id="cw-s-rw" data-k="rollWidth"></label>
           <label class="cw-fld"><span>Usable width</span><input id="cw-s-uw" data-k="useWidth"></label>
           <label class="cw-fld"><span>Extra per piece</span><input id="cw-s-ex" data-k="extra"></label>
+          <label class="cw-fld"><span>Shift seams over</span><input id="cw-s-off"></label>
         </div>
-        <p class="cw-hint" id="cw-set-hint">Starts from the estimator's settings. Feet and inches like 14 10. Extra goes on every piece for trimming, then rounds up to the next foot. Changing the direction or width clears the splits.</p>
+        <p class="cw-hint" id="cw-set-hint">Starts from the estimator's settings. Feet and inches like 14 10. Extra goes on every piece for trimming, then rounds up to the next foot. Shift seams slides every side seam over (0 = first roll starts at the edge). Changing the direction, width or shift clears the splits.</p>
         <div class="cw-row"><button class="cw-btn sm" id="cw-b-default">Back to estimator settings</button><button class="cw-btn sm ghost danger" id="cw-b-clear">Clear all splits</button></div>
       </section>
     </div>
@@ -1134,15 +1146,15 @@ const edgeOf=ej=>(ej.points||[]).filter(p=>p&&p.t==='e'&&p.x!=null&&p.y!=null&&i
 /* ---------- layout (same method as the estimator's Turf tab) ---------- */
 function lineHits(Q,v){const us=[];for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a.v>v)!==(b.v>v))us.push(a.u+(v-a.v)*(b.u-a.u)/(b.v-a.v))}return us.sort((a,b)=>a-b)}
 function polyArea(P){let a=0;for(let i=0,j=P.length-1;i<P.length;j=i++)a+=(P[j].x+P[i].x)*(P[j].y-P[i].y);return Math.abs(a/2)}
-function strips(P,S,along){const SW=Math.max(1,+S.rollWidth||15),W=Math.min(SW,Math.max(1,+S.useWidth||SW)),extra=Math.max(0,+S.extra||0);
+function strips(P,S,along,off){off=Math.max(0,+off||0);const SW=Math.max(1,+S.rollWidth||15),W=Math.min(SW,Math.max(1,+S.useWidth||SW)),extra=Math.max(0,+S.extra||0);
   const Q=P.map(p=>along==='x'?{u:p.x,v:p.y}:{u:p.y,v:p.x});const vmin=Math.min(...Q.map(q=>q.v)),vmax=Math.max(...Q.map(q=>q.v));const out=[];
-  for(let v0=vmin;v0<vmax-0.01;v0+=W){const v1=v0+W;let lo=Infinity,hi=-Infinity;
+  for(let vs=vmin-(off%W);vs<vmax-0.01;vs+=W){const v1=vs+W;if(v1<=vmin+0.01)continue;const v0=Math.max(vs,vmin);let lo=Infinity,hi=-Infinity;
     for(let s=0;s<=24;s++){const v=Math.min(vmax-1e-4,Math.max(vmin+1e-4,v0+(v1-v0)*s/24));const us=lineHits(Q,v);if(us.length){lo=Math.min(lo,us[0]);hi=Math.max(hi,us[us.length-1])}}
     for(const q of Q)if(q.v>=v0-1e-6&&q.v<=v1+1e-6){lo=Math.min(lo,q.u);hi=Math.max(hi,q.u)}
     if(hi>lo)out.push({v0,v1,used:Math.min(v1,vmax)-v0,lo,hi,len:hi-lo})}
   let sideLF=0;const seams=[];for(let k=0;k+1<out.length;k++){const us=lineHits(Q,out[k].v1);let s=0;for(let i=0;i+1<us.length;i+=2)s+=us[i+1]-us[i];sideLF+=s;seams.push({v:out[k].v1,us})}
   const ceilFt=x=>Math.ceil(x+extra-0.001);const bought=out.reduce((a,s)=>a+SW*ceilFt(s.len),0);
-  return{along,SW,W,extra,strips:out,seams,sideLF,bought,ceilFt}}
+  return{along,SW,W,extra,off,strips:out,seams,sideLF,bought,ceilFt}}
 function estDir(ej,P){const want=ej.layout&&ej.layout.dir;if(want==='x'||want==='y')return want;const a=strips(P,ER,'x'),b=strips(P,ER,'y');return(a.bought+a.sideLF*1.5)<=(b.bought+b.sideLF*1.5)?'x':'y'}
 
 /* ---------- playground from the layout app (same placement as the estimator) ---------- */
@@ -1154,17 +1166,19 @@ function pgOf(ej,E){const pg=ej&&ej.pg;if(!pg||!pg.data||!pg.data.fp||E.length<3
   const sp=Math.sign(K.a[0]*K.b[1]-K.a[1]*K.b[0]);const src=sp===st?K.a:K.b;const th=Math.atan2(u.y,u.x)-Math.atan2(src[1],src[0]),ct=Math.cos(th),s=Math.sin(th);
   const cx=fp[K.c[0]],cy=fp[K.c[1]],d1=+pg.d1||0,d2=+pg.d2||0,v={x:-u.y*st,y:u.x*st};const ox=O.x+u.x*d1+v.x*d2,oy=O.y+u.y*d1+v.y*d2;
   const tf=(px,py)=>{const dx=(px-cx)/12,dy=(py-cy)/12;return{x:ox+dx*ct-dy*s,y:oy+dx*s+dy*ct}};const ox2=K.c[0]==='L'?'R':'L',oy2=K.c[1]==='B'?'T':'B';
-  return{name:D.short||'Playground',corners:[[cx,cy],[fp[ox2],cy],[fp[ox2],fp[oy2]],[cx,fp[oy2]]].map(([a,b])=>tf(a,b)),holes:(D.holes||[]).map(h=>({post:!!h.post,...tf(h.x,h.y)}))}}
+  return{name:D.short||'Playground',corners:[[cx,cy],[fp[ox2],cy],[fp[ox2],fp[oy2]],[cx,fp[oy2]]].map(([a,b])=>tf(a,b)),holes:(D.holes||[]).map(h=>({post:!!h.post,...tf(h.x,h.y)})),
+    decks:(D.decks||[]).map(d=>({t:d.t,ht:deckHt(d.t),pts:(d.pts||[]).map(([a,b])=>tf(a,b))})).filter(d=>d.ht!=null&&d.pts.length>=3)}}
+function deckHt(t){t=String(t||'');if(/ramp|stair|link|slide|ground|step/i.test(t))return null;let m=t.match(/(\d+(?:\.\d+)?)\s*'\s*(\d+(?:\.\d+)?)?/);if(m)return+m[1]+(m[2]?+m[2]/12:0);m=t.match(/(\d+(?:\.\d+)?)\s*"/);return m?+m[1]/12:null}
 
 /* ---------- current job ---------- */
 let J=null,L=null,cur=-1;
 function crewOf(id){return CREW[id]||(CREW[id]={edits:{},along:null,S:null})}
-function sigOf(P,S,along){return JSON.stringify([P.map(p=>[Math.round(p.x*100),Math.round(p.y*100)]),+(+S.rollWidth).toFixed(3),+(+S.useWidth).toFixed(3),along])}
+function sigOf(P,S,along,off){return JSON.stringify([P.map(p=>[Math.round(p.x*100),Math.round(p.y*100)]),+(+S.rollWidth).toFixed(3),+(+S.useWidth).toFixed(3),along,Math.round((+off||0)*96)])}
 function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}
   const P=edgeOf(ej);if(P.length<3||polyArea(P)<1){J={ej,P,bad:true};L=null;return}
-  const c=crewOf(ej.id),S=c.S?Object.assign({},ER,c.S):Object.assign({},ER),along=c.along||estDir(ej,P);
-  const sig=sigOf(P,S,along);if(c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}c.sig=sig;
-  J={ej,P,S,along,c,pg:pgOf(ej,P)};const lay=strips(P,S,along);
+  const c=crewOf(ej.id),S=c.S?Object.assign({},ER,c.S):Object.assign({},ER),along=c.along||estDir(ej,P),off=+c.off||0;
+  const sig=sigOf(P,S,along,off);if(c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}c.sig=sig;
+  J={ej,P,S,along,off,c,pg:pgOf(ej,P)};const lay=strips(P,S,along,off);
   lay.strips.forEach((st,k)=>{const e=(c.edits||{})[k]||{};const full=st.used>=lay.W-0.05;st.full=full;st.w=full?lay.W:Math.round(st.used*12)/12;
     st.half=!!e.half;st.cuts=(e.cuts||[]).filter(x=>x>0.25&&x<st.len-0.25).sort((a,b)=>a-b);
     const b=[0,...st.cuts,st.len];st.segs=[];for(let i=0;i+1<b.length;i++)st.segs.push({a:b[i],b:b[i+1],len:b[i+1]-b[i],order:lay.ceilFt(b[i+1]-b[i])});
@@ -1172,7 +1186,73 @@ function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}
   for(let k=0;k+1<lay.strips.length;k++){const A=lay.strips[k],B=lay.strips[k+1];for(const ca of A.cuts)for(const cb of B.cuts)if(Math.abs((A.lo+ca)-(B.lo+cb))<STAGGER){A.warn.push(k+2);B.warn.push(k+1)}}
   lay.strips.forEach(st=>st.warn=[...new Set(st.warn)]);
   lay.headLF=lay.strips.reduce((a,st)=>a+st.cuts.length*st.used,0);lay.ripLF=lay.strips.reduce((a,st)=>a+(st.half?st.len:0),0);
-  lay.lf=lay.strips.reduce((a,s)=>a+s.lf,0);lay.total=lay.lf*lay.SW;L=lay}
+  lay.lf=lay.strips.reduce((a,s)=>a+s.lf,0);lay.total=lay.lf*lay.SW;
+  lay.relief=(J.pg&&!PGOFF[ej.id])?relief(lay,polesIn(J.pg,P),along):null;L=lay}
+
+/* ---------- pole cuts + best-cut finder ---------- */
+// Every footing inside the turf needs a relief cut from the nearest seam or roll end to the pole.
+const ONSEAM=1/12,NEAR=4/12,MINP=4;
+function inPoly(P,x,y){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a.y>y)!==(b.y>y)&&x<(b.x-a.x)*(y-a.y)/(b.y-a.y)+a.x)c=!c}return c}
+function polesIn(pg,P){return pg.holes.filter(h=>inPoly(P,h.x,h.y))}
+const toUV=(p,along)=>along==='x'?{u:p.x,v:p.y}:{u:p.y,v:p.x};
+// shortest cut from a pole at (u,v) to the edge of its piece: piece runs a..b along the roll, band v0..v1 across
+function poleCut(u,v,a,b,v0,v1){const dv=Math.min(v-v0,v1-v),du=Math.min(u-a,b-u);
+  if(dv<=du)return{len:Math.max(0,dv),dir:'v',to:v-v0<=v1-v?v0:v1};return{len:Math.max(0,du),dir:'u',to:u-a<=b-u?a:b}}
+function bandsOf(st,half){const t=st.v0+st.used;if(!half)return[[st.v0,t]];const m=st.v0+st.used/2;return[[st.v0,m],[m,t]]}
+function relief(lay,holes,along){const out=[];
+  for(const h of holes){const{u,v}=toUV(h,along);const k=lay.strips.findIndex(st=>v>=st.v0-1e-6&&v<=st.v0+st.used+1e-6);if(k<0)continue;const st=lay.strips[k];
+    const sg=st.segs.find(g=>u>=st.lo+g.a-1e-6&&u<=st.lo+g.b+1e-6)||st.segs[0];const bd=bandsOf(st,st.half).find(([a,b])=>v>=a-1e-6&&v<=b+1e-6);
+    const c=poleCut(u,v,st.lo+sg.a,st.lo+sg.b,bd[0],bd[1]);const on=c.len<=ONSEAM;
+    const p1=c.dir==='v'?{u,v:c.to}:{u:c.to,v};const A=along==='x'?[u,v]:[v,u],B=along==='x'?[p1.u,p1.v]:[p1.v,p1.u];
+    out.push({k,len:on?0:c.len,on,near:!on&&c.len<NEAR,x0:A[0],y0:A[1],x1:B[0],y1:B[1]})}
+  const lf=out.reduce((a,c)=>a+c.len,0),max=out.reduce((a,c)=>Math.max(a,c.len),0);
+  const per={};out.forEach(c=>{const q=per[c.k]||(per[c.k]={n:0,max:0});if(!c.on){q.n++;q.max=Math.max(q.max,c.len)}});
+  return{cuts:out,lf,max,n:out.filter(c=>!c.on).length,per}}
+
+// the decks that are too low to pull turf under, as u-ranges inside a band
+function lowDecks(pg,low){return(pg.decks||[]).filter(d=>d.ht<=low+0.01)}
+function deckRanges(decks,along,v0,v1){const R=[];
+  for(const d of decks){const Q=d.pts.map(p=>toUV(p,along));let lo=Infinity,hi=-Infinity;
+    for(let s=0;s<=6;s++){const us=lineHits(Q,v0+(v1-v0)*(s+.5)/7);if(us.length){lo=Math.min(lo,us[0]);hi=Math.max(hi,us[us.length-1])}}
+    for(const q of Q)if(q.v>=v0&&q.v<=v1){lo=Math.min(lo,q.u);hi=Math.max(hi,q.u)}
+    if(hi>lo)R.push([lo,hi,d.ht])}return R}
+
+const HSW={avoid:40,bal:15,free:5};
+function cutCost(len){return len+0.25*Math.max(0,len-4)**2}
+// score one roll lane: pole cuts, head seams, split, extra trim material, long pulls under low decks
+function evalStrip(st,cuts,half,H,D,lay,pr){const b=[0,...cuts,st.len],bands=bandsOf(st,half);let cost=0,cutLF=0,max=0,pulls=0,lfx=0;
+  for(let i=0;i+1<b.length;i++)lfx+=lay.ceilFt(b[i+1]-b[i]);lfx-=lay.ceilFt(st.len);
+  cost+=lfx*0.3*(half?2:1)+cuts.length*pr.hs+(half?0.5*st.len+pr.hs*0.5:0);
+  for(const h of H){let i=0;while(i+2<b.length&&h.u>st.lo+b[i+1])i++;const bd=bands.length>1&&h.v>bands[0][1]?bands[1]:bands[0];
+    const c=poleCut(h.u,h.v,st.lo+b[i],st.lo+b[i+1],bd[0],bd[1]);if(c.len<=ONSEAM)continue;cost+=cutCost(c.len)+(c.len<NEAR?3:0);cutLF+=c.len;max=Math.max(max,c.len)}
+  bands.forEach((bd,j)=>{const R=D[half?j+1:0];if(!R.length)return;const wf=(bd[1]-bd[0])/lay.W;
+    for(let i=0;i+1<b.length;i++){const a=st.lo+b[i],z=st.lo+b[i+1];if(R.some(([p,q])=>Math.min(q,z)-Math.max(p,a)>0.25)){pulls++;cost+=0.5*(z-a)*wf}}});
+  return{cost,cutLF,max,pulls}}
+function planStrip(st,H,D,lay,pr,mode,forbid){let best=null;
+  for(const half of[false,true]){let cuts=[],cur=evalStrip(st,cuts,half,H,D,lay,pr);
+    if(mode==='hs'){const cand=new Set();H.forEach(h=>cand.add(Math.round((h.u-st.lo)*12)/12));D.flat().forEach(([p,q])=>{cand.add(Math.round((p-st.lo)*12)/12);cand.add(Math.round((q-st.lo)*12)/12)});
+      for(let r=0;r<3;r++){let pick=null;
+        for(const c of cand){if(c<MINP||c>st.len-MINP||cuts.some(x=>Math.abs(x-c)<MINP)||forbid.some(f=>Math.abs(f-(st.lo+c))<STAGGER))continue;
+          const nc=[...cuts,c].sort((a,b)=>a-b),e=evalStrip(st,nc,half,H,D,lay,pr);if(e.cost<cur.cost-0.01&&(!pick||e.cost<pick.e.cost))pick={nc,e}}
+        if(!pick)break;cuts=pick.nc;cur=pick.e}}
+    if(!best||cur.cost<best.cost)best={...cur,half,cuts}}
+  return best}
+function findBest(pr){const P=J.P,S=J.S,pg=J.pg,holes=polesIn(pg,P),dk=lowDecks(pg,pr.low),W=Math.min(+S.rollWidth,+S.useWidth||+S.rollWidth),res=[];
+  for(const along of['x','y']){const HU=holes.map(h=>toUV(h,along));
+    for(let off=0;off<W-1e-6;off+=1/12){const lay=strips(P,S,along,off);
+      lay.strips.forEach(st=>{st.H=HU.filter(h=>h.v>=st.v0-1e-6&&h.v<=st.v0+st.used+1e-6);const m=st.v0+st.used/2;
+        st.D=dk.length?[deckRanges(dk,along,st.v0,st.v0+st.used),deckRanges(dk,along,st.v0,m),deckRanges(dk,along,m,st.v0+st.used)]:[[],[],[]]});
+      for(const mode of['none','hs']){let tot=lay.bought/lay.SW*0.3+lay.sideLF*0.15,cutLF=0,max=0,pulls=0,hsN=0,halfN=0,forbid=[];const edits={};
+        lay.strips.forEach((st,k)=>{const r=planStrip(st,st.H,st.D,lay,pr,mode,forbid);forbid=r.cuts.map(c=>st.lo+c);tot+=r.cost;cutLF+=r.cutLF;max=Math.max(max,r.max);pulls+=r.pulls;hsN+=r.cuts.length;halfN+=r.half?1:0;
+          if(r.half||r.cuts.length)edits[k]={half:r.half,cuts:r.cuts}});
+        res.push({along,off:Math.round(off*12)/12,mode,score:tot,cutLF,max,pulls,hsN,halfN,edits,rolls:lay.strips.length,lf:lay.bought/lay.SW})}}}
+  res.sort((a,b)=>a.score-b.score);const pick=[],key=r=>r.along+'|'+r.off+'|'+JSON.stringify(r.edits);
+  const add=(r,label,why)=>{if(r&&!pick.some(p=>key(p)===key(r)))pick.push({...r,label,why})};
+  const top=res[0];add(top,'Best overall','Least work all around');
+  add(res.find(r=>r.hsN===0),'No head seams','Vertical seams only');
+  add(res.find(r=>r.along!==top.along),'Run the other way','Rolls turned 90°');
+  if(dk.length)add([...res].sort((a,b)=>a.pulls-b.pulls||a.score-b.score)[0],'Easiest pulls','Fewest long pulls under low decks');
+  return{pick,dk:dk.length,holes:holes.length}}
 
 /* ---------- render ---------- */
 const stat=(v,l)=>`<div class="cw-stat"><b>${v}</b><span>${l}</span></div>`;
@@ -1184,10 +1264,12 @@ function render(){if(!document.body.classList.contains('crew-mode'))return;build
   if(J.bad){$('#cw-stats').innerHTML='';$('#cw-cut-body').innerHTML='<tr><td colspan="4" class="cw-hint">This job has no turf edge yet. Add the corners on the estimator\'s Site tab.</td></tr>';$('#cw-grp-body').innerHTML='';draw();return}
   $$('#cw-dir button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dir===J.along));
   [['#cw-s-rw','rollWidth'],['#cw-s-uw','useWidth'],['#cw-s-ex','extra']].forEach(([id,k])=>{const el=$(id);if(el!==document.activeElement)el.value=fmtIn(+J.S[k])});
-  $('#cw-b-default').hidden=!(J.c.S||J.c.along);const pgOn=!!J.pg&&!PGOFF[J.ej.id];$('#cw-b-pg').hidden=!J.pg;$('#cw-b-pg').setAttribute('aria-pressed',String(pgOn));$('#cw-pg-leg').hidden=!pgOn;
+  {const el=$('#cw-s-off');if(el!==document.activeElement)el.value=fmtIn(J.off)}
+  $('#cw-b-default').hidden=!(J.c.S||J.c.along||J.c.off);const pgOn=!!J.pg&&!PGOFF[J.ej.id];$('#cw-b-pg').hidden=!J.pg;$('#cw-b-pg').setAttribute('aria-pressed',String(pgOn));$('#cw-pg-leg').hidden=!pgOn;$('#cw-rc-leg').hidden=!(pgOn&&L&&L.relief);
   const pcs=L.strips.reduce((a,s)=>a+s.pieces,0);
-  $('#cw-stats').innerHTML=stat(L.strips.length,'rolls ('+fmt(L.SW)+' wide)')+stat(pcs,'pieces to cut')+stat(fmt(L.lf),'roll length used')+stat(Math.round(L.headLF)+' lf','head seams')+stat(Math.round(L.sideLF+L.ripLF)+' lf','side seams');
-  $('#cw-cut-body').innerHTML=L.strips.map((st,k)=>{const tags=(st.half?'<span class="cw-tag rip">split in half</span>':'')+(st.cuts.length?`<span class="cw-tag hs">${st.cuts.length} head seam${st.cuts.length>1?'s':''}</span>`:'')+(st.warn.length?'<span class="cw-tag warn">stagger</span>':'')+(!st.full?'<span class="cw-tag">rip to width</span>':'');
+  $('#cw-stats').innerHTML=stat(L.strips.length,'rolls ('+fmt(L.SW)+' wide)')+stat(pcs,'pieces to cut')+stat(fmt(L.lf),'roll length used')+stat(Math.round(L.headLF)+' lf','head seams')+stat(Math.round(L.sideLF+L.ripLF)+' lf','side seams')+(L.relief?stat(Math.round(L.relief.lf)+' lf',`pole cuts (${L.relief.n}, longest ${fmt(L.relief.max)})`):'');
+  renderBest();
+  $('#cw-cut-body').innerHTML=L.strips.map((st,k)=>{const tags=(st.half?'<span class="cw-tag rip">split in half</span>':'')+(st.cuts.length?`<span class="cw-tag hs">${st.cuts.length} head seam${st.cuts.length>1?'s':''}</span>`:'')+(st.warn.length?'<span class="cw-tag warn">stagger</span>':'')+(!st.full?'<span class="cw-tag">rip to width</span>':'')+(L.relief&&L.relief.per[k]&&L.relief.per[k].n?`<span class="cw-tag" style="background:#efe6f8;color:#7b3fbf">${L.relief.per[k].n} pole cut${L.relief.per[k].n>1?'s':''}, longest ${fmt(L.relief.per[k].max)}</span>`:'');
     return st.segs.map((sg,i)=>`<tr data-roll="${k}">${i===0?`<td rowspan="${st.segs.length}"><b>R${k+1}</b>${tags?'<br>'+tags:''}</td><td rowspan="${st.segs.length}">${st.pieces}</td>`:''}<td class="cw-num"><b>${fmt(sg.order)}</b>${st.segs.length>1?` <span class="cw-hint">(${String.fromCharCode(97+i)})</span>`:''}</td><td class="cw-num">${st.half?'2 × ':''}${fmt(st.pw)}</td></tr>`).join('')}).join('')
     +`<tr><td><b>Total</b></td><td><b>${pcs}</b></td><td class="cw-num"><b>${fmt(L.lf)}</b></td><td class="cw-num">${Math.round(L.total).toLocaleString()} sf</td></tr>`;
   const g=new Map();L.strips.forEach(st=>st.segs.forEach(sg=>{const key=sg.order+'|'+st.pw;if(!g.has(key))g.set(key,{len:sg.order,w:st.pw,n:0});g.get(key).n+=st.half?2:1}));
@@ -1222,7 +1304,11 @@ function draw(){const cv=$('#cw-cv'),dpr=window.devicePixelRatio||1,w=cv.clientW
   L.strips.forEach(st=>{ctx.strokeStyle=st.warn.length?'#a96a00':'#d2462e';ctx.lineWidth=3;st.cuts.forEach(c=>line(st.lo+c,st.v0,st.lo+c,st.v0+st.used))});
   if(PGd){ctx.save();ctx.beginPath();PGd.corners.forEach((p,i)=>{const q=T(p.x,p.y);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.closePath();ctx.fillStyle='rgba(217,122,0,.10)';ctx.fill();ctx.setLineDash([7,5]);ctx.strokeStyle='#d97a00';ctx.lineWidth=2.5;ctx.stroke();ctx.setLineDash([]);
     for(const hh of PGd.holes){const q=T(hh.x,hh.y);ctx.beginPath();ctx.arc(q[0],q[1],hh.post?3.2:2.6,0,7);if(hh.post){ctx.fillStyle='#17201a';ctx.fill()}else{ctx.strokeStyle='#17201a';ctx.lineWidth=1.2;ctx.stroke()}}
-    const c0=T(PGd.corners[0].x,PGd.corners[0].y);ctx.font='700 11px -apple-system,sans-serif';ctx.fillStyle='#a85d00';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(PGd.name,c0[0]+5,c0[1]+4);ctx.restore()}
+    const c0=T(PGd.corners[0].x,PGd.corners[0].y);ctx.font='700 11px -apple-system,sans-serif';ctx.fillStyle='#a85d00';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(PGd.name,c0[0]+5,c0[1]+4);
+    const low=lowDeckFt();for(const d of PGd.decks||[]){if(d.ht>low+0.01)continue;ctx.beginPath();d.pts.forEach((p,i)=>{const q=T(p.x,p.y);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.closePath();ctx.fillStyle='rgba(210,70,46,.14)';ctx.fill();ctx.strokeStyle='#d2462e';ctx.lineWidth=1.5;ctx.stroke()}
+    if(L.relief){ctx.strokeStyle='#7b3fbf';ctx.lineWidth=2.2;for(const c of L.relief.cuts){if(c.on){const q=T(c.x0,c.y0);ctx.beginPath();ctx.arc(q[0],q[1],5.5,0,7);ctx.strokeStyle='#2f9a3b';ctx.lineWidth=2;ctx.stroke();ctx.strokeStyle='#7b3fbf';ctx.lineWidth=2.2;continue}
+      const a=T(c.x0,c.y0),b=T(c.x1,c.y1);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()}}
+    ctx.restore()}
   ctx.font='600 12px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
   L.strips.forEach((st,k)=>st.segs.forEach((sg,i)=>{const p=T(...uv(st.lo+(sg.a+sg.b)/2,st.v0+st.used/2));
     const lbl=`R${k+1}${st.segs.length>1?String.fromCharCode(97+i):''} · ${fmt(sg.order)}`;const tw=ctx.measureText(lbl).width+10;
@@ -1270,11 +1356,32 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&cur>=0)closeSheet()
 $('#cw-cut-body').addEventListener('click',e=>{const r=e.target.closest('[data-roll]');if(r)openSheet(+r.dataset.roll)});
 
 $('#cw-b-pg').addEventListener('click',()=>{if(!J||!J.pg)return;const id=J.ej.id;if(PGOFF[id])delete PGOFF[id];else PGOFF[id]=1;LS.set('tcl.pgOff',PGOFF);render();toast(PGOFF[id]?'Playground hidden':'Playground shown')});
+/* ---------- best cuts ---------- */
+let HSP=LS.get('tcl.hsPref','bal'),BEST=null,UNDO=null;
+function lowDeckFt(){const v=LS.get('tcl.lowDeck',1);return isFinite(+v)?+v:1}
+function renderBest(){const on=!!(J&&J.pg&&!PGOFF[J.ej.id]&&L);$('#cw-best').hidden=!on;if(!on)return;
+  $$('#cw-hsp button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===HSP));const lw=$('#cw-low');if(lw!==document.activeElement)lw.value=fmtIn(lowDeckFt());
+  $('#cw-rc-now').textContent=L.relief?`Now: ${Math.round(L.relief.lf)} lf of pole cuts`:'';$('#cw-b-undo').hidden=!(UNDO&&UNDO.id===J.ej.id);
+  if(!BEST||BEST.id!==J.ej.id){$('#cw-best-list').innerHTML='';return}
+  const same=r=>r.along===J.along&&Math.abs(r.off-J.off)<1/24&&JSON.stringify(r.edits)===JSON.stringify(Object.fromEntries(Object.entries(J.c.edits||{}).filter(([,e])=>e.half||(e.cuts&&e.cuts.length))));
+  $('#cw-best-list').innerHTML=BEST.pick.map((r,i)=>`<div class="cw-opt${same(r)?' on':''}"><div class="t"><b>${esc(r.label)}</b><span>${Math.round(r.cutLF)} lf of pole cuts, longest ${fmt(r.max)} · ${r.hsN?r.hsN+' head seam'+(r.hsN>1?'s':''):'no head seams'}${r.halfN?' · '+r.halfN+' split in half':''}${BEST.dk?' · '+r.pulls+' low-deck pull'+(r.pulls===1?'':'s'):''}<br>${r.rolls} rolls, ${r.along==='x'?'left to right':'front to back'}, seams shifted ${fmt(r.off)} · ${Math.round(r.lf)} lf of roll</span></div>${same(r)?'<span class="cw-tag">In use</span>':`<button class="cw-btn sm pri" data-use="${i}">Use this</button>`}</div>`).join('')}
+$('#cw-hsp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;HSP=b.dataset.p;LS.set('tcl.hsPref',HSP);BEST=null;$('#cw-best-msg').textContent='';render()});
+$('#cw-low').addEventListener('change',e=>{const v=parseFt(e.target.value);if(isFinite(v)&&v>=0){LS.set('tcl.lowDeck',v);BEST=null;$('#cw-best-msg').textContent=''}render()});
+$('#cw-b-best').addEventListener('click',()=>{if(!J||!J.pg)return;const btn=$('#cw-b-best');btn.disabled=true;$('#cw-best-msg').textContent='Working it out…';
+  setTimeout(()=>{try{const R=findBest({hs:HSW[HSP]||15,low:lowDeckFt()});BEST={id:J.ej.id,...R};
+    const decks=(J.pg.decks||[]).length;
+    $('#cw-best-msg').textContent=`Checked ${R.holes} poles inside the turf. `+(R.dk?`${R.dk} low deck${R.dk>1?'s':''} counted. `:decks?'No decks that low. ':'No deck heights in this playground file (re-copy it from the layout app to bring them in). ')+'Tap Use this to load one; you can still change any roll after.'}
+    catch(err){$('#cw-best-msg').textContent='Something went wrong working it out.';console.error(err)}btn.disabled=false;render()},30)});
+$('#cw-best-list').addEventListener('click',e=>{const b=e.target.closest('[data-use]');if(!b||!BEST)return;const r=BEST.pick[+b.dataset.use];
+  UNDO={id:J.ej.id,along:J.c.along,off:J.c.off,edits:JSON.parse(JSON.stringify(J.c.edits||{}))};
+  J.c.along=r.along;J.c.off=r.off;J.c.edits=JSON.parse(JSON.stringify(r.edits));J.c.sig=sigOf(J.P,J.S,r.along,r.off);touch();toast(r.label+' loaded')});
+$('#cw-b-undo').addEventListener('click',()=>{if(!UNDO||!J||UNDO.id!==J.ej.id)return;J.c.along=UNDO.along;J.c.off=UNDO.off;J.c.edits=UNDO.edits;J.c.sig=sigOf(J.P,J.S,UNDO.along||estDir(J.ej,J.P),UNDO.off);UNDO=null;touch();toast('Back to what you had')});
+$('#cw-s-off').addEventListener('change',e=>{if(!J)return;const v=parseFt(e.target.value);if(!isFinite(v)||v<0){render();return}const W=L?L.W:14+10/12,o=Math.round((v%W)*12)/12;if(Math.abs(o-J.off)<1/24){render();return}J.c.off=o;J.c.edits={};touch()});
 /* ---------- settings ---------- */
 $('#cw-dir').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!J||b.dataset.dir===J.along)return;J.c.along=b.dataset.dir;J.c.edits={};touch();toast('Direction changed, splits cleared')});
 $$('#cw-root [data-k]').forEach(el=>el.addEventListener('change',()=>{if(!J)return;const v=parseFt(el.value);if(!isFinite(v)||v<0){render();return}const k=el.dataset.k;
   if(+J.S[k]===v)return;const S=Object.assign({},J.c.S||{});S[k]=v;J.c.S=S;if(k!=='extra')J.c.edits={};touch()}));
-$('#cw-b-default').addEventListener('click',()=>{if(!J)return;J.c.S=null;J.c.along=null;J.c.edits={};touch();toast('Back to the estimator settings')});
+$('#cw-b-default').addEventListener('click',()=>{if(!J)return;J.c.S=null;J.c.along=null;J.c.off=0;J.c.edits={};touch();toast('Back to the estimator settings')});
 let clrArm=0;$('#cw-b-clear').addEventListener('click',e=>{if(!J)return;if(!clrArm){clrArm=1;e.target.textContent='Tap again to clear';setTimeout(()=>{clrArm=0;e.target.textContent='Clear all splits'},3000);return}clrArm=0;e.target.textContent='Clear all splits';J.c.edits={};touch()});
 
 /* ---------- jobs, copy, mode ---------- */
@@ -1283,8 +1390,9 @@ $('#cw-b-jobs').addEventListener('click',()=>{jobsOpen=!jobsOpen;if(!J)jobsOpen=
 $('#cw-b-est').addEventListener('click',()=>{location.hash='';setMode()});
 $('#cw-b-copy').addEventListener('click',()=>{if(!L)return;const fw=L.along==='x'?'left':'front';const nm=(J.ej.info&&J.ej.info.name)||'Turf job';
   const lines=[`${nm} — turf cut list`,`${L.strips.length} rolls, ${fmt(L.SW)} wide, run ${L.along==='x'?'left to right':'front to back'}`,''];
-  L.strips.forEach((st,k)=>lines.push(`R${k+1}: ${st.segs.map((sg,i)=>`${st.segs.length>1?String.fromCharCode(97+i)+') ':''}${fmt(sg.order)}`).join(', ')}${st.half?' — split in half, 2 @ '+fmt(st.pw):st.full?'':' — rip to '+fmt(st.w)}${st.cuts.length?` (head seam${st.cuts.length>1?'s':''} at ${st.cuts.map(fmt).join(', ')} from ${fw})`:''}`));
-  lines.push('',`Total: ${L.strips.reduce((a,s)=>a+s.pieces,0)} pieces, ${fmt(L.lf)} of roll`);const t=lines.join('\n');
+  L.strips.forEach((st,k)=>lines.push(`R${k+1}: ${st.segs.map((sg,i)=>`${st.segs.length>1?String.fromCharCode(97+i)+') ':''}${fmt(sg.order)}`).join(', ')}${st.half?' — split in half, 2 @ '+fmt(st.pw):st.full?'':' — rip to '+fmt(st.w)}${st.cuts.length?` (head seam${st.cuts.length>1?'s':''} at ${st.cuts.map(fmt).join(', ')} from ${fw})`:''}${L.relief&&L.relief.per[k]&&L.relief.per[k].n?` · ${L.relief.per[k].n} pole cuts, longest ${fmt(L.relief.per[k].max)}`:''}`));
+  if(L.off)lines.splice(2,0,`Seams shifted ${fmt(L.off)} from the ${L.along==='x'?'front':'left'} edge`);
+  lines.push('',`Total: ${L.strips.reduce((a,s)=>a+s.pieces,0)} pieces, ${fmt(L.lf)} of roll`);if(L.relief)lines.push(`Pole cuts: ${L.relief.n}, ${Math.round(L.relief.lf)} lf, longest ${fmt(L.relief.max)}`);const t=lines.join('\n');
   const fb=()=>{const ta=$('#cw-copy-fb');ta.hidden=false;ta.value=t;ta.focus();ta.select();$('#cw-copy-msg').textContent="Copy didn't go through. It's selected below."};
   try{navigator.clipboard.writeText(t).then(()=>{toast('Cut list copied');$('#cw-copy-fb').hidden=true;$('#cw-copy-msg').textContent=''},fb)}catch(e){fb()}});
 function setMode(){const on=location.hash==='#crew';document.body.classList.toggle('crew-mode',on);$('#cw-root').hidden=!on;if(!on){closeSheet();window.dispatchEvent(new Event('resize'));return}
