@@ -350,10 +350,11 @@ nav.tabs button[aria-current="page"]{color:var(--accent);box-shadow:inset 0 3px 
   </div>
   <div class="panel"><div class="row" style="justify-content:space-between;align-items:center"><h3>Cut list</h3><span class="tag" id="cut-sum"></span></div>
     <div class="row" style="margin:6px 0"><button class="btn sm primary" data-crew-open="1">Open crew cut list</button><button class="btn sm" id="b-crew">Send to turf crew</button><span class="hint" id="crew-msg">Open the crew cut list right here, or copy the site for the separate app.</span></div><textarea id="crew-text" hidden style="width:100%;min-height:90px"></textarea>
+    <p class="hint" id="cut-src" style="margin:0"></p>
     <div class="tbl-wrap"><table><thead><tr><th>Roll</th><th class="num">Cut length</th><th class="num">Width</th><th class="num">Measured</th></tr></thead><tbody id="rolls-body"></tbody></table></div>
     <h3>How many of each</h3>
     <div class="tbl-wrap"><table><thead><tr><th class="num">Cut length</th><th class="num">Width</th><th class="num">How many</th></tr></thead><tbody id="cut-body"></tbody></table></div></div>
-  <div class="panel" id="crew-pick" style="min-width:0" hidden><div class="row" style="justify-content:space-between;align-items:center"><h3>Turf crew's picks</h3><span class="tag" id="crew-pick-tag"></span></div>
+  <div class="panel" id="crew-pick" style="min-width:0" hidden><div class="row" style="justify-content:space-between;align-items:center"><h3>Turf crew's layout</h3><span class="tag" id="crew-pick-tag"></span></div>
     <p class="hint" id="crew-pick-msg"></p>
     <div id="crew-pick-main" style="min-width:0;display:grid;gap:8px"><canvas id="cv-crew" style="width:100%;max-width:100%;display:block;border-radius:8px;background:#eef1ea;margin:8px 0" aria-label="The turf crew's roll layout"></canvas>
     <div class="tbl-wrap"><table><thead><tr><th>Roll</th><th class="num">Cut lengths</th><th class="num">Width</th></tr></thead><tbody id="crew-pick-body"></tbody></table></div></div>
@@ -688,9 +689,10 @@ function renderGrade(){
   $('#ve-lbl').textContent=$('#ve').value+'×';
   $('#legend-3d').innerHTML=V3.view==='cut'?'<span><i class="sw" style="background:var(--cut)"></i>Cut (dig)</span><span><i class="sw" style="background:var(--fill)"></i>Fill</span><span>Solid line: existing edge · dashed: subgrade</span>'+(pgShown()?'<span>Yellow dashes: playground · sticks: posts · white dots: footings</span>':''):'<span><i class="sw" style="background:var(--turf)"></i>Turf rolls</span><span><i class="sw" style="background:var(--accent)"></i>Seams</span><span>Dashed: existing ground edge</span>'+(pgShown()?'<span>Yellow dashes: playground · sticks: posts · white dots: footings</span>':'');pgSyncTog()}
 function renderCrewPick(){const box=$('#crew-pick');if(!box)return;const p=(typeof window.crewPick==='function'&&job&&!job.sample)?window.crewPick(job):null;
+  const src=$('#cut-src');if(src)src.textContent=p&&!p.stale?'':'Estimator\'s plan. Once the turf crew picks their cuts in the crew cut list, their cuts show here.';
   if(!p){box.hidden=true;return}box.hidden=false;const f=window.crewFmt||fmtFtIn;
   const when=p.updated?new Date(p.updated).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
-  if(p.stale){$('#crew-pick-tag').textContent='Needs a new look';$('#crew-pick-main').hidden=true;
+  if(p.stale){if(src)src.textContent='The turf crew\'s picks no longer fit (the site or roll settings changed), so this is the estimator\'s plan again.';$('#crew-pick-tag').textContent='Needs a new look';$('#crew-pick-main').hidden=true;
     $('#crew-pick-msg').textContent=`The crew picked their cuts${when?' '+when:''}, but the site or roll settings changed after that. Their picks don't fit anymore; have them open the crew cut list and pick again.`;return}
   $('#crew-pick-main').hidden=false;const C=p.L,pcs=C.strips.reduce((a,s)=>a+s.pieces,0),est=L?L.strips.reduce((a,s)=>a+s.order,0):null,d=C.lf-(est||0);
   $('#crew-pick-tag').textContent=`${pcs} pieces`;
@@ -698,9 +700,20 @@ function renderCrewPick(){const box=$('#crew-pick');if(!box)return;const p=(type
   const tag=(t,c)=>` <span class="tag"${c?` style="background:${c[0]};color:${c[1]}"`:''}>${t}</span>`;
   $('#crew-pick-body').innerHTML=C.strips.map((st,k)=>`<tr><td style="white-space:normal"><b>R${k+1}</b>${st.cuts.length||st.half||!st.full?'<br>':''}${st.cuts.length?tag(st.cuts.length+' head seam'+(st.cuts.length>1?'s':''),['#fbe7e3','#d2462e']):''}${st.half?tag('split',['#e3ecfa','#1f5fbf']):''}${!st.full?tag('rip'):''}</td><td class="num"><b>${st.segs.map(g=>f(g.order)).join(' + ')}</b></td><td class="num">${st.half?'2 × ':''}${f(st.pw)}</td></tr>`).join('')
     +`<tr><td><b>Total</b></td><td class="num"><b>${f(C.lf)}</b></td><td class="num">${pcs} pcs</td></tr>`;
+  // the cut list itself now shows the crew's pieces
+  const tg=(t,c)=>`<span class="tag" style="background:${c[0]};color:${c[1]}">${t}</span>`;
+  $('#rolls-body').innerHTML=C.strips.map((st,k)=>st.segs.map((g,i)=>`<tr><td style="white-space:normal"><b>R${k+1}${st.segs.length>1?String.fromCharCode(97+i):''}</b>${i===0&&st.cuts.length?' '+tg('head seam',['#fbe7e3','#d2462e']):''}${i===0&&st.half?' '+tg('split',['#e3ecfa','#1f5fbf']):''}${i===0&&!st.full?' <span class="tag">rip</span>':''}</td><td class="num"><b>${f(g.order)}</b></td><td class="num">${st.half?'2 × ':''}${f(st.pw)}</td><td class="num">${f(g.len)}</td></tr>`).join('')).join('')
+    +`<tr><td><b>Total</b></td><td class="num"><b>${f(C.lf)}</b></td><td class="num">${pcs} pcs</td><td></td></tr>`;
+  const g=new Map();C.strips.forEach(st=>st.segs.forEach(sg=>{const key=sg.order+'|'+st.pw;if(!g.has(key))g.set(key,{len:sg.order,w:st.pw,n:0});g.get(key).n+=st.half?2:1}));
+  $('#cut-body').innerHTML=[...g.values()].sort((a,b)=>b.len-a.len||b.w-a.w).map(e=>`<tr><td class="num"><b>${f(e.len)}</b></td><td class="num">${f(e.w)}</td><td class="num"><b>${e.n}</b></td></tr>`).join('')+`<tr><td><b>Total</b></td><td></td><td class="num"><b>${pcs}</b></td></tr>`;
+  $('#cut-sum').textContent=`Crew's picks · ${pcs} pieces · ${f(C.lf)}`;
+  if(src)src.innerHTML=`<b style="color:var(--accent)">Showing the turf crew's picks</b>${when?' from '+when:''}. The estimate was ${est!=null?f(est):'—'} of roll.`;
   if(cur==='turf')requestAnimationFrame(()=>window.crewDraw($('#cv-crew'),p))}
 window.renderCrewPick=renderCrewPick;
-function renderTurf(){renderCrewPick();if(!M||!L){$('#turf-stats').innerHTML=stat('Rolls','—');$('#rolls-body').innerHTML='<tr><td colspan="4" class="sub">Add at least 3 edge points on the Site tab.</td></tr>';$('#cut-body').innerHTML='';$('#cut-sum').textContent='';return}
+window.tseCurJobId=()=>job&&!job.sample?job.id:null;
+window.addEventListener('hashchange',()=>{if(location.hash!=='#crew')setTimeout(renderAll,0)});
+function renderTurf(){renderTurfEst();renderCrewPick()}
+function renderTurfEst(){if(!M||!L){$('#turf-stats').innerHTML=stat('Rolls','—');$('#rolls-body').innerHTML='<tr><td colspan="4" class="sub">Add at least 3 edge points on the Site tab.</td></tr>';$('#cut-body').innerHTML='';$('#cut-sum').textContent='';return}
   $('#turf-stats').innerHTML=stat('Turf area',n0(M.A),'sq ft','turf')+stat('Order',n0(L.bought),'sq ft')+stat('Waste',n0(L.waste*100)+'%',L.auto?'auto direction':'your direction')+stat('Seams',n0(L.seamLF),'lin ft')+stat('Rolls',L.strips.length,`${fmtFtIn(+R.rollWidth||15)} roll, run ${L.along==='x'?'left–right':'front–back'}`);
   const tot=L.strips.reduce((a,s)=>a+s.order,0);
   $('#rolls-body').innerHTML=L.strips.map((st,k)=>`<tr><td><b>R${k+1}</b></td><td class="num"><b>${fmtFtIn(st.order)}</b></td><td class="num">${fmtFtIn(st.used>=L.W-0.05?L.W:Math.round(st.used*12)/12)}${st.used<L.W-0.05?' <span class="tag">rip</span>':''}</td><td class="num">${fmtFtIn(st.len)}</td></tr>`).join('')
@@ -1431,7 +1444,10 @@ function setMode(){const on=location.hash==='#crew';document.body.classList.togg
   readLocalIfNoDB();if(!EJ.find(j=>j.id===curId))jobsOpen=true;render();window.scrollTo(0,0)}
 function readLocalIfNoDB(){if(!DB)readLocal()}
 window.addEventListener('hashchange',setMode);
-document.addEventListener('click',e=>{const a=e.target.closest('[data-crew-open]');if(a){e.preventDefault();location.hash='crew';setMode()}});
+document.addEventListener('click',e=>{const a=e.target.closest('[data-crew-open]');if(!a)return;e.preventDefault();
+  // open the job that's up in the estimator, not whatever was open last time
+  const id=typeof window.tseCurJobId==='function'?window.tseCurJobId():null;if(id){if(!DB)readLocal();curId=id;LS.set('tcl.curEst',id);jobsOpen=false;cur=-1}
+  location.hash='crew';setMode()});
 
 /* ---------- account data ---------- */
 async function startCloud(){$('#cw-sync').textContent='Showing jobs saved on this device.';if(!window.claude||!claude.use)return;let db=null;try{db=await claude.use('db')}catch(e){}if(!db)return;DB=db;
