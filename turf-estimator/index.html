@@ -353,6 +353,11 @@ nav.tabs button[aria-current="page"]{color:var(--accent);box-shadow:inset 0 3px 
     <div class="tbl-wrap"><table><thead><tr><th>Roll</th><th class="num">Cut length</th><th class="num">Width</th><th class="num">Measured</th></tr></thead><tbody id="rolls-body"></tbody></table></div>
     <h3>How many of each</h3>
     <div class="tbl-wrap"><table><thead><tr><th class="num">Cut length</th><th class="num">Width</th><th class="num">How many</th></tr></thead><tbody id="cut-body"></tbody></table></div></div>
+  <div class="panel" id="crew-pick" style="min-width:0" hidden><div class="row" style="justify-content:space-between;align-items:center"><h3>Turf crew's picks</h3><span class="tag" id="crew-pick-tag"></span></div>
+    <p class="hint" id="crew-pick-msg"></p>
+    <div id="crew-pick-main" style="min-width:0;display:grid;gap:8px"><canvas id="cv-crew" style="width:100%;max-width:100%;display:block;border-radius:8px;background:#eef1ea;margin:8px 0" aria-label="The turf crew's roll layout"></canvas>
+    <div class="tbl-wrap"><table><thead><tr><th>Roll</th><th class="num">Cut lengths</th><th class="num">Width</th></tr></thead><tbody id="crew-pick-body"></tbody></table></div></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" data-crew-open="1">Open crew cut list</button></div></div>
 </section>
 
 <!-- MATERIALS -->
@@ -682,7 +687,20 @@ function renderGrade(){
   notes.push(`Ground relief across the shots: ${n1(M.relief*12)}".`);$('#grade-note').textContent=notes.join(' ');
   $('#ve-lbl').textContent=$('#ve').value+'×';
   $('#legend-3d').innerHTML=V3.view==='cut'?'<span><i class="sw" style="background:var(--cut)"></i>Cut (dig)</span><span><i class="sw" style="background:var(--fill)"></i>Fill</span><span>Solid line: existing edge · dashed: subgrade</span>'+(pgShown()?'<span>Yellow dashes: playground · sticks: posts · white dots: footings</span>':''):'<span><i class="sw" style="background:var(--turf)"></i>Turf rolls</span><span><i class="sw" style="background:var(--accent)"></i>Seams</span><span>Dashed: existing ground edge</span>'+(pgShown()?'<span>Yellow dashes: playground · sticks: posts · white dots: footings</span>':'');pgSyncTog()}
-function renderTurf(){if(!M||!L){$('#turf-stats').innerHTML=stat('Rolls','—');$('#rolls-body').innerHTML='<tr><td colspan="4" class="sub">Add at least 3 edge points on the Site tab.</td></tr>';$('#cut-body').innerHTML='';$('#cut-sum').textContent='';return}
+function renderCrewPick(){const box=$('#crew-pick');if(!box)return;const p=(typeof window.crewPick==='function'&&job&&!job.sample)?window.crewPick(job):null;
+  if(!p){box.hidden=true;return}box.hidden=false;const f=window.crewFmt||fmtFtIn;
+  const when=p.updated?new Date(p.updated).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+  if(p.stale){$('#crew-pick-tag').textContent='Needs a new look';$('#crew-pick-main').hidden=true;
+    $('#crew-pick-msg').textContent=`The crew picked their cuts${when?' '+when:''}, but the site or roll settings changed after that. Their picks don't fit anymore; have them open the crew cut list and pick again.`;return}
+  $('#crew-pick-main').hidden=false;const C=p.L,pcs=C.strips.reduce((a,s)=>a+s.pieces,0),est=L?L.strips.reduce((a,s)=>a+s.order,0):null,d=C.lf-(est||0);
+  $('#crew-pick-tag').textContent=`${pcs} pieces`;
+  $('#crew-pick-msg').textContent=`Picked by the crew${when?' '+when:''}. ${C.strips.length} rolls, run ${C.along==='x'?'left to right':'front to back'}${C.off?', seams shifted '+f(C.off):''}. ${f(C.lf)} of roll`+(est!=null?` (estimate ${f(est)}${Math.abs(d)>=1?', '+(d>0?f(d)+' more':f(-d)+' less'):', same'})`:'')+`. ${Math.round(C.headLF)} lf of head seams`+(C.relief?`, ${Math.round(C.relief.lf)} lf of pole cuts, longest ${f(C.relief.max)}.`:'.');
+  const tag=(t,c)=>` <span class="tag"${c?` style="background:${c[0]};color:${c[1]}"`:''}>${t}</span>`;
+  $('#crew-pick-body').innerHTML=C.strips.map((st,k)=>`<tr><td style="white-space:normal"><b>R${k+1}</b>${st.cuts.length||st.half||!st.full?'<br>':''}${st.cuts.length?tag(st.cuts.length+' head seam'+(st.cuts.length>1?'s':''),['#fbe7e3','#d2462e']):''}${st.half?tag('split',['#e3ecfa','#1f5fbf']):''}${!st.full?tag('rip'):''}</td><td class="num"><b>${st.segs.map(g=>f(g.order)).join(' + ')}</b></td><td class="num">${st.half?'2 × ':''}${f(st.pw)}</td></tr>`).join('')
+    +`<tr><td><b>Total</b></td><td class="num"><b>${f(C.lf)}</b></td><td class="num">${pcs} pcs</td></tr>`;
+  if(cur==='turf')requestAnimationFrame(()=>window.crewDraw($('#cv-crew'),p))}
+window.renderCrewPick=renderCrewPick;
+function renderTurf(){renderCrewPick();if(!M||!L){$('#turf-stats').innerHTML=stat('Rolls','—');$('#rolls-body').innerHTML='<tr><td colspan="4" class="sub">Add at least 3 edge points on the Site tab.</td></tr>';$('#cut-body').innerHTML='';$('#cut-sum').textContent='';return}
   $('#turf-stats').innerHTML=stat('Turf area',n0(M.A),'sq ft','turf')+stat('Order',n0(L.bought),'sq ft')+stat('Waste',n0(L.waste*100)+'%',L.auto?'auto direction':'your direction')+stat('Seams',n0(L.seamLF),'lin ft')+stat('Rolls',L.strips.length,`${fmtFtIn(+R.rollWidth||15)} roll, run ${L.along==='x'?'left–right':'front–back'}`);
   const tot=L.strips.reduce((a,s)=>a+s.order,0);
   $('#rolls-body').innerHTML=L.strips.map((st,k)=>`<tr><td><b>R${k+1}</b></td><td class="num"><b>${fmtFtIn(st.order)}</b></td><td class="num">${fmtFtIn(st.used>=L.W-0.05?L.W:Math.round(st.used*12)/12)}${st.used<L.W-0.05?' <span class="tag">rip</span>':''}</td><td class="num">${fmtFtIn(st.len)}</td></tr>`).join('')
@@ -1177,10 +1195,13 @@ function deckHt(t){t=String(t||'');if(/ramp|stair|link|slide|ground|step/i.test(
 let J=null,L=null,cur=-1;
 function crewOf(id){return CREW[id]||(CREW[id]={edits:{},along:null,S:null})}
 function sigOf(P,S,along,off){return JSON.stringify([P.map(p=>[Math.round(p.x*100),Math.round(p.y*100)]),+(+S.rollWidth).toFixed(3),+(+S.useWidth).toFixed(3),along,Math.round((+off||0)*96)])}
-function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}
-  const P=edgeOf(ej);if(P.length<3||polyArea(P)<1){J={ej,P,bad:true};L=null;return}
-  const c=crewOf(ej.id),S=c.S?Object.assign({},ER,c.S):Object.assign({},ER),along=c.along||estDir(ej,P),off=+c.off||0;
-  const sig=sigOf(P,S,along,off);if(c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}c.sig=sig;
+function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}const r=planFor(ej,true);J=r.J;L=r.L}
+// live=true: the crew screen (clears stale splits). live=false: read-only view for the estimator.
+function planFor(ej,live){let J,L;
+  const P=edgeOf(ej);if(P.length<3||polyArea(P)<1)return{J:{ej,P,bad:true},L:null};
+  const c=live?crewOf(ej.id):(CREW[ej.id]||{edits:{}}),S=c.S?Object.assign({},ER,c.S):Object.assign({},ER),along=c.along||estDir(ej,P),off=+c.off||0;
+  const sig=sigOf(P,S,along,off);if(!live&&c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length)return{stale:true,J:{ej,P,c}};
+  if(live&&c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}if(live)c.sig=sig;
   J={ej,P,S,along,off,c,pg:pgOf(ej,P)};const lay=strips(P,S,along,off);
   lay.strips.forEach((st,k)=>{const e=(c.edits||{})[k]||{};const full=st.used>=lay.W-0.05;st.full=full;st.w=full?lay.W:Math.round(st.used*12)/12;
     st.half=!!e.half;st.cuts=(e.cuts||[]).filter(x=>x>0.25&&x<st.len-0.25).sort((a,b)=>a-b);
@@ -1190,7 +1211,7 @@ function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}
   lay.strips.forEach(st=>st.warn=[...new Set(st.warn)]);
   lay.headLF=lay.strips.reduce((a,st)=>a+st.cuts.length*st.used,0);lay.ripLF=lay.strips.reduce((a,st)=>a+(st.half?st.len:0),0);
   lay.lf=lay.strips.reduce((a,s)=>a+s.lf,0);lay.total=lay.lf*lay.SW;
-  lay.relief=(J.pg&&!PGOFF[ej.id])?relief(lay,polesIn(J.pg,P),along):null;L=lay}
+  lay.relief=(J.pg&&!PGOFF[ej.id])?relief(lay,polesIn(J.pg,P),along):null;L=lay;return{J,L}}
 
 /* ---------- pole cuts + best-cut finder ---------- */
 // Every footing inside the turf needs a relief cut from the nearest seam or roll end to the pole.
@@ -1259,7 +1280,7 @@ function findBest(pr){const P=J.P,S=J.S,pg=J.pg,holes=polesIn(pg,P),dk=lowDecks(
 
 /* ---------- render ---------- */
 const stat=(v,l)=>`<div class="cw-stat"><b>${v}</b><span>${l}</span></div>`;
-function render(){if(!document.body.classList.contains('crew-mode'))return;build();
+function render(){if(!document.body.classList.contains('crew-mode')){if(typeof window.renderCrewPick==='function')window.renderCrewPick();return}build();
   const ej=J&&J.ej;$('#cw-title').firstChild.textContent=ej?(ej.info&&ej.info.name)||'Untitled job':'Turf Cut List';
   $('#cw-sub').textContent=ej?[ej.info&&ej.info.customer,ej.info&&ej.info.address].filter(Boolean).join(' · ')||' ':'Pick a job';
   renderJobs();$('#cw-jobs').hidden=!!(J&&!jobsOpen);$('#cw-work').hidden=!J;
@@ -1284,7 +1305,8 @@ function renderJobs(){const list=[...EJ].sort((a,b)=>(b.updated||0)-(a.updated||
     :'<p class="cw-hint">No jobs saved in the estimator yet. Make one there and it shows up here.</p>'}
 
 /* canvas */
-function draw(){const cv=$('#cw-cv'),dpr=window.devicePixelRatio||1,w=cv.clientWidth||600;
+function draw(){drawOn($('#cw-cv'),J,L,cur)}
+function drawOn(cv,J,L,cur){const dpr=window.devicePixelRatio||1,w=cv.clientWidth||600;
   if(!L||!J||J.bad){cv.style.height='60px';cv.width=w*dpr;cv.height=60*dpr;return}
   const uv=(u,v)=>L.along==='x'?[u,v]:[v,u];
   const xs=J.P.map(p=>p.x),ys=J.P.map(p=>p.y);let minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
@@ -1415,7 +1437,13 @@ async function startCloud(){$('#cw-sync').textContent='Showing jobs saved on thi
   DB.collection('jobs').onSnapshot(snap=>{EJ=snap.docs.map(d=>Object.assign({id:d.id},d.data())).filter(j=>!j.sample);$('#cw-sync').textContent='Jobs from the account. Splits save for the whole crew.';render()},()=>{});
   DB.doc('config/pricing').onSnapshot(sn=>{if(sn.exists){const d=sn.data();ER=pickS(d.R)}render()},()=>{});
   DB.collection('crew').onSnapshot(snap=>{for(const d of snap.docs){if(dirty.has(d.id))continue;const c=d.data();if(!CREW[d.id]||(CREW[d.id].updated||0)<(c.updated||0))CREW[d.id]=c}LS.set('tcl.crew',CREW);render()},()=>{})}
-readLocal();setMode();startCloud();
+// for the estimator's Turf tab: what the crew picked for a job (null if they haven't changed anything)
+window.crewPick=function(ej){if(!ej||!ej.id)return null;if(!DB)ER=pickS(LS.get('tse.rates',{}));const c=CREW[ej.id];if(!c)return null;
+  const picked=c.along||c.off||c.S||Object.values(c.edits||{}).some(e=>e&&(e.half||(e.cuts&&e.cuts.length)));if(!picked)return null;
+  const r=planFor(ej,false);if(r.stale)return{stale:true,updated:c.updated};if(!r.L)return null;return{J:r.J,L:r.L,updated:c.updated}};
+window.crewDraw=function(cv,p){if(p&&p.L)drawOn(cv,p.J,p.L,-1)};
+window.crewFmt=fmt;
+readLocal();setMode();startCloud();if(typeof window.renderCrewPick==='function')window.renderCrewPick();
 })();
 </script>
 
