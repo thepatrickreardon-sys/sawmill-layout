@@ -194,6 +194,7 @@ nav.tabs button[aria-current="page"]{color:var(--accent);box-shadow:inset 0 3px 
   <div class="panel">
     <div class="row" style="justify-content:space-between;align-items:center"><div><h3>Saved jobs</h3><span class="sync" id="sync" data-ok="0">Checking…</span></div>
       <div class="row"><button class="btn sm" id="b-dup">Duplicate this job</button><button class="btn sm primary" id="b-new">New job</button></div></div>
+    <div class="row" style="margin:6px 0 10px"><button class="btn sm" id="b-export">Back up jobs to a file</button><button class="btn sm" id="b-import">Load jobs from a file</button><input type="file" id="f-import" accept=".json,application/json,text/plain" hidden></div>
     <div class="joblist" id="joblist"></div>
   </div>
 </section>
@@ -442,6 +443,15 @@ let DB=null,canCfg=false,dirty=new Set(),gone=new Set(),cfgDirty=false,cloudT=0,
 function setSync(t,ok){const el=$('#sync');if(!el)return;el.textContent=t;el.dataset.ok=ok?'1':'0'}
 function clean(o){return JSON.parse(JSON.stringify(o))}
 function normJob(d){const j=clean(d);j.points=(j.points||[]).map(p=>({x:p.x==null?NaN:p.x,y:p.y==null?NaN:p.y,z:p.z==null?NaN:p.z,t:p.t||'e',...(p.b?{b:{e:+p.b.e||0,d:+p.b.d||0}}:{}),...(p.src?{src:p.src}:{})}));j.info=j.info||{};j.grade=j.grade||{mode:'fit',slope:1,dir:'270',offset:0};j.layout=j.layout||{dir:'auto'};return j}
+document.addEventListener('change',async e=>{if(e.target.id!=='f-import')return;const f=e.target.files&&e.target.files[0];if(!f)return;
+  let d;try{d=JSON.parse(await f.text())}catch(err){toast('That file isn\u2019t a jobs file');return}
+  const list=Array.isArray(d)?d:(d.jobs||[]);let added=0,updated=0;
+  for(const raw of list){if(!raw||!raw.id||raw.sample)continue;const nj=normJob(raw);const i=jobs.findIndex(x=>x.id===nj.id);
+    if(i<0){jobs.push(nj);added++}else if((jobs[i].updated||0)<=(nj.updated||0)){jobs[i]=nj;updated++}}
+  if(d.R)R=Object.assign({},DEFAULT_RATES,d.R);if(d.PR)PR=Object.assign({},DEFAULT_PRICES,d.PR);if('pricesTouched' in d)pricesTouched=!!d.pricesTouched;
+  if(added+updated){jobs=jobs.filter(j=>!j.sample);jobs.sort((a,b)=>(b.updated||0)-(a.updated||0));job=jobs[0]}
+  LS.set('tse.jobs',jobs);LS.set('tse.cur',job.id);LS.set('tse.rates',R);LS.set('tse.prices',PR);LS.set('tse.pricesTouched',pricesTouched);
+  fillInputs();renderPts();recompute();toast(added+' job'+(added===1?'':'s')+' added'+(updated?', '+updated+' updated':''))});
 function cloudSoon(){if(!DB)return;clearTimeout(cloudT);cloudT=setTimeout(flush,900)}
 async function flush(){if(!DB||syncing)return;syncing=true;let err=null;
   try{for(const id of[...gone]){await DB.doc('jobs/'+id).delete();gone.delete(id)}
@@ -778,6 +788,9 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)r
   if(t.dataset.open){job=jobs.find(j=>j.id===t.dataset.open)||job;delArm=null;fillInputs();renderPts();save();recompute();toast('Opened '+(job.info.name||'job'));return}
   if(t.dataset.del){const id=t.dataset.del;if(delArm!==id){delArm=id;renderJobs();return}delArm=null;gone.add(id);dirty.delete(id);jobs=jobs.filter(j=>j.id!==id);if(!jobs.length)jobs=[blankJob()];if(job.id===id)job=jobs[0];fillInputs();renderPts();save();recompute();toast('Job deleted');return}
   switch(t.id){
+   case 'b-export':{const real=jobs.filter(j=>!j.sample);const data={app:'turf-sales-estimator',v:1,saved:new Date().toISOString(),jobs:clean(real),R,PR,pricesTouched};
+     const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='turf-jobs-'+todayStr()+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast(real.length+' job'+(real.length===1?'':'s')+' backed up');break}
+   case 'b-import':{$('#f-import').value='';$('#f-import').click();break}
    case 'b-new':{const j=blankJob();jobs.unshift(j);job=j;fillInputs();renderPts();save();recompute();go('site');toast('New job started');break}
    case 'b-dup':{const j=JSON.parse(JSON.stringify(job));j.id=uid();j.sample=false;j.info.name=(j.info.name||'Job')+' (copy)';jobs.unshift(j);job=j;fillInputs();save();recompute();toast('Duplicated');break}
    case 'b-add-e':case 'b-add-s':{const last=job.points[job.points.length-1];job.points.push({x:last?last.x:0,y:last?last.y:0,z:NaN,t:t.id==='b-add-e'?'e':'s'});renderPts();save();recompute();const ins=$$('#pts-body input[data-pk="x"]');ins[ins.length-1]?.focus();break}
