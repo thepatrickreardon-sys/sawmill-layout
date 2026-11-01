@@ -1194,14 +1194,16 @@ function deckHt(t){t=String(t||'');if(/ramp|stair|link|slide|ground|step/i.test(
 /* ---------- current job ---------- */
 let J=null,L=null,cur=-1;
 function crewOf(id){return CREW[id]||(CREW[id]={edits:{},along:null,S:null})}
+// picks saved before the seam shift existed used a sig without it; they still count when the shift is 0
+function sigOK(c,P,S,along,off){if(!c.sig||c.sig===sigOf(P,S,along,off))return true;if(+off)return false;const a=JSON.parse(sigOf(P,S,along,0));a.pop();return c.sig===JSON.stringify(a)}
 function sigOf(P,S,along,off){return JSON.stringify([P.map(p=>[Math.round(p.x*100),Math.round(p.y*100)]),+(+S.rollWidth).toFixed(3),+(+S.useWidth).toFixed(3),along,Math.round((+off||0)*96)])}
 function build(){const ej=EJ.find(j=>j.id===curId);if(!ej){J=null;L=null;return}const r=planFor(ej,true);J=r.J;L=r.L}
 // live=true: the crew screen (clears stale splits). live=false: read-only view for the estimator.
 function planFor(ej,live){let J,L;
   const P=edgeOf(ej);if(P.length<3||polyArea(P)<1)return{J:{ej,P,bad:true},L:null};
   const c=live?crewOf(ej.id):(CREW[ej.id]||{edits:{}}),S=c.S?Object.assign({},ER,c.S):Object.assign({},ER),along=c.along||estDir(ej,P),off=+c.off||0;
-  const sig=sigOf(P,S,along,off);if(!live&&c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length)return{stale:true,J:{ej,P,c}};
-  if(live&&c.sig&&c.sig!==sig&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}if(live)c.sig=sig;
+  const sig=sigOf(P,S,along,off);const fits=sigOK(c,P,S,along,off);if(!live&&!fits&&Object.keys(c.edits||{}).length)return{stale:true,J:{ej,P,c}};
+  if(live&&!fits&&Object.keys(c.edits||{}).length){c.edits={};c.sig=sig;c.updated=Date.now();dirty.add(ej.id);soon();setTimeout(()=>toast('Site or rolls changed, splits cleared'),50)}if(live)c.sig=sig;
   J={ej,P,S,along,off,c,pg:pgOf(ej,P)};const lay=strips(P,S,along,off);
   lay.strips.forEach((st,k)=>{const e=(c.edits||{})[k]||{};const full=st.used>=lay.W-0.05;st.full=full;st.w=full?lay.W:Math.round(st.used*12)/12;
     st.half=!!e.half;st.cuts=(e.cuts||[]).filter(x=>x>0.25&&x<st.len-0.25).sort((a,b)=>a-b);
