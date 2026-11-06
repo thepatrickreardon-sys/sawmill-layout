@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b4d1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Turf Calculator">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Turf Tek Direct — Turf Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#2e7d32; --green-d:#1b4d1f; --green-l:#e8f3e6; --ink:#1d2a1f; --mute:#5d6b60;
+    --line:#dfe6dc; --bg:#f3f6f1; --card:#fff; --orange:#e07b16; --red:#c0392b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.4}
+  header{background:var(--green-d);color:#fff;padding:18px 16px 16px}
+  .hwrap{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;flex:none}
+  header h1{font-family:"Barlow Condensed",sans-serif;font-size:24px;margin:0;letter-spacing:.3px}
+  header p{margin:2px 0 0;opacity:.8;font-size:14px}
+  main{max-width:860px;margin:0 auto;padding:16px 12px 60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  h2{font-family:"Barlow Condensed",sans-serif;font-size:21px;margin:0 0 10px;color:var(--green-d)}
+  h3{font-size:15px;margin:14px 0 6px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+  .steps{font-size:14px;color:var(--mute);margin:0}
+  .area-head{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  .area-head input{font-weight:700;font-size:18px;border:none;border-bottom:2px solid var(--line);border-radius:0;padding:4px 2px;flex:1;min-width:0}
+  .area-head input:focus{border-bottom-color:var(--green);outline:none}
+  .x{background:none;border:1px solid var(--line);color:var(--mute);border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;cursor:pointer}
+  .seg{display:flex;background:var(--green-l);border-radius:10px;padding:3px;gap:3px;margin-bottom:10px}
+  .seg button{flex:1;border:none;background:none;padding:8px 4px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;color:var(--green-d);cursor:pointer}
+  .seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin-bottom:4px}
+  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid #cfd8cc;border-radius:9px;background:#fff;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
+  .bad{border-color:var(--red)!important;background:#fff6f5}
+  .hint{font-size:12px;color:var(--mute);margin-top:3px}
+  .opts{margin-top:12px;display:grid;gap:10px}
+  .check{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:500;color:var(--ink)}
+  .check input{width:22px;height:22px;flex:none;margin:0}
+  .draw{margin-top:14px;background:#fafcf9;border:1px solid var(--line);border-radius:12px;padding:8px}
+  .draw svg{width:100%;height:auto;display:block;max-height:420px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);padding:6px 4px 2px}
+  .legend i{display:inline-block;width:18px;height:0;border-top:2px dashed;vertical-align:middle;margin-right:4px}
+  .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .mini div{background:var(--green-l);border-radius:10px;padding:8px;text-align:center}
+  .mini b{display:block;font-size:18px;color:var(--green-d)}
+  .mini span{font-size:12px;color:var(--mute)}
+  .cutlist{margin:8px 0 0;padding:0;list-style:none;font-size:14px}
+  .cutlist li{padding:5px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between}
+  .err{color:var(--red);font-size:14px;margin-top:8px}
+  .add{width:100%;padding:14px;border:2px dashed var(--green);background:#fff;color:var(--green);border-radius:14px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+  td small{display:block;color:var(--mute);font-weight:400;font-size:12px}
+  .big{font-size:15px}
+  .rolls td:first-child{font-weight:700}
+  .btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;background:var(--green);color:#fff;font:inherit;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none}
+  .btn.alt{background:#fff;color:var(--green-d);border:1.5px solid var(--green);margin-top:10px}
+  .msg{margin-top:10px;font-size:14px;padding:10px;border-radius:10px;background:var(--green-l);color:var(--green-d);display:none}
+  .msg.show{display:block}
+  pre{white-space:pre-wrap;font-size:12px;background:#f7f9f6;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:260px;overflow:auto}
+  footer{font-size:12px;color:var(--mute);text-align:center;padding:0 16px}
+  .shape-hint{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute);margin:-2px 0 10px}
+  .shape-hint svg{width:70px;flex:none}
+  @media (max-width:420px){.mini b{font-size:16px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#fff"/><circle cx="24" cy="24" r="20" fill="#2e7d32"/><path d="M10 34c3-6 5-11 6-18 1 7 2 11 4 15 1-8 3-14 4-20 1 6 3 12 4 20 2-4 3-8 4-15 1 7 3 12 6 18z" fill="#9ccc65"/></svg>
+    <div><h1>Turf Tek Direct · Turf Calculator</h1><p>Enter your layout, get your roll cut list and materials, then request a quote.</p></div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <p class="steps"><b>1.</b> Add each turf area and type in its size. &nbsp;<b>2.</b> Pick roll direction, half rolls and head seams. &nbsp;<b>3.</b> Check your roll list and materials. &nbsp;<b>4.</b> Send it to our sales team for pricing.</p>
+    <p class="hint" style="margin-top:8px">Type sizes like <b>40</b>, <b>40.5</b>, <b>40' 6"</b> or <b>40-6</b>.</p>
+  </div>
+
+  <div id="areas"></div>
+  <button class="add" id="addArea">+ Add another area</button>
+
+  <div class="card" id="results"></div>
+
+  <div class="card">
+    <h2>Request a quote</h2>
+    <p class="hint" style="margin:-4px 0 12px">We'll price your material list and get back to you. No prices are shown here.</p>
+    <form id="quote" novalidate>
+      <div class="grid">
+        <div><label for="q_name">Name *</label><input id="q_name" autocomplete="name"></div>
+        <div><label for="q_company">Company</label><input id="q_company" autocomplete="organization"></div>
+        <div><label for="q_phone">Phone *</label><input id="q_phone" type="tel" autocomplete="tel"></div>
+        <div><label for="q_email">Email *</label><input id="q_email" type="email" autocomplete="email"></div>
+      </div>
+      <div style="margin-top:10px"><label for="q_job">Job address or town</label><input id="q_job"></div>
+      <div style="margin-top:10px"><label for="q_product">Turf product (if you know it)</label><input id="q_product" placeholder="Optional"></div>
+      <div style="margin-top:10px"><label for="q_notes">Notes</label><textarea id="q_notes" rows="3" placeholder="Delivery date, site access, anything else"></textarea></div>
+      <div style="margin-top:14px"><button class="btn" type="submit">Email my quote request</button></div>
+      <button class="btn alt" type="button" id="copyBtn">Copy summary</button>
+      <div class="msg" id="qmsg"></div>
+    </form>
+    <h3>Summary that gets sent</h3>
+    <pre id="summary"></pre>
+  </div>
+
+  <footer>Quantities are estimates for quoting only. Turf Tek Direct will confirm the final material list with you.</footer>
+</main>
+
+<script>
+/* ================= SETTINGS (Turf Tek can adjust these) ================= */
+const C = {
+  SALES_EMAIL: "",               // where quote requests go, e.g. "sales@yourdomain.com"
+  ROLL_WIDTH_FT: 15,             // roll width as ordered
+  FULL_COVER_FT: 14 + 10/12,     // usable width after trimming (14'10")
+  HALF_COVER_FT: 7 + 5/12,       // usable width of a half roll (7'5")
+  END_ALLOWANCE_FT: 1,           // extra length added to every piece for trimming (6" each end)
+  MAX_ROLL_LENGTH_FT: 100,       // longest single piece we cut
+  BASE_DEPTH_IN: 4,              // 3/8" bluestone base depth
+  INFILL_LB_PER_SF: 2,           // sand infill
+  INFILL_BAG_LB: 50,
+  SEAM_TAPE_ROLL_FT: 100,
+  GLUE_LF_PER_GAL: 25,           // linear feet of seam per gallon of glue
+  STAPLE_SPACING_IN: 3,          // staples into 2x4 nailer board
+  NAIL_SPACING_IN: 6,            // nails into landscape edging
+  BOARD_LENGTH_FT: 16            // 2x4 length for board count
+};
+/* ======================================================================== */
+
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 9);
+function newArea(n){ return {id:uid(), name:'Area '+n, shape:'rect', L:'', W:'', A:'', B:'', c:'', d:'', dir:'auto', halfRolls:true, maxPiece:'', border:'board', boardFt:''}; }
+
+let state;
+try { state = JSON.parse(localStorage.getItem('ttd-calc') || 'null'); } catch(e) { state = null; }
+if (!state || !Array.isArray(state.areas) || !state.areas.length) state = {areas:[newArea(1)], contact:{}};
+function save(){ try { localStorage.setItem('ttd-calc', JSON.stringify(state)); } catch(e) {} }
+
+/* ---------- length parsing / formatting ---------- */
+function parseLen(s){
+  if (s == null) return NaN;
+  s = String(s).trim().toLowerCase().replace(/[’′]/g,"'").replace(/[”″]/g,'"');
+  if (!s) return NaN;
+  const m = s.match(/^(\d+(?:\.\d+)?)\s*(?:'|ft|feet)?\s*(?:-|\s)?\s*(?:(\d+(?:\.\d+)?)\s*(?:"|in|inches)?)?$/);
+  if (!m) return NaN;
+  return parseFloat(m[1]) + (m[2] ? parseFloat(m[2]) / 12 : 0);
+}
+function fmt(ft){
+  const t = Math.round(ft * 12), f = Math.floor(t / 12), i = t % 12;
+  return i ? `${f}'${i}"` : `${f}'`;
+}
+const n0 = x => Math.round(x).toLocaleString('en-US');
+const n1 = x => (Math.round(x * 10) / 10).toLocaleString('en-US');
+const widthLabel = half => half ? `7'6"` : `15'`;
+
+/* ---------- geometry ---------- */
+function geometry(a){
+  if (a.shape === 'rect'){
+    const L = parseLen(a.L), W = parseLen(a.W);
+    if (!(L > 0 && W > 0)) return null;
+    return {rects:[{x:0,y:0,w:L,h:W}], poly:[[0,0],[L,0],[L,W],[0,W]], perim:2*(L+W), sf:L*W,
+            desc:`Rectangle ${fmt(L)} × ${fmt(W)}`, L, W};
+  }
+  const A = parseLen(a.A), B = parseLen(a.B), c = parseLen(a.c), d = parseLen(a.d);
+  if (!(A > 0 && B > 0 && c > 0 && d > 0)) return null;
+  if (c >= A || d >= B) return {error:'The cut-out has to be smaller than the overall length and width.'};
+  return {rects:[{x:0,y:0,w:A,h:B-d},{x:0,y:B-d,w:A-c,h:d}],
+          poly:[[0,0],[A,0],[A,B-d],[A-c,B-d],[A-c,B],[0,B]], perim:2*(A+B), sf:A*B-c*d,
+          desc:`L-shape ${fmt(A)} × ${fmt(B)} with ${fmt(c)} × ${fmt(d)} cut-out`, L:A, W:B};
+}
+
+function merge(ints){
+  ints.sort((p,q) => p[0] - q[0]);
+  const out = [];
+  for (const iv of ints){
+    if (out.length && iv[0] <= out[out.length-1][1] + 1e-6) out[out.length-1][1] = Math.max(out[out.length-1][1], iv[1]);
+    else out.push([iv[0], iv[1]]);
+  }
+  return out;
+}
+
+/* Rolls always run along x in layout space; swap=true runs them along the width. */
+function layout(rects, swap, opts){
+  const R = swap ? rects.map(r => ({x:r.y, y:r.x, w:r.h, h:r.w})) : rects;
+  const H = Math.max(...R.map(r => r.y + r.h));
+  const maxLen = Math.min(opts.maxPiece > 0 ? opts.maxPiece : Infinity, C.MAX_ROLL_LENGTH_FT);
+  const usable = Math.max(1, maxLen - C.END_ALLOWANCE_FT);
+  const lanes = [];
+  let y = 0, guard = 0;
+  while (H - y > 0.01 && guard++ < 400){
+    const half = opts.halfRolls && (H - y) <= C.HALF_COVER_FT + 0.001;
+    const cover = half ? C.HALF_COVER_FT : C.FULL_COVER_FT;
+    const y1 = Math.min(y + cover, H);
+    const ints = merge(R.filter(r => r.y < y1 - 1e-6 && r.y + r.h > y + 1e-6).map(r => [r.x, r.x + r.w]));
+    const segs = ints.map(([a,b]) => {
+      const run = b - a, n = Math.max(1, Math.ceil(run / usable - 1e-9));
+      return {a, b, run, n, len: Math.ceil(run / n + C.END_ALLOWANCE_FT - 1e-9)};
+    });
+    lanes.push({y0:y, y1, half, segs});
+    y += cover;
+  }
+  const pieces = [], vLines = [], hLines = [];
+  let seamV = 0, seamH = 0, orderedSf = 0;
+  lanes.forEach((ln, i) => {
+    ln.segs.forEach(s => {
+      for (let k = 0; k < s.n; k++){
+        pieces.push({half:ln.half, len:s.len, rect:{x:s.a + k*s.run/s.n, y:ln.y0, w:s.run/s.n, h:ln.y1 - ln.y0}, lane:i});
+        orderedSf += (ln.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT) * s.len;
+      }
+      for (let k = 1; k < s.n; k++){
+        const x = s.a + k*s.run/s.n;
+        seamH += ln.y1 - ln.y0;
+        hLines.push([x, ln.y0, x, ln.y1]);
+      }
+    });
+    if (i < lanes.length - 1){
+      lanes[i+1].segs.forEach(t => ln.segs.forEach(s => {
+        const a = Math.max(s.a, t.a), b = Math.min(s.b, t.b);
+        if (b - a > 0.01){ seamV += b - a; vLines.push([a, ln.y1, b, ln.y1]); }
+      }));
+    }
+  });
+  if (swap){
+    pieces.forEach(p => { const r = p.rect; p.rect = {x:r.y, y:r.x, w:r.h, h:r.w}; });
+    [vLines, hLines].forEach(arr => arr.forEach((l, j) => arr[j] = [l[1], l[0], l[3], l[2]]));
+  }
+  return {swap, pieces, orderedSf, seamV, seamH, vLines, hLines, nLanes:lanes.length};
+}
+
+function solve(a){
+  const g = geometry(a);
+  if (!g || g.error) return {g};
+  const opts = {halfRolls:a.halfRolls, maxPiece:parseLen(a.maxPiece)};
+  const alongL = layout(g.rects, false, opts), alongW = layout(g.rects, true, opts);
+  let lay;
+  if (a.dir === 'length') lay = alongL;
+  else if (a.dir === 'width') lay = alongW;
+  else {
+    const d = alongL.orderedSf - alongW.orderedSf;
+    if (Math.abs(d) <= 0.01 * Math.min(alongL.orderedSf, alongW.orderedSf))
+      lay = (alongL.seamV + alongL.seamH) <= (alongW.seamV + alongW.seamH) ? alongL : alongW;
+    else lay = d < 0 ? alongL : alongW;
+  }
+  const runAlong = lay.swap ? g.W : g.L;
+  let board = 0;
+  if (a.border === 'board') board = g.perim;
+  else if (a.border === 'split') board = Math.min(g.perim, Math.max(0, parseLen(a.boardFt) || 0));
+  return {g, lay, runAlong, board, edge:g.perim - board};
+}
+
+/* ---------- drawing ---------- */
+function drawSVG(g, lay){
+  const W = Math.max(...g.poly.map(p => p[0])), H = Math.max(...g.poly.map(p => p[1]));
+  const m = Math.max(W, H), pad = m * 0.13, fs = m * 0.045, sw = m * 0.006;
+  const cid = 'c' + uid();
+  const pts = g.poly.map(p => p.join(',')).join(' ');
+  let s = `<svg viewBox="${-pad} ${-pad} ${W + pad*2} ${H + pad*2}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roll layout">`;
+  s += `<defs><clipPath id="${cid}"><polygon points="${pts}"/></clipPath></defs><g clip-path="url(#${cid})">`;
+  lay.pieces.forEach(p => {
+    const r = p.rect, col = p.half ? '#a5d38a' : (p.lane % 2 ? '#5fae4f' : '#479a3c');
+    s += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${col}"/>`;
+  });
+  lay.vLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#fff" stroke-width="${sw*1.3}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
+  lay.hLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#e07b16" stroke-width="${sw*1.6}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
+  s += `</g><polygon points="${pts}" fill="none" stroke="#1b4d1f" stroke-width="${sw*1.4}" stroke-linejoin="round"/>`;
+  lay.pieces.forEach((p, i) => {
+    const r = p.rect, t = Math.min(fs * 0.9, Math.min(r.w, r.h) * 0.45);
+    if (t < fs * 0.35) return;
+    s += `<text x="${r.x + r.w/2}" y="${r.y + r.h/2}" font-size="${t}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+  });
+  s += `<text x="${W/2}" y="${-pad*0.38}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle">${fmt(W)}</text>`;
+  s += `<text x="${-pad*0.38}" y="${H/2}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle" transform="rotate(-90 ${-pad*0.38} ${H/2})">${fmt(H)}</text>`;
+  const ay = H + pad*0.55, ax = W/2;
+  if (!lay.swap){
+    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run this way ⟷</text>`;
+  } else {
+    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run top to bottom ↕</text>`;
+  }
+  return s + '</svg>';
+}
+
+/* ---------- area cards ---------- */
+function field(a, key, label, ph){
+  return `<div><label>${label}</label><input inputmode="decimal" data-id="${a.id}" data-f="${key}" value="${esc(a[key])}" placeholder="${ph||''}"></div>`;
+}
+function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function cardHTML(a){
+  const dims = a.shape === 'rect'
+    ? `<div class="grid">${field(a,'L','Length','e.g. 40')}${field(a,'W','Width','e.g. 25\' 6"')}</div>`
+    : `<div class="shape-hint"><svg viewBox="0 0 70 46"><path d="M2 2h66v26H44v16H2z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
+         Enter the full outside size, then the size of the corner piece that's cut out (red).</div>
+       <div class="grid">${field(a,'A','Overall length')}${field(a,'B','Overall width')}${field(a,'c','Cut-out length')}${field(a,'d','Cut-out width')}</div>`;
+  return `<div class="card" data-card="${a.id}">
+    <div class="area-head"><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
+      ${state.areas.length > 1 ? `<button class="x" data-del="${a.id}">Remove</button>` : ''}</div>
+    <div class="seg"><button class="${a.shape==='rect'?'on':''}" data-shape="rect" data-id="${a.id}">Rectangle</button><button class="${a.shape==='L'?'on':''}" data-shape="L" data-id="${a.id}">L-shape</button></div>
+    ${dims}
+    <div class="opts">
+      <div class="grid">
+        <div><label>Roll direction</label><select data-id="${a.id}" data-f="dir">
+          <option value="auto"${a.dir==='auto'?' selected':''}>Best fit</option>
+          <option value="length"${a.dir==='length'?' selected':''}>Along the length</option>
+          <option value="width"${a.dir==='width'?' selected':''}>Along the width</option></select></div>
+        <div><label>Longest piece (head seams)</label><input inputmode="decimal" data-id="${a.id}" data-f="maxPiece" value="${esc(a.maxPiece)}" placeholder="No head seams">
+          <div class="hint">Enter a length to cut rolls shorter and add head seams. Max ${C.MAX_ROLL_LENGTH_FT}'.</div></div>
+      </div>
+      <label class="check"><input type="checkbox" data-id="${a.id}" data-f="halfRolls"${a.halfRolls?' checked':''}> Use a half roll (7'6") for the last strip when it fits</label>
+      <div class="grid">
+        <div><label>Outside border</label><select data-id="${a.id}" data-f="border">
+          <option value="board"${a.border==='board'?' selected':''}>2x4 (stapled)</option>
+          <option value="edge"${a.border==='edge'?' selected':''}>Edging (nailed)</option>
+          <option value="split"${a.border==='split'?' selected':''}>Some of each</option></select></div>
+        <div style="${a.border==='split'?'':'display:none'}" data-splitwrap="${a.id}">${field(a,'boardFt','Feet on 2x4','Rest is edging').replace('<div>','<div>')}</div>
+      </div>
+    </div>
+    <div data-out="${a.id}"></div>
+  </div>`;
+}
+
+function renderAreas(){
+  $('#areas').innerHTML = state.areas.map(cardHTML).join('');
+  update();
+}
+
+function areaOut(a, r){
+  const el = document.querySelector(`[data-out="${a.id}"]`);
+  if (!el) return;
+  ['L','W','A','B','c','d','maxPiece','boardFt'].forEach(k => {
+    const inp = document.querySelector(`input[data-id="${a.id}"][data-f="${k}"]`);
+    if (inp) inp.classList.toggle('bad', inp.value.trim() !== '' && !(parseLen(inp.value) > 0));
+  });
+  if (!r.g){ el.innerHTML = `<p class="hint" style="margin-top:12px">Enter the size to see the roll layout.</p>`; return; }
+  if (r.g.error){ el.innerHTML = `<p class="err">${r.g.error}</p>`; return; }
+  const {g, lay} = r;
+  const list = lay.pieces.map((p, i) => `<li><span>Roll ${i+1}${p.half ? ' <small>(half)</small>' : ''}</span><span>${widthLabel(p.half)} × ${p.len}'</span></li>`).join('');
+  el.innerHTML = `<div class="draw">${drawSVG(g, lay)}
+      <div class="legend"><span><i style="border-color:#5fae4f"></i>side seam</span>${lay.hLines.length ? '<span><i style="border-color:#e07b16"></i>head seam</span>' : ''}${lay.pieces.some(p=>p.half) ? '<span><b style="display:inline-block;width:12px;height:12px;background:#a5d38a;border-radius:2px;vertical-align:middle"></b> half roll</span>' : ''}</div></div>
+    <div class="mini"><div><b>${n0(g.sf)}</b><span>sq ft</span></div><div><b>${lay.pieces.length}</b><span>pieces</span></div><div><b>${n0(lay.seamV + lay.seamH)}'</b><span>of seams</span></div></div>
+    <ul class="cutlist">${list}</ul>
+    <p class="hint">Rolls run along the ${fmt(r.runAlong)} side. Each piece includes ${fmt(C.END_ALLOWANCE_FT)} extra for trimming.</p>`;
+}
+
+/* ---------- totals ---------- */
+function totals(){
+  const T = {sf:0, ordered:0, seamV:0, seamH:0, board:0, edge:0, pieces:[], areas:[]};
+  state.areas.forEach(a => {
+    const r = solve(a);
+    areaOut(a, r);
+    if (!r.lay) return;
+    T.sf += r.g.sf; T.ordered += r.lay.orderedSf; T.seamV += r.lay.seamV; T.seamH += r.lay.seamH;
+    T.board += r.board; T.edge += r.edge;
+    r.lay.pieces.forEach(p => T.pieces.push({...p, area:a.name}));
+    T.areas.push({a, r});
+  });
+  const groups = {};
+  T.pieces.forEach(p => { const k = (p.half ? 'h' : 'f') + '|' + p.len; (groups[k] = groups[k] || {half:p.half, len:p.len, n:0}).n++; });
+  T.groups = Object.values(groups).sort((x, y) => (x.half - y.half) || (y.len - x.len));
+  T.seam = T.seamV + T.seamH;
+  T.baseCY = T.sf * (C.BASE_DEPTH_IN / 12) / 27;
+  T.infillLb = T.sf * C.INFILL_LB_PER_SF;
+  T.bags = Math.ceil(T.infillLb / C.INFILL_BAG_LB);
+  T.tapeRolls = T.seam > 0 ? Math.ceil(T.seam / C.SEAM_TAPE_ROLL_FT) : 0;
+  T.glue = T.seam > 0 ? Math.ceil(T.seam / C.GLUE_LF_PER_GAL) : 0;
+  T.staples = Math.ceil(T.board * 12 / C.STAPLE_SPACING_IN);
+  T.boards = Math.ceil(T.board / C.BOARD_LENGTH_FT);
+  T.nails = Math.ceil(T.edge * 12 / C.NAIL_SPACING_IN);
+  return T;
+}
+
+function update(){
+  const T = totals();
+  const res = $('#results');
+  if (!T.areas.length){
+    res.innerHTML = `<h2>Your material list</h2><p class="hint">Enter at least one area size to see your rolls and materials.</p>`;
+    $('#summary').textContent = '';
+    save(); return;
+  }
+  const waste = T.ordered > 0 ? (T.ordered - T.sf) / T.ordered * 100 : 0;
+  const rows = [];
+  rows.push(['Base: 3/8" bluestone', `${C.BASE_DEPTH_IN}" deep · ${n1(T.baseCY)} cu yd exact`, `${Math.ceil(T.baseCY)} cu yd`]);
+  rows.push(['Infill: sand', `${C.INFILL_LB_PER_SF} lb/sq ft · ${n0(T.infillLb)} lb (${n1(T.infillLb/2000)} tons)`, `${n0(T.bags)} × ${C.INFILL_BAG_LB} lb bags`]);
+  if (T.seam > 0){
+    rows.push(['Seam tape', `${n0(T.seam)} linear ft of seams`, `${T.tapeRolls} roll${T.tapeRolls>1?'s':''} (${C.SEAM_TAPE_ROLL_FT}')`]);
+    rows.push(['Seam glue', `about ${C.GLUE_LF_PER_GAL} linear ft per gallon`, `${T.glue} gal`]);
+  }
+  if (T.board > 0){
+    rows.push(['Staples (2x4 border)', `every ${C.STAPLE_SPACING_IN}" along ${n0(T.board)}' of border`, `${n0(T.staples)}`]);
+    rows.push(['2x4 nailer board', `${n0(T.board)} linear ft`, `${T.boards} × ${C.BOARD_LENGTH_FT}'`]);
+  }
+  if (T.edge > 0){
+    rows.push(['Nails (edging border)', `every ${C.NAIL_SPACING_IN}" along ${n0(T.edge)}' of border`, `${n0(T.nails)}`]);
+    rows.push(['Landscape edging', `${n0(T.edge)} linear ft`, `${n0(Math.ceil(T.edge))}'`]);
+  }
+  res.innerHTML = `<h2>Your material list</h2>
+    <div class="mini" style="margin:0 0 6px"><div><b>${n0(T.sf)}</b><span>sq ft of turf area</span></div><div><b>${n0(T.ordered)}</b><span>sq ft of turf to order</span></div><div><b>${n1(waste)}%</b><span>waste</span></div></div>
+    <h3>Turf rolls to cut</h3>
+    <table class="rolls">${T.groups.map(g => `<tr><td>${g.n} ×</td><td>${widthLabel(g.half)} wide × ${g.len}' long${g.half ? '<small>half roll</small>' : ''}</td><td>${n0(g.n * g.len * (g.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT))} sq ft</td></tr>`).join('')}</table>
+    <p class="hint">Side seams: ${n0(T.seamV)}' · Head seams: ${n0(T.seamH)}'. Seams are glued and taped, not stapled or nailed.</p>
+    <h3>Materials</h3>
+    <table>${rows.map(r => `<tr><td>${r[0]}<small>${r[1]}</small></td><td>${r[2]}</td></tr>`).join('')}</table>`;
+  $('#summary').textContent = buildSummary(T);
+  save();
+}
+
+/* ---------- summary / quote ---------- */
+function contact(){
+  const ids = ['name','company','phone','email','job','product','notes'];
+  const o = {}; ids.forEach(k => o[k] = $('#q_' + k).value.trim()); return o;
+}
+function buildSummary(T){
+  const c = contact(), L = [];
+  L.push('TURF TEK DIRECT — QUOTE REQUEST', '');
+  L.push(`Name: ${c.name || '-'}`);
+  if (c.company) L.push(`Company: ${c.company}`);
+  L.push(`Phone: ${c.phone || '-'}`, `Email: ${c.email || '-'}`);
+  if (c.job) L.push(`Job: ${c.job}`);
+  if (c.product) L.push(`Turf product: ${c.product}`);
+  L.push('', 'AREAS');
+  T.areas.forEach(({a, r}) => {
+    const hs = parseLen(a.maxPiece) > 0 ? `, pieces max ${fmt(parseLen(a.maxPiece))}` : '';
+    L.push(`- ${a.name}: ${r.g.desc} = ${n0(r.g.sf)} sq ft; rolls run along ${fmt(r.runAlong)}; ${r.lay.pieces.length} pieces${a.halfRolls ? '' : ', no half rolls'}${hs}`);
+  });
+  L.push('', 'TURF ROLLS TO CUT');
+  T.groups.forEach(g => L.push(`- ${g.n} x ${widthLabel(g.half)} wide x ${g.len}' long${g.half ? ' (half roll)' : ''}`));
+  L.push(`Turf area: ${n0(T.sf)} sq ft | Turf ordered: ${n0(T.ordered)} sq ft`);
+  L.push(`Seams: ${n0(T.seamV)}' side + ${n0(T.seamH)}' head = ${n0(T.seam)}'`);
+  L.push('', 'MATERIALS');
+  L.push(`- 3/8" bluestone base @ ${C.BASE_DEPTH_IN}": ${Math.ceil(T.baseCY)} cu yd (${n1(T.baseCY)} exact)`);
+  L.push(`- Sand infill @ ${C.INFILL_LB_PER_SF} lb/sf: ${n0(T.infillLb)} lb = ${T.bags} x ${C.INFILL_BAG_LB} lb bags`);
+  if (T.seam > 0) L.push(`- Seam tape: ${n0(T.seam)} lf = ${T.tapeRolls} roll(s)`, `- Seam glue: ${T.glue} gal`);
+  if (T.board > 0) L.push(`- 2x4 nailer: ${n0(T.board)} lf (${T.boards} x ${C.BOARD_LENGTH_FT}'), staples: ${n0(T.staples)}`);
+  if (T.edge > 0) L.push(`- Landscape edging: ${n0(T.edge)} lf, nails: ${n0(T.nails)}`);
+  if (c.notes) L.push('', 'NOTES', c.notes);
+  return L.join('\n');
+}
+
+function showMsg(t){ const m = $('#qmsg'); m.textContent = t; m.classList.add('show'); }
+
+$('#quote').addEventListener('submit', e => {
+  e.preventDefault();
+  const c = contact();
+  const T = totals();
+  if (!T.areas.length) return showMsg('Add at least one area size first.');
+  if (!c.name || (!c.phone && !c.email)) return showMsg('Please add your name and a phone number or email so we can reach you.');
+  const body = buildSummary(T);
+  const subj = `Turf quote request — ${c.company || c.name}${c.job ? ' — ' + c.job : ''}`;
+  const a = document.createElement('a');
+  a.href = `mailto:${C.SALES_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  document.body.appendChild(a); a.click(); a.remove();
+  showMsg(`Your email app should open with the request filled in. Just hit send.${C.SALES_EMAIL ? ' If it doesn\'t open, copy the summary and email it to ' + C.SALES_EMAIL + '.' : ' If it doesn\'t open, use Copy summary and email it to us.'}`);
+});
+
+$('#copyBtn').addEventListener('click', async () => {
+  const txt = $('#summary').textContent;
+  try { await navigator.clipboard.writeText(txt); showMsg('Summary copied.'); }
+  catch(e){
+    const r = document.createRange(); r.selectNodeContents($('#summary'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    showMsg('Summary selected — copy it with your device\'s copy command.');
+  }
+});
+
+['name','company','phone','email','job','product','notes'].forEach(k => {
+  const el = $('#q_' + k);
+  el.value = (state.contact && state.contact[k]) || '';
+  el.addEventListener('input', () => { state.contact = contact(); $('#summary').textContent = buildSummary(totals()); save(); });
+});
+
+/* ---------- events ---------- */
+const areaById = id => state.areas.find(a => a.id === id);
+$('#areas').addEventListener('input', e => {
+  const t = e.target, a = areaById(t.dataset.id); if (!a || !t.dataset.f) return;
+  a[t.dataset.f] = t.type === 'checkbox' ? t.checked : t.value;
+  if (t.dataset.f === 'border'){
+    const w = document.querySelector(`[data-splitwrap="${a.id}"]`); if (w) w.style.display = a.border === 'split' ? '' : 'none';
+  }
+  update();
+});
+$('#areas').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') e.target.dispatchEvent(new Event('input', {bubbles:true})); });
+$('#areas').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.shape){ const a = areaById(b.dataset.id); a.shape = b.dataset.shape; renderAreas(); }
+  if (b.dataset.del){ state.areas = state.areas.filter(a => a.id !== b.dataset.del); renderAreas(); }
+});
+$('#addArea').addEventListener('click', () => { state.areas.push(newArea(state.areas.length + 1)); renderAreas(); });
+
+renderAreas();
+</script>
+</body>
+</html>
