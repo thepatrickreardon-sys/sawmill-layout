@@ -2205,4 +2205,281 @@ document.getElementById('fsSend').addEventListener('click',()=>{const d={kind:'t
 elevRefresh();
 </script>
 
+<script>
+/* ---------- BUILD DAYS: plan what gets built each day ---------- */
+(function(){
+  if(typeof GROUPS==='undefined'||!GROUPS.home) return;
+  const css=`
+.subnav .seg.wide button{padding-inline:4px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.bdtop h2{margin:0;flex:1 1 auto}
+.bddays{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:thin}
+.bddays button{flex:none;min-height:42px;padding:6px 14px;border-radius:99px;font-weight:700;font-family:var(--display);font-size:17px;border:2px solid var(--dc,var(--line));background:var(--panel);color:var(--ink)}
+.bddays button[aria-pressed="true"]{background:var(--dc,var(--ink));color:#fff;border-color:var(--dc,var(--ink))}
+.bddays button small{font-family:var(--body);font-weight:600;font-size:12px;opacity:.85;margin-left:4px}
+.bdlayers{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.bdlayers button{min-height:34px;padding:4px 12px;border-radius:99px;font-size:14px;font-weight:700}
+.bdlayers button[aria-pressed="true"]{background:var(--steelsoft);color:var(--steel);border-color:var(--steel)}
+#bdMap{display:block;width:100%;height:min(66vh,640px);touch-action:none;user-select:none;-webkit-user-select:none}
+.bdhint{font-size:14px;margin:8px 0 0}
+.bdlist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.bdlist li{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--panel)}
+.bdlist li.done{opacity:.55}
+.bdlist li.done .bdname{text-decoration:line-through}
+.bdn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-family:var(--display);font-size:16px;background:var(--dc,var(--ink))}
+.bdname{font-weight:700;font-size:16px;line-height:1.2}
+.bdsub{font-size:13px;color:var(--muted);line-height:1.25}
+.bdbtns{display:flex;gap:4px}
+.bdbtns{gap:3px}.bdbtns button{min-width:34px;min-height:38px;padding:0 4px;font-size:15px}
+.bdlist li{grid-template-columns:30px 1fr auto;padding:6px}
+.bdbtns button.ok[aria-pressed="true"]{background:var(--good);color:#fff;border-color:var(--good)}
+.bdact{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bdact button{min-height:40px}
+.bdsum{display:grid;gap:10px}
+.bdday{border-left:5px solid var(--dc,var(--line));padding:4px 0 4px 10px}
+.bdday h3{margin:0;font-size:18px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.bdday h3 small{font-family:var(--body);font-weight:400;color:var(--muted);font-size:13px}
+.bdday ol{margin:4px 0 0;padding-left:22px;font-size:15px;line-height:1.35}
+.bdday ol li.done{text-decoration:line-through;opacity:.6}
+.bdban{background:var(--paintsoft);border:2px solid var(--paint);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bdban b{flex:1 1 200px}
+.bdtoast{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:6px 12px;border-radius:99px;font-size:14px;font-weight:700;pointer-events:none;white-space:nowrap;z-index:3}
+`;
+  document.head.insertAdjacentHTML('beforeend','<style>'+css+'</style>');
+
+  const T=s=>{ try{ return typeof L==='function'?L(s):s; }catch(e){ return s; } };
+  const COLORS=['#e8590c','#1f5f8b','#2b8a3e','#7048e8','#c2255c','#0c8599','#b07d00','#5c940d','#862e9c','#495057'];
+  const dcol=i=>COLORS[i%COLORS.length];
+  const HB=new Map(HOLES.map(h=>[String(h.h),h]));
+  const cmp=(a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true});
+  const span=list=>{ const s=[...list].sort(cmp); return s.length>4?`${s[0]}–${s[s.length-1]}`:s.join(', '); };
+
+  // ---- build the list of things you can schedule ----
+  const ITEMS=[], BYK={};
+  const add=it=>{ ITEMS.push(it); BYK[it.k]=it; };
+  // poles
+  for(const h of HOLES.filter(h=>h.post)) add({k:'p'+h.h, kind:'pole', name:`Pole ${h.h}`, sub:[h.part,h.len].filter(Boolean).join(' · '), x:h.x, y:h.y, h:h.h});
+  // decks
+  (JOB.decks||[]).forEach((d,i)=>{ const pts=(d.p||[]).map(n=>HB.get(String(n))).filter(Boolean); if(pts.length<3) return;
+    const cx=pts.reduce((s,h)=>s+h.x,0)/pts.length, cy=pts.reduce((s,h)=>s+h.y,0)/pts.length;
+    const nm=/^\d+'\s*\d*"?$/.test(d.t)?`${d.t} deck`:d.t.charAt(0).toUpperCase()+d.t.slice(1);
+    add({k:'d'+i, kind:'deck', name:nm, sub:`Poles ${span(d.p)}`, x:cx, y:cy, poly:pts.map(h=>[h.x,h.y])}); });
+  // components in the ground (non-post holes), grouped by name and closeness
+  const FDOC=(JOB.footDoc||[]).map(([p,ks])=>[new RegExp(p,'i'),ks]);
+  const base=d=>String(d||'').replace(/\s*\((Kompan\s+)?P\d+\)/ig,'').replace(/\s*\(trench\)/ig,'').replace(/\s+(foot|feet|support|mid-support|leg|legs|footer|post|ground foot|exit|spring anchor|pedestal)$/i,'').replace(/\s*\(pedestal\)/i,'').trim();
+  const groups=[];
+  for(const h of HOLES.filter(h=>!h.post)){
+    if(/no hole|stake only|reference/i.test(h.d||'')) continue;
+    const b=base(h.d)||'Footing'; let g=groups.find(g=>g.b===b && g.hs.some(q=>Math.hypot(q.x-h.x,q.y-h.y)<=180));
+    if(!g){ g={b,hs:[]}; groups.push(g); } g.hs.push(h);
+  }
+  // merge groups that the closeness check split but later holes joined
+  const cnt={}; groups.forEach(g=>cnt[g.b]=(cnt[g.b]||0)+1); const seen={};
+  const usedDocs=new Set();
+  groups.forEach((g,i)=>{ const xs=g.hs.map(h=>h.x), ys=g.hs.map(h=>h.y);
+    seen[g.b]=(seen[g.b]||0)+1; const nm=g.b+(cnt[g.b]>1?` #${seen[g.b]}`:'');
+    const docs=[]; for(const [re,ks] of FDOC) if(re.test(g.hs[0].d||'')) ks.forEach(k=>{ if(!docs.includes(k)) docs.push(k); });
+    docs.forEach(k=>usedDocs.add(k));
+    add({k:'c'+i, kind:'comp', name:nm, sub:`Holes ${span(g.hs.map(h=>h.h))}`, box:[Math.min(...xs)-14,Math.min(...ys)-14,Math.max(...xs)+14,Math.max(...ys)+14], x:(Math.min(...xs)+Math.max(...xs))/2, y:(Math.min(...ys)+Math.max(...ys))/2, docs, holes:g.hs.map(h=>h.h)}); });
+  // parts hung on the structure (panels, barriers, slides…) found from the pole marks
+  if(JOB.itemDocs && typeof DOCS!=='undefined'){
+    const sets=new Set();
+    JOB.itemDocs.forEach(([p,k],i)=>{ if(/^deck$/i.test(p)||!DOCS[k]||usedDocs.has(k)) return; const re=new RegExp(p,'i');
+      const on=HOLES.filter(h=>h.post&&(h.marks||[]).some(m=>re.test(m[2]||''))); if(!on.length||on.length>12) return;
+      const cl=[]; for(const h of on){ let c=cl.find(c=>c.some(q=>Math.hypot(q.x-h.x,q.y-h.y)<=100)); if(!c){ c=[]; cl.push(c); } c.push(h); }
+      cl.forEach((c,ci)=>{ const sig=c.map(h=>h.h).sort(cmp).join(','); if(sets.has(sig+'|'+p)) return; sets.add(sig+'|'+p);
+        const x=c.reduce((s,h)=>s+h.x,0)/c.length, y=c.reduce((s,h)=>s+h.y,0)/c.length;
+        add({k:'a'+i+(ci?'_'+ci:''), kind:'part', name:DOCS[k][0]+(cl.length>1?` #${ci+1}`:''), sub:`On pole${c.length>1?'s':''} ${span(c.map(h=>h.h))}`, x, y, docs:[k], poles:c.map(h=>h.h)}); }); });
+    // spread markers that land on the same spot
+    const parts=ITEMS.filter(it=>it.kind==='part');
+    parts.forEach((it,i)=>{ const twins=parts.filter(o=>Math.hypot(o.x-it.x,o.y-it.y)<10); if(twins.length>1){ const j=twins.indexOf(it), a=j/twins.length*Math.PI*2; it.x+=Math.cos(a)*16; it.y+=Math.sin(a)*16; } });
+  }
+  const KIND={pole:'Poles',deck:'Decks',comp:'Ground parts',part:'Structure parts'};
+
+  // ---- saved plan ----
+  let P=store.get('build',null); if(!P||!Array.isArray(P.days)||!P.days.length) P={days:[{items:[],done:[]}],cur:0,view:'day'};
+  const clean=()=>{ P.days.forEach(d=>{ d.items=(d.items||[]).filter(k=>BYK[k]); d.done=(d.done||[]).filter(k=>d.items.includes(k)); }); if(P.cur>=P.days.length) P.cur=P.days.length-1; };
+  clean();
+  let LAY=store.get('buildLayers',{pole:true,deck:true,comp:true,part:true});
+  const save=()=>store.set('build',P);
+  const dayOf=k=>P.days.findIndex(d=>d.items.includes(k));
+
+  // ---- view ----
+  const main=document.querySelector('main');
+  main.insertAdjacentHTML('beforeend',`<section data-view="build" hidden>
+  <div id="bdBan"></div>
+  <div class="card">
+    <div class="bdtop"><h2>${T('Build days')}</h2><span class="muted small">${T('Tap what you will build, in order')}</span></div>
+    <div class="bddays" id="bdDays" role="group" aria-label="Day"></div>
+    <div class="bdlayers" id="bdLayers"></div>
+    <div class="mapbox" id="bdBox">
+      <svg id="bdMap" role="img" aria-label="Overview: tap poles, decks and parts to add them to the day"></svg>
+      <div class="mapctl"><button id="bdZin" aria-label="Zoom in">+</button><button id="bdZout" aria-label="Zoom out">−</button><button id="bdZfit" aria-label="Fit">⤢</button></div>
+      <div class="bdtoast" id="bdToast" hidden></div>
+    </div>
+    <p class="bdhint muted" id="bdHint"></p>
+  </div>
+  <div class="card" id="bdDayCard"></div>
+  <div class="card"><h2 style="margin:0 0 8px">${T('All days')}</h2><div class="bdsum" id="bdSum"></div>
+    <div class="bdact"><button class="primary" id="bdShare">📤 ${T('Send plan to crew')}</button><button id="bdCopy">${T('Copy as text')}</button></div>
+    <p class="muted small" style="margin:8px 0 0">${T('The plan saves on this phone. Send it to the crew and they tap the link to load the same plan.')}</p></div>
+</section>`);
+  GROUPS.home.push('build'); if(typeof TABS!=='undefined'&&!TABS.includes('build')) TABS.push('build');
+  if(typeof SUBLAB!=='undefined') { SUBLAB.build='Build'; if(!SUBLAB.home) SUBLAB.home='Plan'; }
+  try{ const v=store.get('last_home',null); if(v==='build') LAST.home='build'; }catch(e){}
+
+  const svg=document.getElementById('bdMap');
+  let vb=null, toastT=null;
+  function toast(t){ const el=document.getElementById('bdToast'); el.textContent=t; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true,1600); }
+  const W=()=>svg.clientWidth||400, H=()=>svg.clientHeight||400;
+  let FULL=false;
+  function fitV(){ let x0=FP.L,x1=FP.R,y0=FP.B,y1=FP.T;
+    const st=ITEMS.filter(i=>i.kind!=='comp'); if(!FULL&&st.length>2&&W()<700){ const xs=st.map(i=>i.x), ys=st.map(i=>i.y); x0=Math.min(...xs);x1=Math.max(...xs);y0=Math.min(...ys);y1=Math.max(...ys); }
+    const pad=40, w=x1-x0+pad*2, h=y1-y0+pad*2, ar=W()/H();
+    let vw=w, vh=h; if(w/h>ar) vh=w/ar; else vw=h*ar; vb={x:(x0+x1)/2-vw/2, y:-(y0+y1)/2-vh/2, w:vw, h:vh}; }
+  const sc=()=>vb.w/W(); // plan inches per screen px
+  function applyV(){ svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
+  function zoom(f,cx,cy){ const r=svg.getBoundingClientRect(); cx=cx??r.width/2; cy=cy??r.height/2;
+    const px=vb.x+cx/r.width*vb.w, py=vb.y+cy/r.height*vb.h; const full=(FP.R-FP.L+80)*1.3;
+    let nw=Math.min(full*1.5,Math.max(60,vb.w/f)); const k=nw/vb.w; vb={x:px-(px-vb.x)*k,y:py-(py-vb.y)*k,w:nw,h:vb.h*k}; draw(); }
+
+  function draw(){
+    if(!vb) fitV(); applyV();
+    const s=sc(), all=P.view==='all', cur=P.days[P.cur]||{items:[]};
+    const fs=Math.max(7,13*s), pr=Math.max(4,6*s);
+    let g=`<rect x="${FP.L}" y="${-FP.T}" width="${FP.R-FP.L}" height="${FP.T-FP.B}" fill="none" stroke="var(--line)" stroke-width="${2*s}" stroke-dasharray="${8*s} ${5*s}"/>`;
+    const st=it=>{ const d=dayOf(it.k); if(d<0) return {d, c:null}; return {d, c:dcol(d), on:all||d===P.cur}; };
+    const badge=(it,x,y)=>{ const {d,c,on}=st(it); if(d<0) return ''; const n=all?`${d+1}`:(d===P.cur?`${cur.items.indexOf(it.k)+1}`:`D${d+1}`);
+      const r=Math.max(7,11*s); const done=P.days[d].done.includes(it.k);
+      return `<g opacity="${on?1:.55}"><circle cx="${x}" cy="${-y}" r="${r}" fill="${c}" stroke="#fff" stroke-width="${1.5*s}"/><text x="${x}" y="${-y}" dy=".35em" text-anchor="middle" font-size="${r*(n.length>2?0.95:1.15)}" font-weight="800" fill="#fff">${done?'✓':esc(n)}</text></g>`; };
+    if(LAY.deck) for(const it of ITEMS.filter(i=>i.kind==='deck')){ const {c,on}=st(it);
+      g+=`<polygon points="${it.poly.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="${c||'var(--steel)'}" fill-opacity="${c?(on?.45:.2):.1}" stroke="${c||'var(--steel)'}" stroke-width="${1.5*s}"/>`;
+      if(s<1.4) g+=`<text x="${it.x}" y="${-it.y+fs*1.6}" text-anchor="middle" font-size="${fs*.85}" fill="var(--ink)" opacity=".8">${esc(it.name)}</text>`; }
+    if(LAY.comp) for(const it of ITEMS.filter(i=>i.kind==='comp')){ const {c,on}=st(it); const [x0,y0,x1,y1]=it.box;
+      g+=`<rect x="${x0}" y="${-y1}" width="${x1-x0}" height="${y1-y0}" rx="${6*s}" fill="${c||'var(--paint)'}" fill-opacity="${c?(on?.4:.18):.08}" stroke="${c||'var(--paint)'}" stroke-width="${1.5*s}" stroke-dasharray="${c?'none':(5*s)+' '+(3*s)}"/>`;
+      for(const n of it.holes){ const h=HB.get(String(n)); g+=`<circle cx="${h.x}" cy="${-h.y}" r="${pr*.7}" fill="var(--panel)" stroke="var(--muted)" stroke-width="${s}"/>`; }
+      if(s<2.2) g+=`<text x="${it.x}" y="${-y0+fs*1.1}" text-anchor="middle" font-size="${fs*.8}" fill="var(--ink)" opacity=".85">${esc(it.name.length>26?it.name.slice(0,25)+'…':it.name)}</text>`; }
+    if(LAY.pole) for(const it of ITEMS.filter(i=>i.kind==='pole')){ const {c,on}=st(it);
+      g+=`<circle cx="${it.x}" cy="${-it.y}" r="${pr}" fill="${c||'var(--panel)'}" fill-opacity="${c&&!on?.5:1}" stroke="${c||'var(--ink)'}" stroke-width="${1.5*s}"/>`;
+      if(s<2.6) g+=`<text x="${it.x+pr*1.3}" y="${-it.y-pr*1.1}" font-size="${fs*.8}" font-weight="700" fill="var(--muted)">${esc(it.h)}</text>`; }
+    if(LAY.part) for(const it of ITEMS.filter(i=>i.kind==='part')){ const {c,on}=st(it); const r=pr*1.25;
+      g+=`<rect x="${it.x-r}" y="${-it.y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${it.x} ${-it.y})" fill="${c||'var(--paintsoft)'}" fill-opacity="${c&&!on?.5:1}" stroke="${c||'var(--paint)'}" stroke-width="${1.5*s}"/>`; }
+    // order badges on top
+    const vis=it=>LAY[it.kind];
+    for(const it of ITEMS) if(vis(it)){ const bx=it.kind==='pole'?it.x+pr*1.6:it.kind==='part'?it.x+pr*1.8:it.x, by=it.kind==='pole'||it.kind==='part'?it.y+pr*1.6:it.y; g+=badge(it,bx,by); }
+    // route line through today's order
+    if(!all&&cur.items.length>1){ const pts=cur.items.map(k=>BYK[k]).filter(vis); g=g+`<polyline points="${pts.map(it=>it.x+','+(-it.y)).join(' ')}" fill="none" stroke="${dcol(P.cur)}" stroke-width="${2*s}" stroke-opacity=".5" stroke-dasharray="${4*s} ${4*s}" pointer-events="none"/>`; }
+    svg.innerHTML=g;
+  }
+
+  // ---- tap to add ----
+  function hit(cx,cy){ const r=svg.getBoundingClientRect(); const x=vb.x+(cx-r.left)/r.width*vb.w, y=-(vb.y+(cy-r.top)/r.height*vb.h), s=sc();
+    let best=null,bd=1e9;
+    for(const it of ITEMS) if((it.kind==='pole'&&LAY.pole)||(it.kind==='part'&&LAY.part)){ const d=Math.hypot(it.x-x,it.y-y)/s; if(d<bd){bd=d;best=it;} }
+    if(best&&bd<=22) return best;
+    if(LAY.comp){ const c=ITEMS.filter(i=>i.kind==='comp'&&x>=i.box[0]&&x<=i.box[2]&&y>=i.box[1]&&y<=i.box[3]).sort((a,b)=>(a.box[2]-a.box[0])*(a.box[3]-a.box[1])-(b.box[2]-b.box[0])*(b.box[3]-b.box[1]))[0]; if(c) return c; }
+    if(LAY.deck){ const inPoly=(p)=>{ let o=false; for(let i=0,j=p.length-1;i<p.length;j=i++){ const [xi,yi]=p[i],[xj,yj]=p[j]; if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) o=!o; } return o; };
+      const d=ITEMS.find(i=>i.kind==='deck'&&inPoly(i.poly)); if(d) return d; }
+    return null; }
+  function tapItem(it){
+    if(P.view==='all'){ const d=dayOf(it.k); toast(d<0?`${it.name}: ${T('not planned yet')}`:`${it.name}: ${T('Day')} ${d+1}`); return; }
+    const cur=P.days[P.cur], d=dayOf(it.k);
+    if(d===P.cur){ cur.items=cur.items.filter(k=>k!==it.k); cur.done=cur.done.filter(k=>k!==it.k); toast(`${T('Removed')}: ${it.name}`); }
+    else { if(d>=0){ const o=P.days[d]; o.items=o.items.filter(k=>k!==it.k); o.done=o.done.filter(k=>k!==it.k); toast(`${it.name}: ${T('moved from Day')} ${d+1}`); } else toast(`${cur.items.length+1}. ${it.name}`); cur.items.push(it.k); }
+    save(); renderAllB(); }
+
+  // pan / pinch / tap
+  const ptrs=new Map(); let start=null, moved=false, pinch=null;
+  svg.addEventListener('pointerdown',e=>{ svg.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); moved=false;
+    if(ptrs.size===1) start={x:e.clientX,y:e.clientY,vb:{...vb}};
+    if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y),vb:{...vb},cx:(a.x+b.x)/2,cy:(a.y+b.y)/2}; moved=true; } });
+  svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); const r=svg.getBoundingClientRect();
+    if(pinch&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; const f=Math.hypot(a.x-b.x,a.y-b.y)/pinch.d; vb={...pinch.vb}; zoom(f,pinch.cx-r.left,pinch.cy-r.top); return; }
+    if(start&&ptrs.size===1){ const dx=e.clientX-start.x, dy=e.clientY-start.y; if(Math.hypot(dx,dy)>8) moved=true; if(moved){ vb={...start.vb,x:start.vb.x-dx/r.width*start.vb.w,y:start.vb.y-dy/r.height*start.vb.h}; applyV(); } } });
+  const up=e=>{ const was=ptrs.has(e.pointerId); ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=null;
+    if(was&&ptrs.size===0){ if(!moved&&e.type==='pointerup'){ const it=hit(e.clientX,e.clientY); if(it) tapItem(it); } else draw(); start=null; } };
+  svg.addEventListener('pointerup',up); svg.addEventListener('pointercancel',up);
+  svg.addEventListener('wheel',e=>{ e.preventDefault(); const r=svg.getBoundingClientRect(); zoom(e.deltaY<0?1.15:0.87,e.clientX-r.left,e.clientY-r.top); },{passive:false});
+  document.getElementById('bdZin').onclick=()=>zoom(1.5); document.getElementById('bdZout').onclick=()=>zoom(1/1.5); document.getElementById('bdZfit').onclick=()=>{ FULL=!FULL; fitV(); draw(); toast(T(FULL?'Whole site':'Structure')); };
+
+  // ---- day chips, layers, lists ----
+  function renderDays(){
+    const el=document.getElementById('bdDays');
+    el.innerHTML=`<button data-dall aria-pressed="${P.view==='all'}">${T('Overview')}</button>`+P.days.map((d,i)=>`<button data-day="${i}" style="--dc:${dcol(i)}" aria-pressed="${P.view!=='all'&&i===P.cur}">${T('Day')} ${i+1}<small>${d.items.length}</small></button>`).join('')+`<button data-dadd aria-label="Add a day">＋ ${T('Day')}</button>`;
+    document.getElementById('bdLayers').innerHTML=Object.keys(KIND).filter(k=>ITEMS.some(i=>i.kind===k)).map(k=>`<button data-lay="${k}" aria-pressed="${!!LAY[k]}">${T(KIND[k])}</button>`).join('');
+    const left=ITEMS.filter(it=>dayOf(it.k)<0).length;
+    document.getElementById('bdHint').textContent=P.view==='all'?T(`Overview: every part shows its day number. ${left} not planned yet.`):T(`Day ${P.cur+1}: tap poles, decks and parts in the order you will build them. Tap again to take one off. ${left} not planned yet.`);
+  }
+  function itemRow(it,i,d,day){ const done=day.done.includes(it.k);
+    return `<li class="${done?'done':''}" style="--dc:${dcol(d)}"><span class="bdn">${i+1}</span><span data-open="${esc(it.k)}"><span class="bdname">${esc(it.name)}</span><br><span class="bdsub">${esc(T(KIND[it.kind]).replace(/s$/,''))} · ${esc(it.sub||'')}</span></span>
+      <span class="bdbtns"><button class="ok" data-done="${esc(it.k)}" aria-pressed="${done}" aria-label="Done">✓</button><button data-up="${i}" aria-label="Move up" ${i?'':'disabled'}>↑</button><button data-dn="${i}" aria-label="Move down" ${i<day.items.length-1?'':'disabled'}>↓</button><button data-rm="${esc(it.k)}" aria-label="Remove">✕</button></span></li>`; }
+  function renderDayCard(){
+    const c=document.getElementById('bdDayCard'); if(P.view==='all'){ c.hidden=true; return; } c.hidden=false;
+    const d=P.cur, day=P.days[d], its=day.items.map(k=>BYK[k]);
+    const by={}; its.forEach(it=>by[it.kind]=(by[it.kind]||0)+1);
+    c.innerHTML=`<h2 style="margin:0;display:flex;gap:8px;align-items:center"><span class="bdn" style="--dc:${dcol(d)}">${d+1}</span>${T('Day')} ${d+1}</h2>
+      <p class="muted small" style="margin:4px 0 0">${its.length?Object.keys(KIND).filter(k=>by[k]).map(k=>`${by[k]} ${T(by[k]===1?KIND[k].replace(/s$/,''):KIND[k]).toLowerCase()}`).join(' · ')+` · ${day.done.length}/${its.length} ${T('done')}`:T('Nothing picked yet. Tap things on the plan above.')}</p>
+      ${its.length?`<ol class="bdlist">${its.map((it,i)=>itemRow(it,i,d,day)).join('')}</ol>`:''}
+      <div class="bdact">${its.length?`<button data-clr>${T('Clear this day')}</button>`:''}${P.days.length>1?`<button data-ddel>${T('Delete this day')}</button>`:''}</div>`;
+  }
+  function planText(){ const job=JOB.name||JOB.short||'';
+    let t=`${job} — ${T('Build plan')}\n`;
+    P.days.forEach((d,i)=>{ if(!d.items.length) return; t+=`\n${T('Day')} ${i+1}:\n`+d.items.map((k,j)=>{ const it=BYK[k]; return `${j+1}. ${it.name}${it.sub?' ('+it.sub+')':''}${d.done.includes(k)?' ✓':''}`; }).join('\n')+'\n'; });
+    const left=ITEMS.filter(it=>dayOf(it.k)<0); if(left.length) t+=`\n${T('Not planned yet')}: ${left.length}\n`;
+    return t; }
+  function renderSum(){
+    const el=document.getElementById('bdSum'); const left=ITEMS.filter(it=>dayOf(it.k)<0);
+    el.innerHTML=P.days.map((d,i)=>`<div class="bdday" style="--dc:${dcol(i)}"><h3><span style="color:${dcol(i)}">${T('Day')} ${i+1}</span><small>${d.items.length} ${T(d.items.length===1?'item':'items')}${d.items.length?` · ${d.done.length} ${T('done')}`:''}</small><button data-goday="${i}" style="margin-left:auto;min-height:34px;padding:2px 10px">${T('Edit')}</button></h3>
+      ${d.items.length?`<ol>${d.items.map(k=>`<li class="${d.done.includes(k)?'done':''}">${esc(BYK[k].name)}</li>`).join('')}</ol>`:`<div class="muted small">${T('Nothing yet')}</div>`}</div>`).join('')
+      +`<details${left.length?'':' hidden'}><summary><b>${T('Not planned yet')}</b> <span class="muted small">${left.length}</span></summary><div class="small" style="margin-top:6px;line-height:1.5">${Object.keys(KIND).map(k=>{ const l=left.filter(i=>i.kind===k); return l.length?`<div><b>${T(KIND[k])}:</b> ${l.map(i=>esc(i.name.replace(/^Pole /,''))).join(', ')}</div>`:''; }).join('')}</div></details>`;
+  }
+  function renderAllB(){ renderDays(); draw(); renderDayCard(); renderSum(); if(LANG==='es'&&window.trDom){ try{ trDom(document.querySelector('[data-view=build]')); }catch(e){} } }
+
+  document.getElementById('bdDays').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    if(b.hasAttribute('data-dall')) P.view='all';
+    else if(b.hasAttribute('data-dadd')){ P.days.push({items:[],done:[]}); P.cur=P.days.length-1; P.view='day'; }
+    else { P.cur=+b.dataset.day; P.view='day'; }
+    save(); renderAllB(); });
+  document.getElementById('bdLayers').addEventListener('click',e=>{ const b=e.target.closest('[data-lay]'); if(!b) return; LAY[b.dataset.lay]=!LAY[b.dataset.lay]; store.set('buildLayers',LAY); renderAllB(); });
+  document.getElementById('bdDayCard').addEventListener('click',e=>{
+    const day=P.days[P.cur]; let b;
+    if(b=e.target.closest('[data-done]')){ const k=b.dataset.done; day.done.includes(k)?day.done=day.done.filter(x=>x!==k):day.done.push(k); }
+    else if(b=e.target.closest('[data-up]')){ const i=+b.dataset.up; [day.items[i-1],day.items[i]]=[day.items[i],day.items[i-1]]; }
+    else if(b=e.target.closest('[data-dn]')){ const i=+b.dataset.dn; [day.items[i+1],day.items[i]]=[day.items[i],day.items[i+1]]; }
+    else if(b=e.target.closest('[data-rm]')){ const k=b.dataset.rm; day.items=day.items.filter(x=>x!==k); day.done=day.done.filter(x=>x!==k); }
+    else if(e.target.closest('[data-clr]')){ day.items=[]; day.done=[]; }
+    else if(e.target.closest('[data-ddel]')){ P.days.splice(P.cur,1); P.cur=Math.max(0,P.cur-1); }
+    else if(b=e.target.closest('[data-open]')){ openItem(BYK[b.dataset.open]); return; }
+    else return;
+    save(); renderAllB(); });
+  document.getElementById('bdSum').addEventListener('click',e=>{ const b=e.target.closest('[data-goday]'); if(!b) return; P.cur=+b.dataset.goday; P.view='day'; save(); renderAllB(); document.getElementById('bdDays').scrollIntoView({behavior:'smooth',block:'start'}); });
+  function openItem(it){ if(!it) return;
+    try{
+      if(it.kind==='pole'){ location.hash='poles'; route(); selectPole(it.h); return; }
+      if(it.docs&&it.docs.length&&typeof openDoc==='function'){ try{ VSTACK=[]; }catch(e){} openDoc(it.docs[0]); return; }
+      if(it.kind==='comp'&&typeof selectHole==='function'){ selectHole(it.holes[0]); location.hash='map'; route(); }
+    }catch(e){} }
+  async function share(){ const url=location.origin+location.pathname+'?plan='+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(P.days.map(d=>[d.items,d.done]))))));
+    const text=planText();
+    try{ if(navigator.share){ await navigator.share({title:`${JOB.short||''} ${T('build plan')}`,text:text+'\n'+T('Open to load this plan:'),url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; }
+    try{ await navigator.clipboard.writeText(text+'\n'+url); toast(T('Copied. Paste it in a text.')); }catch(e){ prompt(T('Copy this link'),url); } }
+  document.getElementById('bdShare').onclick=share;
+  document.getElementById('bdCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(planText()); toast(T('Copied')); }catch(e){ prompt(T('Copy the plan'),planText()); } };
+
+  // ---- load a plan someone sent ----
+  try{ const q=new URLSearchParams(location.search).get('plan'); if(q){
+    const arr=JSON.parse(decodeURIComponent(escape(atob(q)))); const days=arr.map(([i,d])=>({items:(i||[]).filter(k=>BYK[k]),done:(d||[]).filter(k=>BYK[k])}));
+    history.replaceState(null,'',location.pathname+'#build');
+    const ban=document.getElementById('bdBan'); const n=days.reduce((s,d)=>s+d.items.length,0);
+    ban.innerHTML=`<div class="bdban"><b>${T(`A build plan was sent to you: ${days.length} day${days.length===1?'':'s'}, ${n} item${n===1?'':'s'}.`)}</b><button class="primary" data-bload>${T('Load it')}</button><button data-bno>${T('Keep mine')}</button></div>`;
+    ban.onclick=e=>{ if(e.target.closest('[data-bload]')){ P={days:days.length?days:[{items:[],done:[]}],cur:0,view:'all'}; save(); ban.innerHTML=''; renderAllB(); toast(T('Plan loaded')); } else if(e.target.closest('[data-bno]')) ban.innerHTML=''; };
+  } }catch(e){}
+
+  window.addEventListener('hashchange',()=>{ if(location.hash==='#build') requestAnimationFrame(()=>{ if(!vb) fitV(); renderAllB(); }); });
+  addEventListener('resize',()=>{ if(!document.querySelector('[data-view=build]').hidden){ fitV(); draw(); } });
+  route();
+  if(location.hash==='#build') requestAnimationFrame(()=>{ fitV(); renderAllB(); });
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script></body></html>
