@@ -1693,6 +1693,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{ if(
 fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); setTimeout(loadText, 1500);
 </script>
 
+<script>if(!JOB.homePlan) JOB.homePlan={page:261,img:[3400,2200],crop:[1650,30,1680,2120],o:[1767.17,174.33],k:2.08333};</script>
 <script>
 /* ---------- BUILD DAYS: plan what gets built each day ---------- */
 (function(){
@@ -1708,7 +1709,7 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
 .bdlayers{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
 .bdlayers button{min-height:34px;padding:4px 12px;border-radius:99px;font-size:14px;font-weight:700}
 .bdlayers button[aria-pressed="true"]{background:var(--steelsoft);color:var(--steel);border-color:var(--steel)}
-#bdMap{display:block;width:100%;height:min(66vh,640px);touch-action:none;user-select:none;-webkit-user-select:none}
+#bdMap{display:block;width:100%;background:#fff;height:min(66vh,640px);touch-action:none;user-select:none;-webkit-user-select:none}
 .bdhint{font-size:14px;margin:8px 0 0}
 .bdlist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
 .bdlist li{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--panel)}
@@ -1782,13 +1783,26 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
     const parts=ITEMS.filter(it=>it.kind==='part');
     parts.forEach((it,i)=>{ const twins=parts.filter(o=>Math.hypot(o.x-it.x,o.y-it.y)<10); if(twins.length>1){ const j=twins.indexOf(it), a=j/twins.length*Math.PI*2; it.x+=Math.cos(a)*16; it.y+=Math.sin(a)*16; } });
   }
-  const KIND={pole:'Poles',deck:'Decks',comp:'Ground parts',part:'Structure parts'};
+  // footings poured ahead of the part: slabs, pads and anchor-bolt sets
+  const FTJ=JOB.footing||{};
+  (FTJ.groups||[]).forEach((G,gi)=>{ (G.sets||[]).forEach((set,si)=>{ const hs=set.map(n=>HB.get(String(n))).filter(Boolean); if(!hs.length) return;
+    const xs=hs.map(h=>h.x), ys=hs.map(h=>h.y);
+    let nm=String(G.label||'Footing').replace(/\s*anchor bolts?$/i,'').replace(/\s*anchors?$/i,'').replace(/\s*footing$/i,'').trim()+' footing';
+    if(G.sets.length>1) nm+=` #${si+1}`;
+    add({k:`f${gi}_${si}`, kind:'foot', name:nm, sub:[G.foot,`holes ${span(set)}`].filter(Boolean).join(' · '), box:[Math.min(...xs)-16,Math.min(...ys)-16,Math.max(...xs)+16,Math.max(...ys)+16], x:(Math.min(...xs)+Math.max(...xs))/2, y:(Math.min(...ys)+Math.max(...ys))/2, docs:G.doc?[G.doc]:[], holes:set}); }); });
+  Object.entries(FTJ.types||{}).forEach(([t,T0])=>{ if(!/\b(pad|slab)\b/i.test([T0.label,T0.word,T0.size].join(' '))) return;
+    ((FTJ.holes||{})[t]||[]).forEach(n=>{ const h=HB.get(String(n)); if(!h||ITEMS.some(i=>i.kind==='foot'&&i.holes.map(String).includes(String(n)))) return;
+      add({k:'f'+t+'_'+n, kind:'foot', name:`${base(h.d)||'Concrete'} pad`, sub:`${T0.label||''} · hole ${n}`, box:[h.x-24,h.y-24,h.x+24,h.y+24], x:h.x, y:h.y, docs:[], holes:[n]}); }); });
+  // tag each part with the footing that goes first
+  ITEMS.filter(i=>i.kind==='foot').forEach(f=>{ const c=ITEMS.find(i=>i.kind==='comp'&&i.holes.some(n=>f.holes.map(String).includes(String(n)))); if(c){ c.sub+=` · after ${f.name}`; c.paired=1; if(!f.docs.length) f.docs=c.docs; } });
+  const KIND={foot:'Footings first',pole:'Poles',deck:'Decks',comp:'Ground parts',part:'Structure parts'};
+  const KIND1={foot:'Footing',pole:'Pole',deck:'Deck',comp:'Ground part',part:'Structure part'};
 
   // ---- saved plan ----
   let P=store.get('build',null); if(!P||!Array.isArray(P.days)||!P.days.length) P={days:[{items:[],done:[]}],cur:0,view:'day'};
   const clean=()=>{ P.days.forEach(d=>{ d.items=(d.items||[]).filter(k=>BYK[k]); d.done=(d.done||[]).filter(k=>d.items.includes(k)); }); if(P.cur>=P.days.length) P.cur=P.days.length-1; };
   clean();
-  let LAY=store.get('buildLayers',{pole:true,deck:true,comp:true,part:true});
+  let LAY=Object.assign({foot:true,pole:true,deck:true,comp:true,part:true},store.get('buildLayers',{}));
   const save=()=>store.set('build',P);
   const dayOf=k=>P.days.findIndex(d=>d.items.includes(k));
 
@@ -1813,7 +1827,7 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
     <p class="muted small" style="margin:8px 0 0">${T('The plan saves on this phone. Send it to the crew and they tap the link to load the same plan.')}</p></div>
 </section>`);
   GROUPS.home.push('build'); if(typeof TABS!=='undefined'&&!TABS.includes('build')) TABS.push('build');
-  if(typeof SUBLAB!=='undefined') { SUBLAB.build='Build'; if(!SUBLAB.home) SUBLAB.home='Plan'; }
+  if(typeof SUBLAB!=='undefined') { SUBLAB.build=GROUPS.build?'Build days':'Build'; if(!SUBLAB.home) SUBLAB.home='Plan'; }
   try{ const v=store.get('last_home',null); if(v==='build') LAST.home='build'; }catch(e){}
 
   const svg=document.getElementById('bdMap');
@@ -1821,9 +1835,9 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
   function toast(t){ const el=document.getElementById('bdToast'); el.textContent=t; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true,1600); }
   const W=()=>svg.clientWidth||400, H=()=>svg.clientHeight||400;
   let FULL=false;
-  function fitV(){ let x0=FP.L,x1=FP.R,y0=FP.B,y1=FP.T;
+  function fitV(){ let x0=FP.L,x1=FP.R,y0=FP.B,y1=FP.T; if(IMGP){ x0=IMGP.cx; x1=IMGP.cx+IMGP.cw; y1=-IMGP.cy; y0=-(IMGP.cy+IMGP.ch); }
     const st=ITEMS.filter(i=>i.kind!=='comp'); if(!FULL&&st.length>2&&W()<700){ const xs=st.map(i=>i.x), ys=st.map(i=>i.y); x0=Math.min(...xs);x1=Math.max(...xs);y0=Math.min(...ys);y1=Math.max(...ys); }
-    const pad=40, w=x1-x0+pad*2, h=y1-y0+pad*2, ar=W()/H();
+    const pad=FULL||!st.length?0:40, w=x1-x0+pad*2, h=y1-y0+pad*2, ar=W()/H();
     let vw=w, vh=h; if(w/h>ar) vh=w/ar; else vw=h*ar; vb={x:(x0+x1)/2-vw/2, y:-(y0+y1)/2-vh/2, w:vw, h:vh}; }
   const sc=()=>vb.w/W(); // plan inches per screen px
   function applyV(){ svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
@@ -1831,32 +1845,35 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
     const px=vb.x+cx/r.width*vb.w, py=vb.y+cy/r.height*vb.h; const full=(FP.R-FP.L+80)*1.3;
     let nw=Math.min(full*1.5,Math.max(60,vb.w/f)); const k=nw/vb.w; vb={x:px-(px-vb.x)*k,y:py-(py-vb.y)*k,w:nw,h:vb.h*k}; draw(); }
 
+  // the drawing itself (same sheet as the home Plan), placed in plan inches
+  const HP=JOB.homePlan||null;
+  const IMGP=HP?{src:`sheets/p-${String(HP.page).padStart(3,'0')}.jpg`,x:FP.L-HP.o[0]/HP.k,y:-FP.T-HP.o[1]/HP.k,w:HP.img[0]/HP.k,h:HP.img[1]/HP.k,
+    cx:FP.L+(HP.crop[0]-HP.o[0])/HP.k, cy:-FP.T+(HP.crop[1]-HP.o[1])/HP.k, cw:HP.crop[2]/HP.k, ch:HP.crop[3]/HP.k}:null;
   function draw(){
     if(!vb) fitV(); applyV();
     const s=sc(), all=P.view==='all', cur=P.days[P.cur]||{items:[]};
-    const fs=Math.max(7,13*s), pr=Math.max(4,6*s);
-    let g=`<rect x="${FP.L}" y="${-FP.T}" width="${FP.R-FP.L}" height="${FP.T-FP.B}" fill="none" stroke="var(--line)" stroke-width="${2*s}" stroke-dasharray="${8*s} ${5*s}"/>`;
-    const st=it=>{ const d=dayOf(it.k); if(d<0) return {d, c:null}; return {d, c:dcol(d), on:all||d===P.cur}; };
-    const badge=(it,x,y)=>{ const {d,c,on}=st(it); if(d<0) return ''; const n=all?`${d+1}`:(d===P.cur?`${cur.items.indexOf(it.k)+1}`:`D${d+1}`);
-      const r=Math.max(7,11*s); const done=P.days[d].done.includes(it.k);
-      return `<g opacity="${on?1:.55}"><circle cx="${x}" cy="${-y}" r="${r}" fill="${c}" stroke="#fff" stroke-width="${1.5*s}"/><text x="${x}" y="${-y}" dy=".35em" text-anchor="middle" font-size="${r*(n.length>2?0.95:1.15)}" font-weight="800" fill="#fff">${done?'✓':esc(n)}</text></g>`; };
-    if(LAY.deck) for(const it of ITEMS.filter(i=>i.kind==='deck')){ const {c,on}=st(it);
-      g+=`<polygon points="${it.poly.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="${c||'var(--steel)'}" fill-opacity="${c?(on?.45:.2):.1}" stroke="${c||'var(--steel)'}" stroke-width="${1.5*s}"/>`;
-      if(s<1.4) g+=`<text x="${it.x}" y="${-it.y+fs*1.6}" text-anchor="middle" font-size="${fs*.85}" fill="var(--ink)" opacity=".8">${esc(it.name)}</text>`; }
-    if(LAY.comp) for(const it of ITEMS.filter(i=>i.kind==='comp')){ const {c,on}=st(it); const [x0,y0,x1,y1]=it.box;
-      g+=`<rect x="${x0}" y="${-y1}" width="${x1-x0}" height="${y1-y0}" rx="${6*s}" fill="${c||'var(--paint)'}" fill-opacity="${c?(on?.4:.18):.08}" stroke="${c||'var(--paint)'}" stroke-width="${1.5*s}" stroke-dasharray="${c?'none':(5*s)+' '+(3*s)}"/>`;
-      for(const n of it.holes){ const h=HB.get(String(n)); g+=`<circle cx="${h.x}" cy="${-h.y}" r="${pr*.7}" fill="var(--panel)" stroke="var(--muted)" stroke-width="${s}"/>`; }
-      if(s<2.2) g+=`<text x="${it.x}" y="${-y0+fs*1.1}" text-anchor="middle" font-size="${fs*.8}" fill="var(--ink)" opacity=".85">${esc(it.name.length>26?it.name.slice(0,25)+'…':it.name)}</text>`; }
-    if(LAY.pole) for(const it of ITEMS.filter(i=>i.kind==='pole')){ const {c,on}=st(it);
-      g+=`<circle cx="${it.x}" cy="${-it.y}" r="${pr}" fill="${c||'var(--panel)'}" fill-opacity="${c&&!on?.5:1}" stroke="${c||'var(--ink)'}" stroke-width="${1.5*s}"/>`;
-      if(s<2.6) g+=`<text x="${it.x+pr*1.3}" y="${-it.y-pr*1.1}" font-size="${fs*.8}" font-weight="700" fill="var(--muted)">${esc(it.h)}</text>`; }
-    if(LAY.part) for(const it of ITEMS.filter(i=>i.kind==='part')){ const {c,on}=st(it); const r=pr*1.25;
-      g+=`<rect x="${it.x-r}" y="${-it.y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${it.x} ${-it.y})" fill="${c||'var(--paintsoft)'}" fill-opacity="${c&&!on?.5:1}" stroke="${c||'var(--paint)'}" stroke-width="${1.5*s}"/>`; }
-    // order badges on top
+    const pr=Math.max(3.5,5*s), sw=1.6*s;
+    let g='';
+    if(IMGP) g+=`<rect x="${IMGP.cx}" y="${IMGP.cy}" width="${IMGP.cw}" height="${IMGP.ch}" fill="#fff"/><image href="${IMGP.src}" x="${IMGP.x}" y="${IMGP.y}" width="${IMGP.w}" height="${IMGP.h}" preserveAspectRatio="none" clip-path="url(#bdClip)"/><clipPath id="bdClip"><rect x="${IMGP.cx}" y="${IMGP.cy}" width="${IMGP.cw}" height="${IMGP.ch}"/></clipPath>`;
+    else g+=`<rect x="${FP.L}" y="${-FP.T}" width="${FP.R-FP.L}" height="${FP.T-FP.B}" fill="#fff" stroke="#999" stroke-width="${2*s}" stroke-dasharray="${8*s} ${5*s}"/>`;
+    const st=it=>{ const d=dayOf(it.k); return d<0?{d,c:null}:{d,c:dcol(d),on:all||d===P.cur}; };
     const vis=it=>LAY[it.kind];
-    for(const it of ITEMS) if(vis(it)){ const bx=it.kind==='pole'?it.x+pr*1.6:it.kind==='part'?it.x+pr*1.8:it.x, by=it.kind==='pole'||it.kind==='part'?it.y+pr*1.6:it.y; g+=badge(it,bx,by); }
-    // route line through today's order
-    if(!all&&cur.items.length>1){ const pts=cur.items.map(k=>BYK[k]).filter(vis); g=g+`<polyline points="${pts.map(it=>it.x+','+(-it.y)).join(' ')}" fill="none" stroke="${dcol(P.cur)}" stroke-width="${2*s}" stroke-opacity=".5" stroke-dasharray="${4*s} ${4*s}" pointer-events="none"/>`; }
+    const boxSh=(it,col)=>{ const {c,on}=st(it); const [x0,y0,x1,y1]=it.box;
+      return `<rect x="${x0}" y="${-y1}" width="${x1-x0}" height="${y1-y0}" rx="${5*s}" fill="${c||col}" fill-opacity="${c?(on?.35:.15):.06}" stroke="${c||col}" stroke-opacity="${c?1:.75}" stroke-width="${c?2.2*s:sw}" stroke-dasharray="${c?'none':(5*s)+' '+(3*s)}"/>`; };
+    if(LAY.deck) for(const it of ITEMS.filter(i=>i.kind==='deck')){ const {c,on}=st(it); if(!c) { g+=`<polygon points="${it.poly.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="#1f5f8b" fill-opacity=".04" stroke="#1f5f8b" stroke-opacity=".35" stroke-width="${sw}" stroke-dasharray="${4*s} ${3*s}"/>`; continue; }
+      g+=`<polygon points="${it.poly.map(p=>p[0]+','+(-p[1])).join(' ')}" fill="${c}" fill-opacity="${on?.4:.18}" stroke="${c}" stroke-width="${2.2*s}"/>`; }
+    if(LAY.comp) for(const it of ITEMS.filter(i=>i.kind==='comp')) g+=boxSh(it,'#1f5f8b');
+    if(LAY.foot) for(const it of ITEMS.filter(i=>i.kind==='foot')) g+=boxSh(it,'#5f3dc4').replace('<rect','<rect stroke-linecap="round"');
+    if(LAY.pole) for(const it of ITEMS.filter(i=>i.kind==='pole')){ const {c,on}=st(it);
+      g+=`<circle cx="${it.x}" cy="${-it.y}" r="${c?pr*1.15:pr}" fill="${c||'#e8590c'}" fill-opacity="${c&&!on?.5:1}" stroke="#fff" stroke-width="${1.2*s}"/>`;
+      if(s<1.5) g+=`<text x="${it.x+pr*1.2}" y="${-it.y-pr*.9}" font-size="${Math.max(6,10*s)}" font-weight="700" fill="#b8460a" paint-order="stroke" stroke="#fff" stroke-width="${2.5*s}">${esc(it.h)}</text>`; }
+    if(LAY.part) for(const it of ITEMS.filter(i=>i.kind==='part')){ const {c,on}=st(it); const r=pr*1.1;
+      g+=`<rect x="${it.x-r}" y="${-it.y-r}" width="${2*r}" height="${2*r}" transform="rotate(45 ${it.x} ${-it.y})" fill="${c||'#fff'}" fill-opacity="${c&&!on?.5:.9}" stroke="${c||'#1f5f8b'}" stroke-width="${1.4*s}"/>`; }
+    if(!all&&cur.items.length>1){ const pts=cur.items.map(k=>BYK[k]).filter(vis); g+=`<polyline points="${pts.map(it=>it.x+','+(-it.y)).join(' ')}" fill="none" stroke="${dcol(P.cur)}" stroke-width="${2.2*s}" stroke-opacity=".6" stroke-dasharray="${5*s} ${4*s}" pointer-events="none"/>`; }
+    for(const it of ITEMS) if(vis(it)){ const {d,c,on}=st(it); if(d<0) continue;
+      const n=all?`${d+1}`:(d===P.cur?`${cur.items.indexOf(it.k)+1}`:`D${d+1}`), done=P.days[d].done.includes(it.k), r=Math.max(6,10*s);
+      let bx=it.kind==='pole'||it.kind==='part'?it.x+r*1.1:it.x, by=it.kind==='pole'||it.kind==='part'?it.y+r*1.1:it.y; if(it.paired){ bx=it.box[2]; by=it.box[3]; }
+      g+=`<g opacity="${on?1:.6}"><circle cx="${bx}" cy="${-by}" r="${r}" fill="${c}" stroke="#fff" stroke-width="${1.5*s}"/><text x="${bx}" y="${-by}" dy=".35em" text-anchor="middle" font-size="${r*(n.length>2?0.95:1.15)}" font-weight="800" fill="#fff">${done?'✓':esc(n)}</text></g>`; }
     svg.innerHTML=g;
   }
 
@@ -1864,8 +1881,11 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
   function hit(cx,cy){ const r=svg.getBoundingClientRect(); const x=vb.x+(cx-r.left)/r.width*vb.w, y=-(vb.y+(cy-r.top)/r.height*vb.h), s=sc();
     let best=null,bd=1e9;
     for(const it of ITEMS) if((it.kind==='pole'&&LAY.pole)||(it.kind==='part'&&LAY.part)){ const d=Math.hypot(it.x-x,it.y-y)/s; if(d<bd){bd=d;best=it;} }
-    if(best&&bd<=22) return best;
-    if(LAY.comp){ const c=ITEMS.filter(i=>i.kind==='comp'&&x>=i.box[0]&&x<=i.box[2]&&y>=i.box[1]&&y<=i.box[3]).sort((a,b)=>(a.box[2]-a.box[0])*(a.box[3]-a.box[1])-(b.box[2]-b.box[0])*(b.box[3]-b.box[1]))[0]; if(c) return c; }
+    let box=null;
+    { const cands=ITEMS.filter(i=>(i.kind==='foot'||i.kind==='comp')&&LAY[i.kind]&&x>=i.box[0]&&x<=i.box[2]&&y>=i.box[1]&&y<=i.box[3]).sort((a,b)=>(a.kind==='foot'?0:1)-(b.kind==='foot'?0:1));
+      if(cands.length) box=cands.find(c=>dayOf(c.k)<0)||cands.slice().reverse().find(c=>dayOf(c.k)===P.cur)||cands[0]; }
+    if(best&&(bd<=10||(bd<=22&&!box))) return best;
+    if(box) return box;
     if(LAY.deck){ const inPoly=(p)=>{ let o=false; for(let i=0,j=p.length-1;i<p.length;j=i++){ const [xi,yi]=p[i],[xj,yj]=p[j]; if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) o=!o; } return o; };
       const d=ITEMS.find(i=>i.kind==='deck'&&inPoly(i.poly)); if(d) return d; }
     return null; }
@@ -1899,14 +1919,14 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
     document.getElementById('bdHint').textContent=P.view==='all'?T(`Overview: every part shows its day number. ${left} not planned yet.`):T(`Day ${P.cur+1}: tap poles, decks and parts in the order you will build them. Tap again to take one off. ${left} not planned yet.`);
   }
   function itemRow(it,i,d,day){ const done=day.done.includes(it.k);
-    return `<li class="${done?'done':''}" style="--dc:${dcol(d)}"><span class="bdn">${i+1}</span><span data-open="${esc(it.k)}"><span class="bdname">${esc(it.name)}</span><br><span class="bdsub">${esc(T(KIND[it.kind]).replace(/s$/,''))} · ${esc(it.sub||'')}</span></span>
+    return `<li class="${done?'done':''}" style="--dc:${dcol(d)}"><span class="bdn">${i+1}</span><span data-open="${esc(it.k)}"><span class="bdname">${esc(it.name)}</span><br><span class="bdsub">${esc(T(KIND1[it.kind]))} · ${esc(it.sub||'')}</span></span>
       <span class="bdbtns"><button class="ok" data-done="${esc(it.k)}" aria-pressed="${done}" aria-label="Done">✓</button><button data-up="${i}" aria-label="Move up" ${i?'':'disabled'}>↑</button><button data-dn="${i}" aria-label="Move down" ${i<day.items.length-1?'':'disabled'}>↓</button><button data-rm="${esc(it.k)}" aria-label="Remove">✕</button></span></li>`; }
   function renderDayCard(){
     const c=document.getElementById('bdDayCard'); if(P.view==='all'){ c.hidden=true; return; } c.hidden=false;
     const d=P.cur, day=P.days[d], its=day.items.map(k=>BYK[k]);
     const by={}; its.forEach(it=>by[it.kind]=(by[it.kind]||0)+1);
     c.innerHTML=`<h2 style="margin:0;display:flex;gap:8px;align-items:center"><span class="bdn" style="--dc:${dcol(d)}">${d+1}</span>${T('Day')} ${d+1}</h2>
-      <p class="muted small" style="margin:4px 0 0">${its.length?Object.keys(KIND).filter(k=>by[k]).map(k=>`${by[k]} ${T(by[k]===1?KIND[k].replace(/s$/,''):KIND[k]).toLowerCase()}`).join(' · ')+` · ${day.done.length}/${its.length} ${T('done')}`:T('Nothing picked yet. Tap things on the plan above.')}</p>
+      <p class="muted small" style="margin:4px 0 0">${its.length?Object.keys(KIND).filter(k=>by[k]).map(k=>`${by[k]} ${T(by[k]===1?KIND1[k]:KIND[k].replace(' first','')).toLowerCase()}`).join(' · ')+` · ${day.done.length}/${its.length} ${T('done')}`:T('Nothing picked yet. Tap things on the plan above.')}</p>
       ${its.length?`<ol class="bdlist">${its.map((it,i)=>itemRow(it,i,d,day)).join('')}</ol>`:''}
       <div class="bdact">${its.length?`<button data-clr>${T('Clear this day')}</button>`:''}${P.days.length>1?`<button data-ddel>${T('Delete this day')}</button>`:''}</div>`;
   }
