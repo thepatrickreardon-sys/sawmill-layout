@@ -2400,7 +2400,8 @@ elevRefresh();
   svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); const r=svg.getBoundingClientRect();
     if(pinch&&ptrs.size===2){ const [a,b]=[...ptrs.values()]; const f=Math.hypot(a.x-b.x,a.y-b.y)/pinch.d; vb={...pinch.vb}; zoom(f,pinch.cx-r.left,pinch.cy-r.top); return; }
     if(start&&ptrs.size===1){ const dx=e.clientX-start.x, dy=e.clientY-start.y; if(Math.hypot(dx,dy)>8) moved=true; if(moved){ vb={...start.vb,x:start.vb.x-dx/r.width*start.vb.w,y:start.vb.y-dy/r.height*start.vb.h}; applyV(); } } });
-  const up=e=>{ const was=ptrs.has(e.pointerId); ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=null;
+  const up=e=>{ const was=ptrs.has(e.pointerId); ptrs.delete(e.pointerId);
+    if(pinch&&ptrs.size===1){ const q=[...ptrs.values()][0]; start={x:q.x,y:q.y,vb:{...vb}}; } if(ptrs.size<2) pinch=null;
     if(was&&ptrs.size===0){ if(!moved&&e.type==='pointerup'){ const it=hit(e.clientX,e.clientY); if(it) tapItem(it); } else draw(); start=null; } };
   svg.addEventListener('pointerup',up); svg.addEventListener('pointercancel',up);
   svg.addEventListener('wheel',e=>{ e.preventDefault(); const r=svg.getBoundingClientRect(); zoom(e.deltaY<0?1.15:0.87,e.clientX-r.left,e.clientY-r.top); },{passive:false});
@@ -2480,10 +2481,10 @@ elevRefresh();
     ban.onclick=e=>{ if(e.target.closest('[data-bload]')){ P={days:days.length?days:[{items:[],done:[]}],cur:0,view:'all'}; save(); ban.innerHTML=''; renderAllB(); toast(T('Plan loaded')); } else if(e.target.closest('[data-bno]')) ban.innerHTML=''; };
   } }catch(e){}
 
-  window.addEventListener('hashchange',()=>{ if(location.hash==='#build') requestAnimationFrame(()=>{ if(!vb) fitV(); renderAllB(); }); });
-  addEventListener('resize',()=>{ if(!document.querySelector('[data-view=build]').hidden){ fitV(); draw(); } });
+  window.addEventListener('hashchange',()=>{ if(location.hash==='#build') requestAnimationFrame(()=>{ if(!vb||!lastW){ lastW=W(); fitV(); } renderAllB(); }); });
+  let lastW=0; addEventListener('resize',()=>{ if(document.querySelector('[data-view=build]').hidden) return; const w=W(); if(Math.abs(w-lastW)<2){ /* phone bar show/hide: keep the zoom, just stretch to the new height */ const nh=vb.w*H()/W(); vb.y+= (vb.h-nh)/2; vb.h=nh; draw(); return; } lastW=w; fitV(); draw(); });
   route();
-  if(location.hash==='#build') requestAnimationFrame(()=>{ fitV(); renderAllB(); });
+  if(location.hash==='#build') requestAnimationFrame(()=>{ lastW=W(); fitV(); renderAllB(); });
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script></body></html>
