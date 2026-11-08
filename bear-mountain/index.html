@@ -1281,13 +1281,15 @@ function docsHTML(h){ const ks=docsFor(h); if(!ks.length) return '';
 let vz=1, vzMax=3;
 const viewer=document.getElementById('viewer'), vBody=document.getElementById('vBody');
 function setZoom(z){ vz=Math.max(1,Math.min(vzMax,z)); vBody.style.setProperty('--z',vz); vBody.classList.toggle('zoomed',vz>1); }
+const EXTRA_PAGES={497:[{src:'sheets/x-497-exploded.jpg',w:2300,h:2120,cap:'Added: exploded view of sheet 7 (posts left, decks right). Schematic, not to scale.'}]};
 function openDoc(k, page, part){ CURPART=part||null;
   const [t,a,b]=DOCS[k]; document.getElementById('vTitle').textContent=t;
   document.getElementById('vPages').textContent=a===b?`Packet page ${a}`:`Packet pages ${a}–${b}`;
   const wide=(JOB.wideDocs||[]).includes(k); vzMax=wide?8:3; CURDOC=k; document.getElementById('vBack').hidden=!VSTACK.length;
   const HS=JOB.hotspots||{}, HW_=JOB.hotspotSize||[1,1];
   let html=''; for(let n=a;n<=b;n++) html+=`<figure data-p="${n}"><figcaption>Page ${n} · sheet ${n-a+1} of ${b-a+1}</figcaption>${HS[n]?'<div class="hsnote">Tap a component name to open its install sheet.</div><div class="hsw">':''}<img ${wide?'class="wide" width="1700" height="1100"':'width="935" height="1210"'} loading="${page&&Math.abs(n-page)<=1?'eager':'lazy'}" src="sheets/p-${String(n).padStart(3,'0')}.jpg" alt="${esc(t)}, packet page ${n}">${HS[n]?HS[n].filter(z=>DOCS[z[0]]).map(([dk,x0,y0,x1,y1])=>`<button class="hs" data-doc="${dk}" aria-label="${esc(DOCS[dk][0])}" title="${esc(DOCS[dk][0])}" style="left:${(x0-12)/HW_[0]*100}%;top:${(y0-10)/HW_[1]*100}%;width:${(x1-x0+24)/HW_[0]*100}%;height:${(y1-y0+20)/HW_[1]*100}%"></button>`).join('')+'</div>':''}</figure>`;
-  vBody.innerHTML=html; seqDecorate(); partDecorate(k); setZoom(1); vBody.scrollTop=0; viewer.hidden=false; document.getElementById('vClose').focus();
+  vBody.innerHTML=html; for(const [pn,xs] of Object.entries(EXTRA_PAGES)){ const f=vBody.querySelector(`figure[data-p="${pn}"]`); if(f) f.insertAdjacentHTML('afterend',xs.map(x=>`<figure data-p="${pn}x"><figcaption>${esc(x.cap)}</figcaption><img width="${x.w}" height="${x.h}" loading="lazy" src="${x.src}" alt="${esc(x.cap)}"></figure>`).join('')); }
+  seqDecorate(); partDecorate(k); setZoom(1); vBody.scrollTop=0; viewer.hidden=false; document.getElementById('vClose').focus();
   if (page){ const f=vBody.querySelector(`[data-p="${page}"]`); if(f) requestAnimationFrame(()=>f.scrollIntoView({block:'start'})); }
 }
 
