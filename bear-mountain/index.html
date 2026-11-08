@@ -1281,11 +1281,27 @@ function docsHTML(h){ const ks=docsFor(h); if(!ks.length) return '';
   return `<span class="lbl">Install sheets</span><div class="docs">${ks.map(k=>`<button data-doc="${k}">${esc(DOCS[k][0])}</button>`).join('')}</div>`; }
 let vz=1, vzMax=3;
 const viewer=document.getElementById('viewer'), vBody=document.getElementById('vBody');
-function setZoom(z){ vz=Math.max(1,Math.min(vzMax,z)); vBody.style.setProperty('--z',vz); vBody.classList.toggle('zoomed',vz>1); }
+function setZoom(z,fx,fy){ const old=vz; vz=Math.max(1,Math.min(vzMax,z)); const r=vz/old;
+  const R=vBody.getBoundingClientRect(); if(fx==null){ fx=R.width/2; fy=R.height/2; } else { fx-=R.left; fy-=R.top; }
+  const cx=vBody.scrollLeft+fx, cy=vBody.scrollTop+fy;
+  vBody.style.setProperty('--z',vz); vBody.classList.toggle('zoomed',vz>1);
+  if(r!==1){ vBody.scrollLeft=Math.max(0,cx*r-fx); vBody.scrollTop=Math.max(0,cy*r-fy); } }
+// pinch to zoom and double-tap to zoom in the sheet viewer
+(function(){ let p=null, lastTap=0;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  vBody.addEventListener('touchstart',e=>{ if(e.touches.length===2){ p={d:dist(e.touches)}; e.preventDefault(); }
+    else if(e.touches.length===1){ const now=Date.now(), t=e.touches[0];
+      if(now-lastTap<300 && !e.target.closest('button')){ e.preventDefault(); setZoom(vz>1.2?1:Math.min(3,vzMax),t.clientX,t.clientY); lastTap=0; } else lastTap=now; } },{passive:false});
+  vBody.addEventListener('touchmove',e=>{ if(p&&e.touches.length===2){ e.preventDefault(); const d=dist(e.touches), t=e.touches;
+    setZoom(vz*d/p.d,(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2); p.d=d; } },{passive:false});
+  vBody.addEventListener('touchend',e=>{ if(e.touches.length<2) p=null; });
+  vBody.addEventListener('gesturestart',e=>e.preventDefault());
+  vBody.addEventListener('wheel',e=>{ if(e.ctrlKey){ e.preventDefault(); setZoom(vz*Math.exp(-e.deltaY/200),e.clientX,e.clientY); } },{passive:false});
+})();
 const EXTRA_PAGES={497:[{src:'sheets/x-497-exploded.jpg',w:2300,h:2120,cap:'Added: exploded view of sheet 7 (posts left, decks right). Schematic, not to scale.'}]};
 const OVERVIEWS=[{"p": 738, "cap": "Whole site – all plan sheets stitched together", "doc": "plan-site", "w": 5041, "h": 5393}, {"p": 1, "cap": "Plan P&M A – 2–5 area", "doc": "plan-A", "w": 3740, "h": 2420}, {"p": 2, "cap": "Plan P&M B – middle terrace", "doc": "plan-B", "w": 3740, "h": 2420}, {"p": 3, "cap": "Plan P&M BC – middle terrace structure", "doc": "plan-BC", "w": 3740, "h": 2420}, {"p": 4, "cap": "Plan P&M CD – upper terrace", "doc": "plan-CD", "w": 3740, "h": 2420}, {"p": 5, "cap": "Plan P&M D – elevated walkway", "doc": "plan-D", "w": 3740, "h": 2420}, {"p": 302, "cap": "Snag tower – Zenith crooked net climber", "doc": "cmp-c-snag", "w": 935, "h": 1210}, {"p": 491, "cap": "23' RPL tower", "doc": "cmp-e-tower", "w": 935, "h": 1210}, {"p": 536, "cap": "Adventurescapes #5 w/ high wire", "doc": "cmp-e-adv", "w": 935, "h": 1210}, {"p": 479, "cap": "26.6' tunnel–scoop slide (from tower)", "doc": "cmp-e-slide266", "w": 935, "h": 1210}, {"p": 489, "cap": "96\" spiral scoop slide", "doc": "cmp-e-spiral96", "w": 935, "h": 1210}, {"p": 651, "cap": "Elevated walkway", "doc": "cmp-e-walkway", "w": 935, "h": 1210}, {"p": 294, "cap": "142\" straight scoop slide", "doc": "cmp-c-slide142", "w": 935, "h": 1210}, {"p": 361, "cap": "Rope pull climber", "doc": "cmp-c-ropepull", "w": 935, "h": 1210}, {"p": 366, "cap": "GFRC lean-to", "doc": "cmp-c-leanto", "w": 935, "h": 1210}, {"p": 128, "cap": "48\" rollerslide w/ hood", "doc": "cmp-a-roller", "w": 935, "h": 1210}, {"p": 136, "cap": "30\" S/S slide", "doc": "cmp-a-ss30", "w": 935, "h": 1210}, {"p": 139, "cap": "GFRC log tunnel slide", "doc": "cmp-a-logtunnel", "w": 935, "h": 1210}, {"p": 146, "cap": "GFRC log stack w/ bear", "doc": "cmp-a-logstack", "w": 935, "h": 1210}, {"p": 151, "cap": "GFRC tree stump transfer", "doc": "cmp-a-stump", "w": 935, "h": 1210}];
-function openOverviews(){ CURPART=null; CURDOC='overviews'; vzMax=6;
-  document.getElementById('vTitle').textContent='Overviews – what everything looks like'; document.getElementById('vPages').textContent=`${OVERVIEWS.length} pages`; document.getElementById('vBack').hidden=!VSTACK.length;
+function openOverviews(){ CURPART=null; CURDOC='overviews'; vzMax=10; vz=1;
+  document.getElementById('vTitle').textContent='Overviews – what everything looks like'; document.getElementById('vPages').textContent=`${OVERVIEWS.length} pages · pinch or double-tap to zoom`; document.getElementById('vBack').hidden=!VSTACK.length;
   vBody.innerHTML=OVERVIEWS.filter(o=>DOCS[o.doc]).map((o,i)=>`<figure data-p="${o.p}"><figcaption>${i+1}. ${esc(o.cap)} · page ${o.p} <button class="hit" data-doc="${o.doc}" data-page="${o.p}" style="margin-left:6px">Open its sheets</button></figcaption><img width="${o.w}" height="${o.h}" ${o.w>1000?'class="wide"':''} loading="${i<2?'eager':'lazy'}" src="sheets/p-${String(o.p).padStart(3,'0')}.jpg" alt="${esc(o.cap)}"></figure>`).join('');
   setZoom(1); vBody.scrollTop=0; viewer.hidden=false; document.getElementById('vClose').focus(); }
 function openDoc(k, page, part){ if(k==='overviews') return openOverviews(); CURPART=part||null;
