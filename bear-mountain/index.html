@@ -1576,7 +1576,7 @@ function renderHWIndex(){ const el=document.getElementById('hwIndex'); if(!el||!
   const q=(document.getElementById('hwQ')?.value||'').toLowerCase().trim(), toks=q.split(/[\s,]+/).filter(Boolean);
   const list=HW.components.map(c=>({c,why:toks.length?hwMatch(c,toks):[]})).filter(r=>r.why);
   const st=document.getElementById('hwStat'); if(st) st.textContent = toks.length ? (list.length?(list.length===1?'1 component matches':`${list.length} components match`):'Nothing matches. Try a component name, a hole number, or a part like "barrel nut".') : `${HW.components.length} components`;
-  el.innerHTML=list.map(({c,why})=>`<button data-hw="${c.key}"><b>${esc(c.name)}</b><span>${esc(c.model)} · ${c.key==='sections'?'per section':(c.qty+' on this job')} · ${c.piles.length?c.piles.length+' piles':'step list'}</span>${why.length?`<span class="hwm">${why.map(w=>esc(w)).join(' · ')}</span>`:''}</button>`).join(''); }
+  el.innerHTML=list.map(({c,why})=>`<button data-hw="${c.key}"><b>${esc(c.name)}</b><span>${esc(c.model)} · ${c.key==='sections'?'per section':(c.qty+' on this job')} · ${c.piles.length?c.piles.length+' piles':(c.steps&&c.steps.length?'step list':'no hardware')}</span>${why.length?`<span class="hwm">${why.map(w=>esc(w)).join(' · ')}</span>`:''}</button>`).join(''); }
 document.getElementById('hwQ')?.addEventListener('input',renderHWIndex);
 function openHW(k){ hwKey=k; hwAllMode=false; renderHW(); document.getElementById('hwv').hidden=false; document.getElementById('hwBody').parentElement.scrollTop=0; document.getElementById('hwClose').focus(); }
 function renderHW(){
@@ -1595,14 +1595,14 @@ function renderHW(){
   const piles=c.piles.map((p,i)=>{ const id=`${c.key}:${i}`, isD=hwDone.has(id);
     const items=p.per.map(([q,part])=>`<li><b>${q*p.n*mult}</b><span>${esc(hn(part))}</span></li>`).join('');
     const each=p.n>1?`<div class="each">${p.n*mult} connections, each gets: ${p.per.map(([q,part])=>`${q} ${esc(hn(part))}`).join(' + ')}</div>`:'';
-    return `<div class="pile ${isD?'done':''}"><div class="pn">${i+1}</div><div><h3>${esc(p.t)}</h3><div class="meta">Detail ${esc(p.d)} · step ${p.step} · page ${p.page}</div><ul>${items}</ul>${each}${p.note?`<div class="note" style="margin-top:6px">${esc(p.note)}</div>`:''}
-      <div class="acts"><button data-doc="${c.doc}" data-page="${p.page}">See drawing</button><button class="pdone" data-pdone="${id}" aria-pressed="${isD}">${isD?'✓ Piled':'Mark piled'}</button></div></div></div>`; }).join('');
+    return `<div class="pile ${isD?'done':''}"><div class="pn">${i+1}</div><div><h3>${esc(p.t)}</h3><div class="meta">${[p.d?'Detail '+esc(p.d):'',p.step!==''&&p.step!=null?'step '+p.step:'',p.page?'page '+p.page:''].filter(Boolean).join(' · ')}</div><ul>${items}</ul>${each}${p.note?`<div class="note" style="margin-top:6px">${esc(p.note)}</div>`:''}
+      <div class="acts"><button data-doc="${p.doc||c.doc}" data-page="${p.page}">See drawing</button><button class="pdone" data-pdone="${id}" aria-pressed="${isD}">${isD?'✓ Piled':'Mark piled'}</button></div></div></div>`; }).join('');
   const steps=(c.steps||[]).map((st,i)=>`<div class="pile"><div class="pn">${i+1}</div><div><h3>${esc(st[0])}</h3><div class="meta">Detail ${esc(st[1])} · page ${st[2]}</div><div class="acts"><button data-doc="${c.doc}" data-page="${st[2]}">See drawing</button></div></div></div>`).join('');
   const spare=(c.spare||[]).length?`<div class="card small"><b>Left over in the bag:</b> ${c.spare.map(([q,p])=>`${q*mult} ${esc(hn(p))}`).join(', ')}. Spares, keep them.</div>`:'';
   const bag=Object.entries(c.parts).map(([p,q])=>`<tr><td>${q*mult}</td><td>${esc(hn(p))}</td><td>${esc(p)}</td></tr>`).join('');
   document.getElementById('hwBody').innerHTML = head + notes +
     (piles?`<h2 style="margin:6px 0 0">Sort the bag into ${c.piles.length} piles</h2><p class="muted small" style="margin:0">One pile per connection, in assembly order. Counts are totals for that pile.</p>`+piles:'') +
-    (steps?`<h2 style="margin:6px 0 0">Assembly steps</h2>`+steps:'') + spare +
+    (steps?`<h2 style="margin:6px 0 0">Assembly steps</h2>`+steps:'') + (!piles&&!steps?`<div class="card small">No loose hardware to sort for this one${(c.spare||[]).length?' on a direct-bury install':''}.</div>`:'') + spare +
     `<details class="card opts"><summary><span>Everything in the bag</span><span class="muted small" style="font-family:var(--body);font-weight:400;margin-left:auto">${Object.keys(c.parts).length} items</span></summary><div style="padding:0 16px 16px"><div class="tblwrap"><table class="bagtbl"><tbody>${bag}</tbody></table></div></div></details>`;
 }
 document.getElementById('hwBody').addEventListener('click',e=>{ const b=e.target.closest('[data-pdone]'); if(!b) return; const id=b.dataset.pdone; hwDone.has(id)?hwDone.delete(id):hwDone.add(id); store.set('hwdone',[...hwDone]); renderHW(); });
