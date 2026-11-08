@@ -2057,7 +2057,9 @@ const GROUPS={home:['home','map','footings','poles'],tapes:['tapes','offset','po
 const SUBLAB={home:'Plan',map:'Layout',footings:'Footings',poles:'Poles',tapes:'Tape list',offset:'Offset',points:'Points',hardware:'Hardware',docs:'Install docs'};
 const TABS=Object.values(GROUPS).flat();
 const groupOf=v=>Object.keys(GROUPS).find(g=>GROUPS[g].includes(v));
-function route(){ let t=location.hash.slice(1); if(t==='more') t='hardware'; if(!TABS.includes(t)) t='home';
+function route(){ let t=location.hash.slice(1); if(t==='more') t='hardware';
+  const dl=t.match(/^doc=([\w-]+)(?:&p=(\d+))?/); if(dl){ t='docs'; history.replaceState(null,'','#docs'); setTimeout(()=>{ if(dl[1]==='overviews'||DOCS[dl[1]]) openDoc(dl[1],dl[2]?+dl[2]:null); },0); }
+  if(!TABS.includes(t)) t='home';
   document.body.classList.toggle('mapview',t==='map');
   const g=groupOf(t); document.querySelectorAll('section[data-view]').forEach(s=>s.hidden=s.dataset.view!==t);
   document.querySelectorAll('nav a').forEach(a=>{ const on=a.dataset.tab===g; a.toggleAttribute('aria-current',false); if(on) a.setAttribute('aria-current','page'); if(GROUPS[a.dataset.tab].length>1) a.setAttribute('href','#'+(on?t:(LAST[a.dataset.tab]||GROUPS[a.dataset.tab][0]))); });
