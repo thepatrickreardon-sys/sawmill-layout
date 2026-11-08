@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#10261a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Turf Calculator">
@@ -15,108 +15,187 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --green:#2e7d32; --green-d:#1b4d1f; --green-l:#e8f3e6; --ink:#1d2a1f; --mute:#5d6b60;
-    --line:#dfe6dc; --bg:#f3f6f1; --card:#fff; --orange:#e07b16; --red:#c0392b;
+    --brand:#86c440; --brand-d:#5f9b25; --sun:#e2e773; --forest:#10261a; --forest2:#1d4424;
+    --green:#3f8f2f; --green-d:#1d4424; --green-l:#eef6e6; --ink:#16221a; --mute:#5f6d62;
+    --line:#e3e9df; --bg:#f1f4ee; --card:#fff; --orange:#e8891c; --red:#c63b2d;
+    --shadow:0 1px 2px rgba(16,38,26,.06),0 6px 20px rgba(16,38,26,.06);
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.4}
-  header{background:#fff;color:var(--green-d);padding:16px 16px 14px;border-bottom:4px solid #86c440;text-align:center}
-  .hwrap{max-width:860px;margin:0 auto}
-  .logo{display:block;width:min(320px,80%);height:auto;margin:0 auto 8px}
-  header h1{font-family:"Barlow Condensed",sans-serif;font-size:24px;margin:0;letter-spacing:.3px}
-  header p{margin:2px 0 0;color:var(--mute);font-size:14px}
-  main{max-width:860px;margin:0 auto;padding:16px 12px 60px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-  h2{font-family:"Barlow Condensed",sans-serif;font-size:21px;margin:0 0 10px;color:var(--green-d)}
-  h3{font-size:15px;margin:14px 0 6px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
-  .steps{font-size:14px;color:var(--mute);margin:0}
-  .area-head{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-  .area-head input{font-weight:700;font-size:18px;border:none;border-bottom:2px solid var(--line);border-radius:0;padding:4px 2px;flex:1;min-width:0}
-  .area-head input:focus{border-bottom-color:var(--green);outline:none}
-  .x{background:none;border:1px solid var(--line);color:var(--mute);border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;cursor:pointer}
-  .seg{display:flex;background:var(--green-l);border-radius:10px;padding:3px;gap:3px;margin-bottom:10px}
-  .seg button{flex:1;border:none;background:none;padding:8px 4px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;color:var(--green-d);cursor:pointer}
-  .seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin-bottom:4px}
-  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid #cfd8cc;border-radius:9px;background:#fff;color:var(--ink)}
-  input:focus,select:focus,textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
-  .bad{border-color:var(--red)!important;background:#fff6f5}
-  .hint{font-size:12px;color:var(--mute);margin-top:3px}
-  .opts{margin-top:12px;display:grid;gap:10px}
-  .check{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:500;color:var(--ink)}
-  .check input{width:22px;height:22px;flex:none;margin:0}
-  .draw{margin-top:14px;background:#fafcf9;border:1px solid var(--line);border-radius:12px;padding:8px}
-  .draw svg{width:100%;height:auto;display:block;max-height:420px}
-  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);padding:6px 4px 2px}
-  .legend i{display:inline-block;width:18px;height:0;border-top:2px dashed;vertical-align:middle;margin-right:4px}
-  .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-  .mini div{background:var(--green-l);border-radius:10px;padding:8px;text-align:center}
-  .mini b{display:block;font-size:18px;color:var(--green-d)}
-  .mini span{font-size:12px;color:var(--mute)}
-  .cutlist{margin:8px 0 0;padding:0;list-style:none;font-size:14px}
-  .cutlist li{padding:5px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between}
-  .err{color:var(--red);font-size:14px;margin-top:8px}
-  .add{width:100%;padding:14px;border:2px dashed var(--green);background:#fff;color:var(--green);border-radius:14px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;margin-bottom:14px}
-  table{width:100%;border-collapse:collapse;font-size:15px}
-  td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
-  td:last-child{text-align:right;font-weight:700;white-space:nowrap}
-  td small{display:block;color:var(--mute);font-weight:400;font-size:12px}
-  .big{font-size:15px}
-  .rolls td:first-child{font-weight:700}
-  .btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;background:var(--green);color:#fff;font:inherit;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none}
-  .btn.alt{background:#fff;color:var(--green-d);border:1.5px solid var(--green);margin-top:10px}
-  .msg{margin-top:10px;font-size:14px;padding:10px;border-radius:10px;background:var(--green-l);color:var(--green-d);display:none}
-  .msg.show{display:block}
-  pre{white-space:pre-wrap;font-size:12px;background:#f7f9f6;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:260px;overflow:auto}
-  footer{font-size:12px;color:var(--mute);text-align:center;padding:0 16px}
-  .shape-hint{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute);margin:-2px 0 10px}
-  .shape-hint svg{width:70px;flex:none}
-  @media (max-width:420px){.mini b{font-size:16px}}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;padding-bottom:90px}
+  /* hero */
+  .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:28px 18px 34px;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
+               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%)}
+  .hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+  .hero-in{max-width:760px;margin:0 auto;position:relative}
+  .logo{display:block;width:min(300px,78%);height:auto;margin:0 auto 14px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.25))}
+  .hero h1{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.5px;text-transform:uppercase}
+  .hero p{margin:10px auto 0;max-width:520px;color:rgba(255,255,255,.78);font-size:15.5px}
+  .stepper{display:flex;justify-content:center;gap:6px;list-style:none;padding:0;margin:20px 0 0;flex-wrap:wrap}
+  .stepper a{display:flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);padding:6px 12px 6px 6px;border-radius:999px}
+  .stepper span{width:22px;height:22px;border-radius:50%;background:var(--brand);color:var(--forest);display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  main{max-width:860px;margin:0 auto;padding:6px 14px 30px}
+  /* sections */
+  .sec{margin-top:26px;scroll-margin-top:12px}
+  .sec-h{display:flex;gap:12px;align-items:flex-start;margin:0 2px 12px}
+  .num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--forest2);color:var(--brand);display:grid;place-items:center;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:20px}
+  .sec-h h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:25px;line-height:1.1;margin:0;text-transform:uppercase;letter-spacing:.3px;color:var(--forest2)}
+  .sec-h p{margin:2px 0 0;font-size:14px;color:var(--mute)}
+  .sec-h p b{color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .card.new{animation:pop .35s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h3{font-size:12.5px;font-weight:700;margin:20px 0 8px;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
+  /* area card */
+  .area-head{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+  .area-ico{flex:none;width:36px;height:36px;border-radius:10px;background:var(--green-l);display:grid;place-items:center}
+  .area-head input{font-weight:700;font-size:19px;border:none;border-bottom:2px solid transparent;border-radius:0;padding:4px 2px;flex:1;min-width:0;background:none}
+  .area-head input:hover{border-bottom-color:var(--line)}
+  .area-head input:focus{border-bottom-color:var(--brand);outline:none}
+  .x{flex:none;width:36px;height:36px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--mute);border-radius:10px;cursor:pointer;font-size:20px;line-height:1}
+  .x:hover{color:var(--red);border-color:#f0c9c4;background:#fff7f6}
+  .seg{display:flex;background:#f0f3ee;border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
+  .seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:none;padding:9px 4px;border-radius:9px;font:inherit;font-weight:600;font-size:14.5px;color:var(--mute);cursor:pointer;transition:all .15s}
+  .seg button svg{width:20px;height:16px}
+  .seg button.on{background:#fff;color:var(--forest2);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin-bottom:5px}
+  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid #dbe3d7;border-radius:11px;background:#fbfcfa;color:var(--ink);transition:border-color .15s,box-shadow .15s,background .15s}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235f6d62' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px rgba(134,196,64,.2)}
+  input::placeholder,textarea::placeholder{color:#a3ada5}
+  .bad{border-color:var(--red)!important;background:#fff6f5!important;box-shadow:0 0 0 4px rgba(198,59,45,.1)!important}
+  .hint{font-size:12.5px;color:var(--mute);margin-top:4px}
+  .opts{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:14px}
+  /* switch */
+  .check{display:flex;gap:12px;align-items:center;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;margin:0}
+  .check input{appearance:none;-webkit-appearance:none;flex:none;width:46px;height:28px;padding:0;margin:0;border-radius:999px;background:#d5ddd1;border:none;position:relative;cursor:pointer;transition:background .2s}
+  .check input:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+  .check input:checked{background:var(--brand)}
+  .check input:checked:before{transform:translateX(18px)}
+  .check input:focus{box-shadow:0 0 0 4px rgba(134,196,64,.25)}
+  /* drawing */
+  .draw{margin-top:16px;background:linear-gradient(#fafcf8,#f3f7f0);border:1px solid var(--line);border-radius:14px;padding:10px 8px 6px}
+  .draw svg{width:100%;height:auto;display:block;max-height:440px}
+  .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;font-size:12px;color:var(--mute);padding:6px 4px 2px}
+  .legend i{display:inline-block;width:18px;height:0;border-top:2.5px dashed;vertical-align:middle;margin-right:5px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .tiles div{background:var(--green-l);border-radius:12px;padding:10px 6px;text-align:center}
+  .tiles b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:24px;line-height:1.05;color:var(--forest2)}
+  .tiles span{font-size:12px;color:var(--mute);font-weight:500}
+  .tiles.dark div{background:var(--forest2)}
+  .tiles.dark b{color:#fff;font-size:28px}
+  .tiles.dark span{color:rgba(255,255,255,.7)}
+  .tiles.dark div:first-child b{color:var(--sun)}
+  details.cuts{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+  details.cuts summary{cursor:pointer;padding:11px 0;font-weight:600;font-size:14.5px;color:var(--forest2);list-style:none;display:flex;justify-content:space-between}
+  details.cuts summary::-webkit-details-marker{display:none}
+  details.cuts summary:after{content:"+";font-size:18px;line-height:1;color:var(--mute)}
+  details.cuts[open] summary:after{content:"–"}
+  .cutlist{margin:0 0 10px;padding:0;list-style:none;font-size:14.5px}
+  .cutlist li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .cutlist .pn{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#479a3c;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
+  .cutlist .pn.h{background:#a5d38a;color:var(--forest2)}
+  .cutlist b{font-weight:700}
+  .err{color:var(--red);font-size:14px;margin-top:12px;background:#fff6f5;border-radius:10px;padding:10px 12px}
+  .empty{margin-top:14px;border:1.5px dashed #d3dccf;border-radius:14px;padding:22px 14px;text-align:center;color:var(--mute);font-size:14px}
+  .empty svg{display:block;margin:0 auto 6px;opacity:.6}
+  .add{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:2px dashed #b9d99a;background:rgba(255,255,255,.6);color:var(--brand-d);border-radius:16px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s}
+  .add:hover{background:#fff;border-color:var(--brand)}
+  .add span{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:18px;line-height:1}
+  .reset{display:block;margin:12px auto 0;background:none;border:none;color:var(--mute);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+  .reset.arm{color:var(--red);font-weight:600}
+  /* results */
+  .rlist{list-style:none;margin:0;padding:0}
+  .rlist li{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .rlist li:first-child{border-top:none}
+  .rlist .ico{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--green-l)}
+  .rlist .what{flex:1;min-width:0;font-weight:600}
+  .rlist .what small{display:block;color:var(--mute);font-weight:400;font-size:12.5px}
+  .rlist .qty{font-weight:700;white-space:nowrap;background:#f3f6f1;border-radius:9px;padding:5px 10px;font-size:15px}
+  .rlist .qty.roll{background:var(--forest2);color:#fff}
+  .note{font-size:13px;color:var(--mute);background:#f6f8f4;border-radius:10px;padding:9px 12px;margin-top:10px}
+  /* quote */
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(180deg,#8fcd48,#73b02f);color:#10261a;font:inherit;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none;box-shadow:0 6px 16px rgba(115,176,47,.35);transition:transform .1s,box-shadow .15s}
+  .btn:active{transform:translateY(1px);box-shadow:0 3px 8px rgba(115,176,47,.3)}
+  .btn.alt{background:#fff;color:var(--forest2);border:1.5px solid var(--line);box-shadow:none;margin-top:10px;font-size:15.5px;padding:13px}
+  .msg{margin-top:12px;font-size:14px;padding:11px 12px;border-radius:11px;background:var(--green-l);color:var(--forest2);display:none}
+  .msg.show{display:block;animation:pop .25s ease-out}
+  .msg.warn{background:#fff4e5;color:#8a4b06}
+  details.prev{margin-top:16px}
+  details.prev summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--mute)}
+  pre{white-space:pre-wrap;font-size:12px;background:#f7f9f6;border:1px solid var(--line);border-radius:12px;padding:12px;max-height:280px;overflow:auto;margin:10px 0 0}
+  .trust{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--mute);margin:-2px 0 16px}
+  .trust span:before{content:"✓ ";color:var(--brand-d);font-weight:700}
+  footer{font-size:12px;color:var(--mute);text-align:center;padding:4px 16px 10px}
+  footer img{width:90px;opacity:.75;display:block;margin:0 auto 6px}
+  .shape-hint{display:flex;gap:12px;align-items:center;font-size:13px;color:var(--mute);margin:-2px 0 12px;background:#f6f8f4;border-radius:12px;padding:8px 10px}
+  .shape-hint svg{width:64px;flex:none}
+  /* dock */
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(16,38,26,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(0);transition:transform .25s}
+  .dock.hide{transform:translateY(110%)}
+  .dock-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .dock-stats{flex:1;display:flex;gap:16px;color:rgba(255,255,255,.7);font-size:12px;line-height:1.1}
+  .dock-stats b{display:block;color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:22px}
+  .dock-stats div:first-child b{color:var(--sun)}
+  .dock-btn{flex:none;background:var(--brand);color:var(--forest);text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px;font-size:15.5px}
+  @media (min-width:700px){.hero{padding:40px 18px 44px}.hero h1{font-size:50px}}
+  @media (max-width:400px){.tiles b{font-size:20px}.tiles.dark b{font-size:23px}.hero h1{font-size:34px}}
 </style>
 </head>
 <body>
-<header>
-  <div class="hwrap">
+<header class="hero">
+  <div class="hero-in">
     <img class="logo" src="logo.png" alt="Turf Tek Direct">
-    <div><h1>Turf Calculator</h1><p>Enter your layout, get your roll cut list and materials, then request a quote.</p></div>
+    <h1>Turf Calculator</h1>
+    <p>Lay out your job, get a roll cut list and full material takeoff, then send it to our sales team for pricing.</p>
+    <ol class="stepper"><li><a href="#layoutSec"><span>1</span>Layout</a></li><li><a href="#resultsSec"><span>2</span>Rolls &amp; materials</a></li><li><a href="#quoteSec"><span>3</span>Quote</a></li></ol>
   </div>
 </header>
 
 <main>
-  <div class="card">
-    <p class="steps"><b>1.</b> Add each turf area and type in its size. &nbsp;<b>2.</b> Pick roll direction, half rolls and head seams. &nbsp;<b>3.</b> Check your roll list and materials. &nbsp;<b>4.</b> Send it to our sales team for pricing.</p>
-    <p class="hint" style="margin-top:8px">Type sizes like <b>40</b>, <b>40.5</b>, <b>40' 6"</b> or <b>40-6</b>.</p>
-  </div>
+  <section class="sec" id="layoutSec">
+    <div class="sec-h"><div class="num">1</div><div><h2>Your layout</h2><p>Add each turf area. Type sizes like <b>40</b>, <b>40.5</b>, <b>40' 6"</b> or <b>40-6</b>.</p></div></div>
+    <div id="areas"></div>
+    <button class="add" id="addArea"><span>+</span>Add another area</button>
+    <button class="reset" id="resetBtn" type="button">Start over</button>
+  </section>
 
-  <div id="areas"></div>
-  <button class="add" id="addArea">+ Add another area</button>
+  <section class="sec" id="resultsSec">
+    <div class="sec-h"><div class="num">2</div><div><h2>Rolls &amp; materials</h2><p>Updates as you type. Quantities only — pricing comes from our sales team.</p></div></div>
+    <div class="card" id="results"></div>
+  </section>
 
-  <div class="card" id="results"></div>
-
-  <div class="card">
-    <h2>Request a quote</h2>
-    <p class="hint" style="margin:-4px 0 12px">We'll price your material list and get back to you. No prices are shown here.</p>
-    <form id="quote" novalidate>
-      <div class="grid">
-        <div><label for="q_name">Name *</label><input id="q_name" autocomplete="name"></div>
-        <div><label for="q_company">Company</label><input id="q_company" autocomplete="organization"></div>
-        <div><label for="q_phone">Phone *</label><input id="q_phone" type="tel" autocomplete="tel"></div>
-        <div><label for="q_email">Email *</label><input id="q_email" type="email" autocomplete="email"></div>
-      </div>
-      <div style="margin-top:10px"><label for="q_job">Job address or town</label><input id="q_job"></div>
-      <div style="margin-top:10px"><label for="q_product">Turf product (if you know it)</label><input id="q_product" placeholder="Optional"></div>
-      <div style="margin-top:10px"><label for="q_notes">Notes</label><textarea id="q_notes" rows="3" placeholder="Delivery date, site access, anything else"></textarea></div>
-      <div style="margin-top:14px"><button class="btn" type="submit">Email my quote request</button></div>
-      <button class="btn alt" type="button" id="copyBtn">Copy summary</button>
-      <div class="msg" id="qmsg"></div>
-    </form>
-    <h3>Summary that gets sent</h3>
-    <pre id="summary"></pre>
-  </div>
+  <section class="sec" id="quoteSec">
+    <div class="sec-h"><div class="num">3</div><div><h2>Request a quote</h2><p>We'll price your material list and get back to you.</p></div></div>
+    <div class="card">
+      <form id="quote" novalidate>
+        <div class="grid">
+          <div><label for="q_name">Name *</label><input id="q_name" autocomplete="name"></div>
+          <div><label for="q_company">Company</label><input id="q_company" autocomplete="organization"></div>
+          <div><label for="q_phone">Phone *</label><input id="q_phone" type="tel" autocomplete="tel"></div>
+          <div><label for="q_email">Email *</label><input id="q_email" type="email" autocomplete="email"></div>
+        </div>
+        <div style="margin-top:12px"><label for="q_job">Job address or town</label><input id="q_job" autocomplete="address-level2"></div>
+        <div style="margin-top:12px"><label for="q_product">Turf product (if you know it)</label><input id="q_product" placeholder="Optional"></div>
+        <div style="margin-top:12px"><label for="q_notes">Notes</label><textarea id="q_notes" rows="3" placeholder="Delivery date, site access, anything else"></textarea></div>
+        <div style="margin-top:18px"><button class="btn" type="submit">Send my quote request <span aria-hidden="true">→</span></button></div>
+        <button class="btn alt" type="button" id="copyBtn">Copy summary</button>
+        <div class="msg" id="qmsg"></div>
+      </form>
+      <details class="prev"><summary>Preview what gets sent</summary><pre id="summary"></pre></details>
+    </div>
+    <div class="trust"><span>No prices or sign-up</span><span>Your layout saves on this device</span><span>Quote from a real person</span></div>
+  </section>
 
   <footer>Quantities are estimates for quoting only. Turf Tek Direct will confirm the final material list with you.</footer>
 </main>
+
+<div class="dock" id="dock"><div class="dock-in">
+  <div class="dock-stats"><div><b id="dSf">–</b>sq ft</div><div><b id="dRolls">–</b>rolls</div><div><b id="dBase">–</b>yd base</div></div>
+  <a class="dock-btn" href="#quoteSec">Get a quote →</a>
+</div></div>
 
 <script>
 /* ================= SETTINGS (Turf Tek can adjust these) ================= */
@@ -266,11 +345,13 @@ function drawSVG(g, lay){
   const cid = 'c' + uid();
   const pts = g.poly.map(p => p.join(',')).join(' ');
   let s = `<svg viewBox="${-pad} ${-pad} ${W + pad*2} ${H + pad*2}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roll layout">`;
-  s += `<defs><clipPath id="${cid}"><polygon points="${pts}"/></clipPath></defs><g clip-path="url(#${cid})">`;
+  const st = sw * 2.2;
+  s += `<defs><clipPath id="${cid}"><polygon points="${pts}"/></clipPath><pattern id="${cid}t" width="${st*2}" height="${st*2}" patternUnits="userSpaceOnUse"${lay.swap ? ' patternTransform="rotate(90)"' : ''}><rect width="${st*2}" height="${st}" fill="#fff" opacity=".06"/></pattern></defs><g clip-path="url(#${cid})">`;
   lay.pieces.forEach(p => {
     const r = p.rect, col = p.half ? '#a5d38a' : (p.lane % 2 ? '#5fae4f' : '#479a3c');
     s += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${col}"/>`;
   });
+  s += `<rect x="0" y="0" width="${W}" height="${H}" fill="url(#${cid}t)"/>`;
   lay.vLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#fff" stroke-width="${sw*1.3}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
   lay.hLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#e07b16" stroke-width="${sw*1.6}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
   s += `</g><polygon points="${pts}" fill="none" stroke="#1b4d1f" stroke-width="${sw*1.4}" stroke-linejoin="round"/>`;
@@ -296,16 +377,19 @@ function field(a, key, label, ph){
 }
 function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
+const ICO_RECT = `<svg viewBox="0 0 20 16"><rect x="1.5" y="1.5" width="17" height="13" rx="1.5" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.6"/></svg>`;
+const ICO_L = `<svg viewBox="0 0 20 16"><path d="M1.5 1.5h17v7.5h-7v5.5h-10z" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+let justAdded = null;
 function cardHTML(a){
   const dims = a.shape === 'rect'
     ? `<div class="grid">${field(a,'L','Length','e.g. 40')}${field(a,'W','Width','e.g. 25\' 6"')}</div>`
     : `<div class="shape-hint"><svg viewBox="0 0 70 46"><path d="M2 2h66v26H44v16H2z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
          Enter the full outside size, then the size of the corner piece that's cut out (red).</div>
        <div class="grid">${field(a,'A','Overall length')}${field(a,'B','Overall width')}${field(a,'c','Cut-out length')}${field(a,'d','Cut-out width')}</div>`;
-  return `<div class="card" data-card="${a.id}">
-    <div class="area-head"><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
-      ${state.areas.length > 1 ? `<button class="x" data-del="${a.id}">Remove</button>` : ''}</div>
-    <div class="seg"><button class="${a.shape==='rect'?'on':''}" data-shape="rect" data-id="${a.id}">Rectangle</button><button class="${a.shape==='L'?'on':''}" data-shape="L" data-id="${a.id}">L-shape</button></div>
+  return `<div class="card${a.id===justAdded?' new':''}" data-card="${a.id}">
+    <div class="area-head"><div class="area-ico" style="color:#3f8f2f">${a.shape==='rect'?ICO_RECT:ICO_L}</div><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
+      ${state.areas.length > 1 ? `<button class="x" data-del="${a.id}" aria-label="Remove area" title="Remove area">×</button>` : ''}</div>
+    <div class="seg"><button class="${a.shape==='rect'?'on':''}" data-shape="rect" data-id="${a.id}">${ICO_RECT}Rectangle</button><button class="${a.shape==='L'?'on':''}" data-shape="L" data-id="${a.id}">${ICO_L}L-shape</button></div>
     ${dims}
     <div class="opts">
       <div class="grid">
@@ -316,7 +400,7 @@ function cardHTML(a){
         <div><label>Longest piece (head seams)</label><input inputmode="decimal" data-id="${a.id}" data-f="maxPiece" value="${esc(a.maxPiece)}" placeholder="No head seams">
           <div class="hint">Enter a length to cut rolls shorter and add head seams. Max ${C.MAX_ROLL_LENGTH_FT}'.</div></div>
       </div>
-      <label class="check"><input type="checkbox" data-id="${a.id}" data-f="halfRolls"${a.halfRolls?' checked':''}> Use a half roll (7'6") for the last strip when it fits</label>
+      <label class="check"><input type="checkbox" data-id="${a.id}" data-f="halfRolls"${a.halfRolls?' checked':''}><span>Use a half roll (7'6") for the last strip when it fits</span></label>
       <div class="grid">
         <div><label>Outside border</label><select data-id="${a.id}" data-f="border">
           <option value="board"${a.border==='board'?' selected':''}>2x4 (stapled)</option>
@@ -331,6 +415,7 @@ function cardHTML(a){
 
 function renderAreas(){
   $('#areas').innerHTML = state.areas.map(cardHTML).join('');
+  justAdded = null;
   update();
 }
 
@@ -341,14 +426,14 @@ function areaOut(a, r){
     const inp = document.querySelector(`input[data-id="${a.id}"][data-f="${k}"]`);
     if (inp) inp.classList.toggle('bad', inp.value.trim() !== '' && !(parseLen(inp.value) > 0));
   });
-  if (!r.g){ el.innerHTML = `<p class="hint" style="margin-top:12px">Enter the size to see the roll layout.</p>`; return; }
+  if (!r.g){ el.innerHTML = `<div class="empty"><svg width="40" height="30" viewBox="0 0 40 30"><rect x="2" y="2" width="36" height="26" rx="3" fill="none" stroke="#86c440" stroke-width="2" stroke-dasharray="4 3"/></svg>Enter the size to see your roll layout.</div>`; return; }
   if (r.g.error){ el.innerHTML = `<p class="err">${r.g.error}</p>`; return; }
   const {g, lay} = r;
-  const list = lay.pieces.map((p, i) => `<li><span>Roll ${i+1}${p.half ? ' <small>(half)</small>' : ''}</span><span>${widthLabel(p.half)} × ${p.len}'</span></li>`).join('');
+  const list = lay.pieces.map((p, i) => `<li><span><span class="pn${p.half ? ' h' : ''}">${i+1}</span>${p.half ? 'Half roll' : 'Full roll'}</span><b>${widthLabel(p.half)} × ${p.len}'</b></li>`).join('');
   el.innerHTML = `<div class="draw">${drawSVG(g, lay)}
       <div class="legend"><span><i style="border-color:#5fae4f"></i>side seam</span>${lay.hLines.length ? '<span><i style="border-color:#e07b16"></i>head seam</span>' : ''}${lay.pieces.some(p=>p.half) ? '<span><b style="display:inline-block;width:12px;height:12px;background:#a5d38a;border-radius:2px;vertical-align:middle"></b> half roll</span>' : ''}</div></div>
-    <div class="mini"><div><b>${n0(g.sf)}</b><span>sq ft</span></div><div><b>${lay.pieces.length}</b><span>pieces</span></div><div><b>${n0(lay.seamV + lay.seamH)}'</b><span>of seams</span></div></div>
-    <ul class="cutlist">${list}</ul>
+    <div class="tiles"><div><b>${n0(g.sf)}</b><span>sq ft</span></div><div><b>${lay.pieces.length}</b><span>pieces</span></div><div><b>${n0(lay.seamV + lay.seamH)}'</b><span>of seams</span></div></div>
+    <details class="cuts"><summary>Cut list for this area</summary><ul class="cutlist">${list}</ul></details>
     <p class="hint">Rolls run along the ${fmt(r.runAlong)} side. Each piece includes ${fmt(C.END_ALLOWANCE_FT)} extra for trimming.</p>`;
 }
 
@@ -383,33 +468,47 @@ function update(){
   const T = totals();
   const res = $('#results');
   if (!T.areas.length){
-    res.innerHTML = `<h2>Your material list</h2><p class="hint">Enter at least one area size to see your rolls and materials.</p>`;
+    res.innerHTML = `<div class="empty" style="margin:0">Enter at least one area size to see your rolls and materials.</div>`;
     $('#summary').textContent = '';
-    save(); return;
+    dock(null); save(); return;
   }
   const waste = T.ordered > 0 ? (T.ordered - T.sf) / T.ordered * 100 : 0;
+  const I = {
+    stone:'<svg width="22" height="22" viewBox="0 0 24 24"><g fill="#8a958c"><circle cx="7" cy="15" r="4"/><circle cx="15" cy="16" r="3.4"/><circle cx="11.5" cy="9" r="3.6"/><circle cx="18.5" cy="10" r="2.6"/></g></svg>',
+    sand:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 19c3-8 6-11 9-11s6 3 9 11z" fill="#d9b86c"/></svg>',
+    tape:'<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#3f8f2f" stroke-width="4"/></svg>',
+    glue:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 8h10v12H7z" fill="#3f8f2f"/><path d="M10 3h4v5h-4z" fill="#86c440"/></svg>',
+    staple:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M5 18V8h14v10" fill="none" stroke="#5f6d62" stroke-width="2.6"/></svg>',
+    board:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="1" fill="#c99a5b"/></svg>',
+    nail:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 5h12M12 5v15l-1.5-2" fill="none" stroke="#5f6d62" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    edge:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M2 15c4-4 7-4 10 0s6 4 10 0" fill="none" stroke="#2f3b31" stroke-width="3" stroke-linecap="round"/></svg>',
+    roll:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="6" width="15" height="12" rx="2" fill="#479a3c"/><ellipse cx="18" cy="12" rx="3" ry="6" fill="#86c440"/><ellipse cx="18" cy="12" rx="1.2" ry="2.4" fill="#1d4424"/></svg>',
+    half:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="15" height="7" rx="1.5" fill="#a5d38a"/><ellipse cx="18" cy="12.5" rx="2" ry="3.5" fill="#86c440"/></svg>'
+  };
   const rows = [];
-  rows.push(['Base: 3/8" bluestone', `${C.BASE_DEPTH_IN}" deep · ${n1(T.baseCY)} cu yd exact`, `${Math.ceil(T.baseCY)} cu yd`]);
-  rows.push(['Infill: sand', `${C.INFILL_LB_PER_SF} lb/sq ft · ${n0(T.infillLb)} lb (${n1(T.infillLb/2000)} tons)`, `${n0(T.bags)} × ${C.INFILL_BAG_LB} lb bags`]);
+  rows.push([I.stone, '3/8" bluestone base', `${C.BASE_DEPTH_IN}" deep · ${n1(T.baseCY)} cu yd exact`, `${Math.ceil(T.baseCY)} cu yd`]);
+  rows.push([I.sand, 'Sand infill', `${C.INFILL_LB_PER_SF} lb/sq ft · ${n0(T.infillLb)} lb (${n1(T.infillLb/2000)} tons)`, `${n0(T.bags)} bags`]);
   if (T.seam > 0){
-    rows.push(['Seam tape', `${n0(T.seam)} linear ft of seams`, `${T.tapeRolls} roll${T.tapeRolls>1?'s':''} (${C.SEAM_TAPE_ROLL_FT}')`]);
-    rows.push(['Seam glue', `about ${C.GLUE_LF_PER_GAL} linear ft per gallon`, `${T.glue} gal`]);
+    rows.push([I.tape, 'Seam tape', `${n0(T.seam)} linear ft of seams · ${C.SEAM_TAPE_ROLL_FT}' rolls`, `${T.tapeRolls} roll${T.tapeRolls>1?'s':''}`]);
+    rows.push([I.glue, 'Seam glue', `about ${C.GLUE_LF_PER_GAL} linear ft per gallon`, `${T.glue} gal`]);
   }
   if (T.board > 0){
-    rows.push(['Staples (2x4 border)', `every ${C.STAPLE_SPACING_IN}" along ${n0(T.board)}' of border`, `${n0(T.staples)}`]);
-    rows.push(['2x4 nailer board', `${n0(T.board)} linear ft`, `${T.boards} × ${C.BOARD_LENGTH_FT}'`]);
+    rows.push([I.board, '2x4 nailer board', `${n0(T.board)} linear ft of border`, `${T.boards} × ${C.BOARD_LENGTH_FT}'`]);
+    rows.push([I.staple, 'Staples', `every ${C.STAPLE_SPACING_IN}" into the 2x4`, `${n0(T.staples)}`]);
   }
   if (T.edge > 0){
-    rows.push(['Nails (edging border)', `every ${C.NAIL_SPACING_IN}" along ${n0(T.edge)}' of border`, `${n0(T.nails)}`]);
-    rows.push(['Landscape edging', `${n0(T.edge)} linear ft`, `${n0(Math.ceil(T.edge))}'`]);
+    rows.push([I.edge, 'Landscape edging', `${n0(T.edge)} linear ft of border`, `${n0(Math.ceil(T.edge))}'`]);
+    rows.push([I.nail, 'Nails', `every ${C.NAIL_SPACING_IN}" into the edging`, `${n0(T.nails)}`]);
   }
-  res.innerHTML = `<h2>Your material list</h2>
-    <div class="mini" style="margin:0 0 6px"><div><b>${n0(T.sf)}</b><span>sq ft of turf area</span></div><div><b>${n0(T.ordered)}</b><span>sq ft of turf to order</span></div><div><b>${n1(waste)}%</b><span>waste</span></div></div>
-    <h3>Turf rolls to cut</h3>
-    <table class="rolls">${T.groups.map(g => `<tr><td>${g.n} ×</td><td>${widthLabel(g.half)} wide × ${g.len}' long${g.half ? '<small>half roll</small>' : ''}</td><td>${n0(g.n * g.len * (g.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT))} sq ft</td></tr>`).join('')}</table>
-    <p class="hint">Side seams: ${n0(T.seamV)}' · Head seams: ${n0(T.seamH)}'. Seams are glued and taped, not stapled or nailed.</p>
+  const li = r => `<li><div class="ico">${r[0]}</div><div class="what">${r[1]}<small>${r[2]}</small></div><div class="qty${r[4]?' roll':''}">${r[3]}</div></li>`;
+  res.innerHTML = `
+    <div class="tiles dark" style="margin:0 0 4px"><div><b>${n0(T.sf)}</b><span>sq ft turf area</span></div><div><b>${T.pieces.length}</b><span>rolls to cut</span></div><div><b>${n1(waste)}%</b><span>waste</span></div></div>
+    <h3>Turf rolls</h3>
+    <ul class="rlist">${T.groups.map(g => li([g.half ? I.half : I.roll, `${widthLabel(g.half)} wide × ${g.len}' long`, `${g.half ? 'Half roll · ' : ''}${n0(g.n * g.len * (g.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT))} sq ft`, `${g.n} ×`, 1])).join('')}</ul>
+    <div class="note">${n0(T.ordered)} sq ft of turf to order · Side seams ${n0(T.seamV)}' · Head seams ${n0(T.seamH)}'. Seams are glued and taped, never stapled or nailed.</div>
     <h3>Materials</h3>
-    <table>${rows.map(r => `<tr><td>${r[0]}<small>${r[1]}</small></td><td>${r[2]}</td></tr>`).join('')}</table>`;
+    <ul class="rlist">${rows.map(li).join('')}</ul>`;
+  dock(T);
   $('#summary').textContent = buildSummary(T);
   save();
 }
@@ -446,14 +545,22 @@ function buildSummary(T){
   return L.join('\n');
 }
 
-function showMsg(t){ const m = $('#qmsg'); m.textContent = t; m.classList.add('show'); }
+function showMsg(t, warn){ const m = $('#qmsg'); m.textContent = t; m.classList.toggle('warn', !!warn); m.classList.remove('show'); void m.offsetWidth; m.classList.add('show'); }
+function dock(T){
+  $('#dSf').textContent = T ? n0(T.sf) : '–';
+  $('#dRolls').textContent = T ? T.pieces.length : '–';
+  $('#dBase').textContent = T ? Math.ceil(T.baseCY) : '–';
+}
 
 $('#quote').addEventListener('submit', e => {
   e.preventDefault();
   const c = contact();
   const T = totals();
-  if (!T.areas.length) return showMsg('Add at least one area size first.');
-  if (!c.name || (!c.phone && !c.email)) return showMsg('Please add your name and a phone number or email so we can reach you.');
+  if (!T.areas.length) return showMsg('Add at least one area size first.', true);
+  if (!c.name || (!c.phone && !c.email)){
+    ['name','phone','email'].forEach(k => $('#q_' + k).classList.toggle('bad', k === 'name' ? !c.name : (!c.phone && !c.email)));
+    return showMsg('Please add your name and a phone number or email so we can reach you.', true);
+  }
   const body = buildSummary(T);
   const subj = `Turf quote request — ${c.company || c.name}${c.job ? ' — ' + c.job : ''}`;
   const a = document.createElement('a');
@@ -475,7 +582,7 @@ $('#copyBtn').addEventListener('click', async () => {
 ['name','company','phone','email','job','product','notes'].forEach(k => {
   const el = $('#q_' + k);
   el.value = (state.contact && state.contact[k]) || '';
-  el.addEventListener('input', () => { state.contact = contact(); $('#summary').textContent = buildSummary(totals()); save(); });
+  el.addEventListener('input', () => { el.classList.remove('bad'); state.contact = contact(); $('#summary').textContent = buildSummary(totals()); save(); });
 });
 
 /* ---------- events ---------- */
@@ -494,7 +601,21 @@ $('#areas').addEventListener('click', e => {
   if (b.dataset.shape){ const a = areaById(b.dataset.id); a.shape = b.dataset.shape; renderAreas(); }
   if (b.dataset.del){ state.areas = state.areas.filter(a => a.id !== b.dataset.del); renderAreas(); }
 });
-$('#addArea').addEventListener('click', () => { state.areas.push(newArea(state.areas.length + 1)); renderAreas(); });
+$('#addArea').addEventListener('click', () => {
+  const a = newArea(state.areas.length + 1); state.areas.push(a); justAdded = a.id; renderAreas();
+  const el = document.querySelector(`[data-card="${a.id}"]`);
+  if (el){ el.scrollIntoView({behavior:'smooth', block:'center'}); setTimeout(() => { const i = el.querySelector('input[data-f="L"]'); if (i) i.focus({preventScroll:true}); }, 400); }
+});
+let resetTimer;
+$('#resetBtn').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (!b.classList.contains('arm')){ b.classList.add('arm'); b.textContent = 'Tap again to clear all areas'; resetTimer = setTimeout(() => { b.classList.remove('arm'); b.textContent = 'Start over'; }, 3000); return; }
+  clearTimeout(resetTimer); b.classList.remove('arm'); b.textContent = 'Start over';
+  state.areas = [newArea(1)]; renderAreas(); window.scrollTo({top:0, behavior:'smooth'});
+});
+if ('IntersectionObserver' in window){
+  new IntersectionObserver(es => es.forEach(x => $('#dock').classList.toggle('hide', x.isIntersecting)), {threshold:0.05}).observe($('#quoteSec'));
+}
 
 renderAreas();
 </script>
