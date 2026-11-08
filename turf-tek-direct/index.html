@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1b4d1f">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Turf Calculator">
@@ -20,11 +20,11 @@
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.4}
-  header{background:var(--green-d);color:#fff;padding:18px 16px 16px}
-  .hwrap{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
-  .logo{width:42px;height:42px;flex:none}
+  header{background:#fff;color:var(--green-d);padding:16px 16px 14px;border-bottom:4px solid #86c440;text-align:center}
+  .hwrap{max-width:860px;margin:0 auto}
+  .logo{display:block;width:min(320px,80%);height:auto;margin:0 auto 8px}
   header h1{font-family:"Barlow Condensed",sans-serif;font-size:24px;margin:0;letter-spacing:.3px}
-  header p{margin:2px 0 0;opacity:.8;font-size:14px}
+  header p{margin:2px 0 0;color:var(--mute);font-size:14px}
   main{max-width:860px;margin:0 auto;padding:16px 12px 60px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
   h2{font-family:"Barlow Condensed",sans-serif;font-size:21px;margin:0 0 10px;color:var(--green-d)}
@@ -78,8 +78,8 @@
 <body>
 <header>
   <div class="hwrap">
-    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#fff"/><circle cx="24" cy="24" r="20" fill="#2e7d32"/><path d="M10 34c3-6 5-11 6-18 1 7 2 11 4 15 1-8 3-14 4-20 1 6 3 12 4 20 2-4 3-8 4-15 1 7 3 12 6 18z" fill="#9ccc65"/></svg>
-    <div><h1>Turf Tek Direct · Turf Calculator</h1><p>Enter your layout, get your roll cut list and materials, then request a quote.</p></div>
+    <img class="logo" src="logo.png" alt="Turf Tek Direct">
+    <div><h1>Turf Calculator</h1><p>Enter your layout, get your roll cut list and materials, then request a quote.</p></div>
   </div>
 </header>
 
