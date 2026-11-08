@@ -639,6 +639,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="docStat" class="muted small" style="margin:10px 0 0"></p>
   </div>
   <div id="hwHits"></div>
+  <article class="dcard" id="ovCard"><button class="dopen" data-doc="overviews"><span class="dicon">🗺️</span><span><b>Overviews – what everything looks like</b><span class="muted small">Whole-site plan, area plans and a 3D view of each big piece</span></span><span class="go">Open</span></button></article>
   <div id="docList" class="dlist"></div>
 
 </section>
@@ -1282,7 +1283,12 @@ let vz=1, vzMax=3;
 const viewer=document.getElementById('viewer'), vBody=document.getElementById('vBody');
 function setZoom(z){ vz=Math.max(1,Math.min(vzMax,z)); vBody.style.setProperty('--z',vz); vBody.classList.toggle('zoomed',vz>1); }
 const EXTRA_PAGES={497:[{src:'sheets/x-497-exploded.jpg',w:2300,h:2120,cap:'Added: exploded view of sheet 7 (posts left, decks right). Schematic, not to scale.'}]};
-function openDoc(k, page, part){ CURPART=part||null;
+const OVERVIEWS=[{"p": 738, "cap": "Whole site – all plan sheets stitched together", "doc": "plan-site", "w": 5041, "h": 5393}, {"p": 1, "cap": "Plan P&M A – 2–5 area", "doc": "plan-A", "w": 3740, "h": 2420}, {"p": 2, "cap": "Plan P&M B – middle terrace", "doc": "plan-B", "w": 3740, "h": 2420}, {"p": 3, "cap": "Plan P&M BC – middle terrace structure", "doc": "plan-BC", "w": 3740, "h": 2420}, {"p": 4, "cap": "Plan P&M CD – upper terrace", "doc": "plan-CD", "w": 3740, "h": 2420}, {"p": 5, "cap": "Plan P&M D – elevated walkway", "doc": "plan-D", "w": 3740, "h": 2420}, {"p": 302, "cap": "Snag tower – Zenith crooked net climber", "doc": "cmp-c-snag", "w": 935, "h": 1210}, {"p": 491, "cap": "23' RPL tower", "doc": "cmp-e-tower", "w": 935, "h": 1210}, {"p": 536, "cap": "Adventurescapes #5 w/ high wire", "doc": "cmp-e-adv", "w": 935, "h": 1210}, {"p": 479, "cap": "26.6' tunnel–scoop slide (from tower)", "doc": "cmp-e-slide266", "w": 935, "h": 1210}, {"p": 489, "cap": "96\" spiral scoop slide", "doc": "cmp-e-spiral96", "w": 935, "h": 1210}, {"p": 651, "cap": "Elevated walkway", "doc": "cmp-e-walkway", "w": 935, "h": 1210}, {"p": 294, "cap": "142\" straight scoop slide", "doc": "cmp-c-slide142", "w": 935, "h": 1210}, {"p": 361, "cap": "Rope pull climber", "doc": "cmp-c-ropepull", "w": 935, "h": 1210}, {"p": 366, "cap": "GFRC lean-to", "doc": "cmp-c-leanto", "w": 935, "h": 1210}, {"p": 128, "cap": "48\" rollerslide w/ hood", "doc": "cmp-a-roller", "w": 935, "h": 1210}, {"p": 136, "cap": "30\" S/S slide", "doc": "cmp-a-ss30", "w": 935, "h": 1210}, {"p": 139, "cap": "GFRC log tunnel slide", "doc": "cmp-a-logtunnel", "w": 935, "h": 1210}, {"p": 146, "cap": "GFRC log stack w/ bear", "doc": "cmp-a-logstack", "w": 935, "h": 1210}, {"p": 151, "cap": "GFRC tree stump transfer", "doc": "cmp-a-stump", "w": 935, "h": 1210}];
+function openOverviews(){ CURPART=null; CURDOC='overviews'; vzMax=6;
+  document.getElementById('vTitle').textContent='Overviews – what everything looks like'; document.getElementById('vPages').textContent=`${OVERVIEWS.length} pages`; document.getElementById('vBack').hidden=!VSTACK.length;
+  vBody.innerHTML=OVERVIEWS.filter(o=>DOCS[o.doc]).map((o,i)=>`<figure data-p="${o.p}"><figcaption>${i+1}. ${esc(o.cap)} · page ${o.p} <button class="hit" data-doc="${o.doc}" data-page="${o.p}" style="margin-left:6px">Open its sheets</button></figcaption><img width="${o.w}" height="${o.h}" ${o.w>1000?'class="wide"':''} loading="${i<2?'eager':'lazy'}" src="sheets/p-${String(o.p).padStart(3,'0')}.jpg" alt="${esc(o.cap)}"></figure>`).join('');
+  setZoom(1); vBody.scrollTop=0; viewer.hidden=false; document.getElementById('vClose').focus(); }
+function openDoc(k, page, part){ if(k==='overviews') return openOverviews(); CURPART=part||null;
   const [t,a,b]=DOCS[k]; document.getElementById('vTitle').textContent=t;
   document.getElementById('vPages').textContent=a===b?`Packet page ${a}`:`Packet pages ${a}–${b}`;
   const wide=(JOB.wideDocs||[]).includes(k); vzMax=wide?8:3; CURDOC=k; document.getElementById('vBack').hidden=!VSTACK.length;
