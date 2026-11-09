@@ -211,7 +211,7 @@ const C = {
   SEAM_TAPE_ROLL_FT: 100,
   GLUE_LF_PER_GAL: 25,           // linear feet of seam per gallon of glue
   STAPLE_SPACING_IN: 3,          // staples into 2x4 nailer board
-  NAIL_SPACING_IN: 6,            // nails into landscape edging
+  NAIL_SPACING_IN: 6,            // nails into buried edge
   BOARD_LENGTH_FT: 16            // 2x4 length for board count
 };
 /* ======================================================================== */
@@ -403,9 +403,9 @@ function cardHTML(a){
       <div class="grid">
         <div><label>Outside border</label><select data-id="${a.id}" data-f="border">
           <option value="board"${a.border==='board'?' selected':''}>2x4 (stapled)</option>
-          <option value="edge"${a.border==='edge'?' selected':''}>Edging (nailed)</option>
+          <option value="edge"${a.border==='edge'?' selected':''}>Buried edge (nailed)</option>
           <option value="split"${a.border==='split'?' selected':''}>Some of each</option></select></div>
-        <div style="${a.border==='split'?'':'display:none'}" data-splitwrap="${a.id}">${field(a,'boardFt','Feet on 2x4','Rest is edging').replace('<div>','<div>')}</div>
+        <div style="${a.border==='split'?'':'display:none'}" data-splitwrap="${a.id}">${field(a,'boardFt','Feet on 2x4','Rest is buried edge').replace('<div>','<div>')}</div>
       </div>
     </div>
     <div data-out="${a.id}"></div>
@@ -496,8 +496,7 @@ function update(){
     rows.push([I.staple, 'Staples', `every ${C.STAPLE_SPACING_IN}" into the 2x4`, `${n0(T.staples)}`]);
   }
   if (T.edge > 0){
-    rows.push([I.edge, 'Landscape edging', `${n0(T.edge)} linear ft of border`, `${n0(Math.ceil(T.edge))}'`]);
-    rows.push([I.nail, 'Nails', `every ${C.NAIL_SPACING_IN}" into the edging`, `${n0(T.nails)}`]);
+    rows.push([I.nail, 'Nails', `every ${C.NAIL_SPACING_IN}" along ${n0(T.edge)}' of buried edge`, `${n0(T.nails)}`]);
   }
   const li = r => `<li><div class="ico">${r[0]}</div><div class="what">${r[1]}<small>${r[2]}</small></div><div class="qty${r[4]?' roll':''}">${r[3]}</div></li>`;
   res.innerHTML = `
@@ -539,7 +538,7 @@ function buildSummary(T){
   L.push(`- Sand infill @ ${C.INFILL_LB_PER_SF} lb/sf: ${n0(T.infillLb)} lb = ${T.bags} x ${C.INFILL_BAG_LB} lb bags`);
   if (T.seam > 0) L.push(`- Seam tape: ${n0(T.seam)} lf = ${T.tapeRolls} roll(s)`, `- Seam glue: ${T.glue} gal`);
   if (T.board > 0) L.push(`- 2x4 nailer: ${n0(T.board)} lf (${T.boards} x ${C.BOARD_LENGTH_FT}'), staples: ${n0(T.staples)}`);
-  if (T.edge > 0) L.push(`- Landscape edging: ${n0(T.edge)} lf, nails: ${n0(T.nails)}`);
+  if (T.edge > 0) L.push(`- Buried edge: ${n0(T.edge)} lf, nails: ${n0(T.nails)}`);
   if (c.notes) L.push('', 'NOTES', c.notes);
   return L.join('\n');
 }
