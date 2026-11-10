@@ -794,6 +794,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span> · <span data-notr>App v10</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -874,7 +875,7 @@ function trCore(s,d){
   return null;
 }
 Object.assign(ES_D,{"home · maps":"Inicio · Mapas","hardware & docs":"Herrajes y docs","tape list":"Lista de cintas","🧮 calculate concrete":"🧮 Calcular concreto","✓ done":"✓ Listo","⇧ bigger":"⇧ Más grande","⇩ smaller":"⇩ Más chico","start":"Empezar","more info ▾":"Más info ▾","less ▴":"Menos ▴","best pair":"Mejor par","no good stake pair for this hole.":"No hay un buen par de estacas para este hoyo."});
-Object.assign(ES_D,Object.fromEntries(Object.entries({"notes":"Notas","reminders":"Recordatorios","what needs doing?":"¿Qué hay que hacer?","reminder":"Recordatorio","no time":"Sin hora","in {n} hours":"En {n} horas","end of day":"Fin del día","tomorrow {n} am":"Mañana {n} AM","tomorrow {n}:{n} am":"Mañana {n}:{n} AM","when (optional)":"Cuándo (opcional)","hole # (optional)":"Hoyo # (opcional)","add reminder":"Agregar recordatorio","clear done":"Borrar hechos","copy all":"Copiar todo","field notes for this job: changes, missing parts, what the gc said. saved on this phone.":"Notas de campo de esta obra: cambios, piezas que faltan, lo que dijo el contratista. Se guarda en este teléfono.","write a note":"Escribe una nota","note":"Nota","save note":"Guardar nota","save changes":"Guardar cambios","cancel edit":"Cancelar","search notes":"Buscar notas","word or hole #":"Palabra o hoyo #","delete":"Borrar","sure?":"¿Seguro?","edit":"Editar","mark done":"Marcar hecho","mark not done":"Marcar pendiente","nothing to remember right now.":"Nada pendiente por ahora.","no notes yet.":"Aún no hay notas.","no notes match.":"Ninguna nota coincide.","talk a reminder":"Dictar recordatorio","listening… say the reminder":"Escuchando… di el recordatorio","say or type the reminder":"Di o escribe el recordatorio","save reminder":"Guardar recordatorio","talk again":"Hablar otra vez","cancel":"Cancelar","no part or hole heard: it will just go on the list.":"No se oyó pieza ni hoyo: solo irá a la lista.","didn't hear anything. tap talk again.":"No escuché nada. Toca Hablar otra vez.","check it, then save.":"Revísalo y guarda.","tap the mic on your keyboard and talk.":"Toca el micrófono del teclado y habla.","reminder saved ✓":"Recordatorio guardado ✓","name a part (like \"double pinnacle\") or a hole (\"hole {n}\") and a ⚠ shows on the plan and layout.":"Nombra una pieza (como \"double pinnacle\") o un hoyo (\"hoyo {n}\") y aparece un ⚠ en el Plano y el Trazo.","copied. paste it in a text or email.":"Copiado. Pégalo en un mensaje o correo.","couldn't copy on this phone.":"No se pudo copiar en este teléfono."}).filter(([k])=>ES_D[k]==null)));
+Object.assign(ES_D,Object.fromEntries(Object.entries({"notes":"Notas","reminders":"Recordatorios","what needs doing?":"¿Qué hay que hacer?","reminder":"Recordatorio","no time":"Sin hora","in {n} hours":"En {n} horas","end of day":"Fin del día","tomorrow {n} am":"Mañana {n} AM","tomorrow {n}:{n} am":"Mañana {n}:{n} AM","when (optional)":"Cuándo (opcional)","hole # (optional)":"Hoyo # (opcional)","add reminder":"Agregar recordatorio","clear done":"Borrar hechos","copy all":"Copiar todo","field notes for this job: changes, missing parts, what the gc said. saved on this phone.":"Notas de campo de esta obra: cambios, piezas que faltan, lo que dijo el contratista. Se guarda en este teléfono.","write a note":"Escribe una nota","note":"Nota","save note":"Guardar nota","save changes":"Guardar cambios","cancel edit":"Cancelar","search notes":"Buscar notas","word or hole #":"Palabra o hoyo #","delete":"Borrar","sure?":"¿Seguro?","edit":"Editar","mark done":"Marcar hecho","mark not done":"Marcar pendiente","nothing to remember right now.":"Nada pendiente por ahora.","no notes yet.":"Aún no hay notas.","no notes match.":"Ninguna nota coincide.","saved on this phone":"Guardado en este teléfono","not saved!":"¡No se guardó!","talk a reminder":"Dictar recordatorio","listening… say the reminder":"Escuchando… di el recordatorio","say or type the reminder":"Di o escribe el recordatorio","save reminder":"Guardar recordatorio","talk again":"Hablar otra vez","cancel":"Cancelar","no part or hole heard: it will just go on the list.":"No se oyó pieza ni hoyo: solo irá a la lista.","didn't hear anything. tap talk again.":"No escuché nada. Toca Hablar otra vez.","check it, then save.":"Revísalo y guarda.","tap the mic on your keyboard and talk.":"Toca el micrófono del teclado y habla.","reminder saved ✓":"Recordatorio guardado ✓","name a part (like \"double pinnacle\") or a hole (\"hole {n}\") and a ⚠ shows on the plan and layout.":"Nombra una pieza (como \"double pinnacle\") o un hoyo (\"hoyo {n}\") y aparece un ⚠ en el Plano y el Trazo.","copied. paste it in a text or email.":"Copiado. Pégalo en un mensaje o correo.","couldn't copy on this phone.":"No se pudo copiar en este teléfono."}).filter(([k])=>ES_D[k]==null)));
 const TR_SKIP='script,style,.hit,#vBody,option[data-raw],[data-notr]';
 function trNode(n){
   if(n.nodeType===3){ const p=n.parentElement; if(!p||p.closest(TR_SKIP)) return; const v=n.nodeValue; const t=tr(v); if(t!==v) n.nodeValue=t; return; }
@@ -2108,14 +2109,33 @@ document.getElementById('oCard').addEventListener('change',e=>{ if(e.target.id!=
 
 // ---------- NOTES & REMINDERS ----------
 let REM = store.get('rem', []), NOTES = store.get('notes', []), NEDIT = null;
+// Saved three ways (localStorage, IndexedDB, Cache Storage) so one getting wiped doesn't lose anything.
+const NV='v10';
+let NSTAMP=(()=>{ try{ return JSON.parse(localStorage.getItem('swl_rn')||'{}').t||0; }catch(e){ return 0; } })();
+(()=>{ try{ const p=JSON.parse(localStorage.getItem('swl_rn')||'null'); if(p&&p.t){ REM=p.rem||[]; NOTES=p.notes||[]; } }catch(e){} })();
+function nIDB(){ return new Promise((res,rej)=>{ try{ const r=indexedDB.open('swl',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } }); }
+async function idbPut(v){ const d=await nIDB(); await new Promise((res,rej)=>{ const tx=d.transaction('kv','readwrite'); tx.objectStore('kv').put(v,'rn'); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); d.close(); }
+async function idbGet(){ const d=await nIDB(); const v=await new Promise((res,rej)=>{ const q=d.transaction('kv').objectStore('kv').get('rn'); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); d.close(); return v; }
+const NCK='./__swl_saved.json';
+async function cachePut(v){ const c=await caches.open('swl-data'); await c.put(NCK,new Response(JSON.stringify(v),{headers:{'content-type':'application/json'}})); }
+async function cacheGet(){ const c=await caches.open('swl-data'); const r=await c.match(NCK); return r?await r.json():null; }
+function nStatus(txt,bad){ const e=document.getElementById('nSaved'); if(!e) return; e.textContent=txt; e.style.color=bad?'var(--bad)':'var(--good)'; }
 function nSave(){
-  let ok=true; try{ const a=JSON.stringify(REM), b=JSON.stringify(NOTES); localStorage.setItem('swl_rem',a); localStorage.setItem('swl_notes',b);
-    ok = localStorage.getItem('swl_rem')===a && localStorage.getItem('swl_notes')===b; }catch(e){ ok=false; }
-  const w=document.getElementById('nSaveWarn'); if(w) w.hidden=ok;
-  if(ok && !nSave.asked && navigator.storage && navigator.storage.persist){ nSave.asked=true; navigator.storage.persist().catch(()=>{}); }
-  return ok; }
+  NSTAMP=Date.now(); const payload={t:NSTAMP,rem:REM,notes:NOTES}; let n=0;
+  try{ const j=JSON.stringify(payload); localStorage.setItem('swl_rn',j); localStorage.setItem('swl_rem',JSON.stringify(REM)); localStorage.setItem('swl_notes',JSON.stringify(NOTES)); if(localStorage.getItem('swl_rn')===j) n++; }catch(e){}
+  const jobs=[]; try{ jobs.push(idbPut(payload).then(()=>n++)); }catch(e){} try{ if(window.caches) jobs.push(cachePut(payload).then(()=>n++)); }catch(e){}
+  Promise.allSettled(jobs).then(()=>{ const w=document.getElementById('nSaveWarn'); if(w) w.hidden=n>0; nStatus(n>0?(L('Saved on this phone')+' ✓'):L('Not saved!'),n===0); });
+  if(!nSave.asked && navigator.storage && navigator.storage.persist){ nSave.asked=true; navigator.storage.persist().catch(()=>{}); }
+  return true; }
+// on open: if IndexedDB or the cache has a newer copy than localStorage, use it and re-save everywhere
+(async()=>{ const got=[]; try{ got.push(await idbGet()); }catch(e){} try{ if(window.caches) got.push(await cacheGet()); }catch(e){}
+  const best=got.filter(v=>v&&v.t).sort((a,b)=>b.t-a.t)[0];
+  if(best && best.t>NSTAMP){ REM=best.rem||[]; NOTES=best.notes||[]; nSave(); try{ renderNotes(); }catch(e){ try{ nBadge(); }catch(_){} } }
+  else if(NSTAMP===0 && (REM.length||NOTES.length)) nSave(); // move old-style saves into all three
+  else if(REM.length||NOTES.length) nStatus(L('Saved on this phone')+' ✓');
+})();
 // pick up changes made in another tab / the home-screen app
-addEventListener('storage',e=>{ if(e.key==='swl_rem'||e.key==='swl_notes'){ REM=store.get('rem',[]); NOTES=store.get('notes',[]); try{ renderNotes(); }catch(_){ } } });
+addEventListener('storage',e=>{ if(e.key==='swl_rn'){ try{ const p=JSON.parse(e.newValue||'{}'); if(p.t){ NSTAMP=p.t; REM=p.rem||[]; NOTES=p.notes||[]; } }catch(_){} try{ renderNotes(); }catch(_){ } } });
 const nid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const NES = LANG === 'es', LOC = NES ? 'es-US' : 'en-US';
 const pad2 = n => String(n).padStart(2, '0');
