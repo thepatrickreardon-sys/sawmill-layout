@@ -2,7 +2,7 @@ const V='neary-v11';
 const CORE=['./','index.html','docs-text.json','hardware.json','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png','icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
-  for(const k of await caches.keys()) if(k!==V) await caches.delete(k);
+  for(const k of await caches.keys()) if(k!==V && k.startsWith('neary-v')) await caches.delete(k); // only this app's old caches: all jobs share one site
   await self.clients.claim();
   // fill in plan sheets in the background so the Docs tab works with no signal
   try{ const list=await (await fetch('sheets.json',{cache:'no-store'})).json(); const c=await caches.open(V);
