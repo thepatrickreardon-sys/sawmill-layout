@@ -377,6 +377,23 @@ html[lang=es] .fbtns button{font-size:17px}
 .hpp{position:absolute;width:calc(7px + var(--hz,1)*1.6px);height:calc(7px + var(--hz,1)*1.6px);transform:translate(-50%,-50%);border-radius:50%;background:#e8590c;border:2px solid #fff;box-shadow:0 0 0 1px #e8590c;pointer-events:none}
 .hpp span{position:absolute;left:100%;top:-3px;margin-left:1px;font:700 calc(9px + var(--hz,1)*1px)/1 "Barlow Condensed",sans-serif;color:#b8460a;background:rgba(255,255,255,.85);padding:0 2px;border-radius:2px;white-space:nowrap}
 .hpp.sel{background:#15212b;box-shadow:0 0 0 3px #e8590c;width:calc(12px + var(--hz,1)*2px);height:calc(12px + var(--hz,1)*2px);z-index:2}
+.hprem{position:absolute;z-index:3;width:calc(15px + var(--hz,1)*2px);height:calc(14px + var(--hz,1)*2px);min-height:0;padding:0;border:0;background:none;transform:translate(-125%,-115%);cursor:pointer}
+.hprem.corner{transform:translate(-55%,-60%)}
+.hprem::before{content:"";position:absolute;inset:-9px}
+.hprem svg{display:block;width:100%;height:100%;overflow:visible}
+.hprem path{fill:#f2a900;stroke:#fff;stroke-width:2;stroke-linejoin:round}
+.hprem text{font:900 15px/1 system-ui,sans-serif;fill:#15212b}
+.hprem.late path{fill:#b42318}.hprem.late text{fill:#fff}
+.dicbtn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px;border-radius:999px;background:var(--paint);border-color:var(--paint);color:#fff;font-weight:700}
+.dicbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.dicbtn svg rect{fill:currentColor;stroke:none}
+.dicp{display:grid;gap:8px;margin:0 0 10px;padding:12px;border:2px solid var(--paint);border-radius:12px;background:#fff8f2}
+.dichead{display:flex;align-items:center;gap:8px}
+.dicdot{width:12px;height:12px;border-radius:50%;background:var(--bad);animation:dicp 1s ease-in-out infinite}
+@keyframes dicp{50%{opacity:.25}}
+.dicp textarea{width:100%;box-sizing:border-box;font:inherit;font-size:17px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;min-height:64px;resize:vertical}
+.dicp .nquick button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.dicp .nmeta{margin:0}
 .hpwrap .mapctl{top:8px;right:8px}
 .hpbub{right:8px;top:8px;left:auto}
 .hplegend{display:flex;gap:6px 14px;flex-wrap:wrap;margin-top:8px;align-items:center}
@@ -448,6 +465,39 @@ html[lang=es] .fbtns button{font-size:17px}
 body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
 @media (max-width:720px){ .tabs{grid-template-columns:repeat(3,1fr)!important} }
 
+/* ---------- NOTES & REMINDERS ---------- */
+@media (max-width:720px){ .tabs{grid-template-columns:repeat(4,1fr)!important} .tabs a span{white-space:normal;text-align:center;line-height:1.1} }
+.tabs a{position:relative}
+.nbadge{position:absolute;top:3px;right:calc(50% - 26px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad);color:#fff;font:700 11px/18px var(--body,system-ui);text-align:center}
+@media (min-width:721px){ .nbadge{position:static;margin-left:2px} }
+.nadd{display:grid;gap:10px}
+.nadd textarea,.nadd input[type=text],.nadd input[type=datetime-local]{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);min-height:44px;box-sizing:border-box}
+.nadd textarea{min-height:84px;resize:vertical}
+.nquick{display:flex;gap:6px;flex-wrap:wrap}
+.nquick button{min-height:36px;padding:6px 10px;font-size:14px}
+.nlist{display:grid;gap:8px;margin-top:12px}
+.nitem{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel)}
+.nitem.due{border-color:var(--warn);background:#fff8eb}
+.nitem.late{border-color:var(--bad);background:#fdeeed}
+.nitem.done .ntxt{text-decoration:line-through;color:var(--muted)}
+.nchk{flex:none;width:30px;height:30px;min-height:30px;padding:0;border-radius:8px;border:2px solid var(--muted);background:#fff;font-size:18px;line-height:1;color:var(--good)}
+.nitem.done .nchk{border-color:var(--good);background:#e8f5ed}
+.nbody{flex:1;min-width:0}
+.ntxt{white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px}
+.nmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;font-size:13px;color:var(--muted)}
+.nitem.due .nwhen{color:var(--warn);font-weight:700}
+.nitem.late .nwhen{color:var(--bad);font-weight:700}
+.nhole{border:1px solid var(--steel);color:var(--steel);background:var(--steelsoft);border-radius:999px;padding:2px 9px;min-height:0;font-size:13px}
+.ncomp{border-color:#c98a00;color:#7a5200;background:#fff6dc}
+.nact{display:flex;gap:6px;flex:none}
+.nact button{min-height:36px;padding:4px 10px;font-size:14px}
+.nact button.sure{background:var(--bad);border-color:var(--bad);color:#fff}
+@keyframes nflash{0%,60%{box-shadow:0 0 0 4px var(--paint)}100%{box-shadow:0 0 0 0 transparent}}
+.nitem.flash{animation:nflash 2.2s ease-out}
+.nempty{color:var(--muted);font-size:14px;margin:12px 0 0}
+.nhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nhead h2{margin:0}
+.nhead .sp{margin-left:auto}
 
 </style>
 
@@ -461,6 +511,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span>Home · Maps</span></a>
     <a href="#tapes" data-tab="tapes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="7"/><circle cx="10" cy="12" r="2"/><path d="M17 12h5v4"/></svg><span>Tapes</span></a>
     <a href="#docs" data-tab="docs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg><span>Hardware &amp; Docs</span></a>
+    <a href="#notes" data-tab="notes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"/><path d="M9 8l1.5 1.5L13 7M9 14h6M9 17h4"/></svg><span>Notes</span><b class="nbadge" id="nBadge" hidden data-notr></b></a>
   </nav>
   <div class="subnav wrap" id="subnav" hidden><div class="seg wide" role="group" aria-label="Sheet" id="subseg"></div></div>
 </header>
@@ -470,7 +521,14 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
 <!-- HOME -->
 <section data-view="home">
   <div class="card hplan">
-    <div class="hpbar"><h2>Plan</h2><span class="muted small" id="hpHint">Tap a pole or a part name</span></div>
+    <div class="hpbar"><h2>Plan</h2><span class="muted small" id="hpHint">Tap a pole or a part name</span><button type="button" class="dicbtn" id="dicBtn" aria-label="Talk a reminder"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><span>Reminder</span></button></div>
+    <div class="dicp" id="dicP" hidden>
+      <div class="dichead"><span class="dicdot" id="dicDot" hidden></span><b id="dicStat">Listening… say the reminder</b></div>
+      <textarea id="dicTxt" rows="2" placeholder="Say or type the reminder" aria-label="Reminder"></textarea>
+      <div class="nmeta" id="dicSee"></div>
+      <div class="nquick" id="dicWhen"><button type="button" data-dw="" aria-pressed="true">No time</button><button type="button" data-dw="2h" aria-pressed="false">In 2 hours</button><button type="button" data-dw="eod" aria-pressed="false">End of day</button><button type="button" data-dw="am" aria-pressed="false">Tomorrow 5:45 AM</button></div>
+      <div class="row"><button type="button" class="primary" id="dicSave">Save reminder</button><button type="button" id="dicAgain" hidden>Talk again</button><button type="button" id="dicCancel">Cancel</button></div>
+    </div>
     <div class="hpwrap">
       <div class="hpbox" id="hpBox"><div class="hpin" id="hpIn"><img src="sheets/p-362.jpg" alt="Plan overview" width="3400" height="2200" draggable="false"><div id="hpMarks"></div></div></div>
       <div class="mapctl"><button id="hpZin" aria-label="Zoom in">+</button><button id="hpZout" aria-label="Zoom out">−</button><button id="hpZfit" aria-label="Fit plan">⤢</button></div>
@@ -700,6 +758,43 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <textarea id="ttText" readonly hidden style="width:100%;min-height:120px;margin-top:8px;font:12px ui-monospace,monospace"></textarea>
   </div>
 </section>
+<!-- NOTES -->
+<section data-view="notes" hidden>
+  <div class="card">
+    <p id="nSaveWarn" class="small" hidden style="margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#fdeeed;color:var(--bad);font-weight:700">This phone isn't saving reminders. Open the app from the home-screen icon (or from Safari/Chrome, not a private tab).</p>
+    <div class="nhead"><h2>Reminders</h2><span class="muted small sp" id="remCount"></span></div>
+    <form class="nadd" id="remF" style="margin-top:10px">
+      <input type="text" id="remTxt" autocomplete="off" placeholder="What needs doing?" aria-label="Reminder">
+      <p class="muted small" style="margin:-4px 0 0">Name a part (like "double pinnacle") or a hole ("hole 28") and a ⚠ shows on the Plan and Layout.</p>
+      <div class="nquick" id="remQuick"><button type="button" data-rq="">No time</button><button type="button" data-rq="2h">In 2 hours</button><button type="button" data-rq="eod">End of day</button><button type="button" data-rq="am">Tomorrow 5:45 AM</button></div>
+      <div class="row">
+        <label class="field" style="flex:1 1 200px"><span class="lbl">When (optional)</span><input type="datetime-local" id="remWhen"></label>
+        <label class="field" style="flex:0 1 140px"><span class="lbl">Hole # (optional)</span><input type="text" id="remHole" inputmode="numeric" autocomplete="off" maxlength="6"></label>
+        <button class="primary" id="remAdd">Add reminder</button>
+      </div>
+    </form>
+    <div class="nlist" id="remList"></div>
+    <details id="remDoneWrap" hidden style="margin-top:12px"><summary class="small muted" id="remDoneSum">Done</summary>
+      <div class="nlist" id="remDone"></div>
+      <div class="row" style="margin-top:8px"><button id="remClear">Clear done</button></div>
+    </details>
+  </div>
+  <div class="card">
+    <div class="nhead"><h2>Notes</h2><span class="sp"></span><button id="noteCopy">Copy all</button></div>
+    <p class="muted small" style="margin:4px 0 10px">Field notes for this job: changes, missing parts, what the GC said. Saved on this phone.</p>
+    <form class="nadd" id="noteF">
+      <textarea id="noteTxt" placeholder="Write a note" aria-label="Note"></textarea>
+      <div class="row">
+        <label class="field" style="flex:0 1 140px"><span class="lbl">Hole # (optional)</span><input type="text" id="noteHole" inputmode="numeric" autocomplete="off" maxlength="6"></label>
+        <button class="primary" id="noteAdd">Save note</button>
+        <button type="button" id="noteCancel" hidden>Cancel edit</button>
+      </div>
+    </form>
+    <label class="field search" style="margin-top:12px"><span class="lbl">Search notes</span><input type="search" id="noteQ" autocomplete="off" placeholder="Word or hole #"></label>
+    <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
+    <div class="nlist" id="noteList"></div>
+  </div>
+</section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
   <div class="fbar"><button id="fExit">✕ Exit</button><span id="fProg"></span><button id="fVoiceBtn" aria-expanded="false" aria-label="Voice settings">🗣</button><button id="fSun" aria-pressed="true" aria-label="Sun mode">☀</button></div>
@@ -779,6 +874,7 @@ function trCore(s,d){
   return null;
 }
 Object.assign(ES_D,{"home · maps":"Inicio · Mapas","hardware & docs":"Herrajes y docs","tape list":"Lista de cintas","🧮 calculate concrete":"🧮 Calcular concreto","✓ done":"✓ Listo","⇧ bigger":"⇧ Más grande","⇩ smaller":"⇩ Más chico","start":"Empezar","more info ▾":"Más info ▾","less ▴":"Menos ▴","best pair":"Mejor par","no good stake pair for this hole.":"No hay un buen par de estacas para este hoyo."});
+Object.assign(ES_D,Object.fromEntries(Object.entries({"notes":"Notas","reminders":"Recordatorios","what needs doing?":"¿Qué hay que hacer?","reminder":"Recordatorio","no time":"Sin hora","in {n} hours":"En {n} horas","end of day":"Fin del día","tomorrow {n} am":"Mañana {n} AM","tomorrow {n}:{n} am":"Mañana {n}:{n} AM","when (optional)":"Cuándo (opcional)","hole # (optional)":"Hoyo # (opcional)","add reminder":"Agregar recordatorio","clear done":"Borrar hechos","copy all":"Copiar todo","field notes for this job: changes, missing parts, what the gc said. saved on this phone.":"Notas de campo de esta obra: cambios, piezas que faltan, lo que dijo el contratista. Se guarda en este teléfono.","write a note":"Escribe una nota","note":"Nota","save note":"Guardar nota","save changes":"Guardar cambios","cancel edit":"Cancelar","search notes":"Buscar notas","word or hole #":"Palabra o hoyo #","delete":"Borrar","sure?":"¿Seguro?","edit":"Editar","mark done":"Marcar hecho","mark not done":"Marcar pendiente","nothing to remember right now.":"Nada pendiente por ahora.","no notes yet.":"Aún no hay notas.","no notes match.":"Ninguna nota coincide.","talk a reminder":"Dictar recordatorio","listening… say the reminder":"Escuchando… di el recordatorio","say or type the reminder":"Di o escribe el recordatorio","save reminder":"Guardar recordatorio","talk again":"Hablar otra vez","cancel":"Cancelar","no part or hole heard: it will just go on the list.":"No se oyó pieza ni hoyo: solo irá a la lista.","didn't hear anything. tap talk again.":"No escuché nada. Toca Hablar otra vez.","check it, then save.":"Revísalo y guarda.","tap the mic on your keyboard and talk.":"Toca el micrófono del teclado y habla.","reminder saved ✓":"Recordatorio guardado ✓","name a part (like \"double pinnacle\") or a hole (\"hole {n}\") and a ⚠ shows on the plan and layout.":"Nombra una pieza (como \"double pinnacle\") o un hoyo (\"hoyo {n}\") y aparece un ⚠ en el Plano y el Trazo.","copied. paste it in a text or email.":"Copiado. Pégalo en un mensaje o correo.","couldn't copy on this phone.":"No se pudo copiar en este teléfono."}).filter(([k])=>ES_D[k]==null)));
 const TR_SKIP='script,style,.hit,#vBody,option[data-raw],[data-notr]';
 function trNode(n){
   if(n.nodeType===3){ const p=n.parentElement; if(!p||p.closest(TR_SKIP)) return; const v=n.nodeValue; const t=tr(v); if(t!==v) n.nodeValue=t; return; }
@@ -1083,6 +1179,7 @@ function drawMap(){
     el('circle',{cx:mx(h.x),cy:my(h.y),r:h.post?0.42:0.34,fill:h.post?C('--ink'):C('--panel'),stroke:S.sel===h.h?C('--paint'):(h.post?C('--ink'):C('--bad')),'stroke-width':S.sel===h.h?0.3:0.12},g);
     const t=el('text',{x:mx(h.x)+0.5,y:my(h.y)-0.45,'font-size':0.95,fill:done.has(h.h)?C('--muted'):C('--bad'),'font-weight':700,'font-family':'Barlow Condensed, sans-serif'},g); t.textContent=h.h;
   }
+  try{ drawRemMarks(C); }catch(e){}
   for (const [k,p] of Object.entries(P)){
     el('rect',{x:mx(p.x)-0.75,y:my(p.y)-0.75,width:1.5,height:1.5,fill:C('--paint'),rx:0.15});
     const t=el('text',{x:mx(p.x),y:my(p.y)+2.1,'font-size':1.3,'text-anchor':'middle',fill:C('--paint'),'font-weight':700,'font-family':'Barlow Condensed, sans-serif'}); t.textContent=k;
@@ -1099,7 +1196,7 @@ svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId)) return; const
   if(ptrs.size===1){ const r=svg.getBoundingClientRect(); const dx=(cur.x-prev.x)/r.width*vb.w, dy=(cur.y-prev.y)/r.height*vb.h; vb.x-=dx; vb.y-=dy; moved+=Math.abs(cur.x-prev.x)+Math.abs(cur.y-prev.y); applyVB(); }
   else if(ptrs.size===2 && pinch0){ const [a,b]=[...ptrs.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y); zoomAt(pinch0.d/d,(a.x+b.x)/2,(a.y+b.y)/2); pinch0.d=d; moved+=10; } });
 function endPtr(e){ const wasTap = ptrs.size===1 && moved<6; ptrs.delete(e.pointerId); if(ptrs.size<2) pinch0=null;
-  if (wasTap){ if(window.shotTap&&window.shotTap(e.clientX,e.clientY)) return; if(MS.on){ measureTap(e.clientX,e.clientY); return; } if(OS.on){ offTap(e.clientX,e.clientY); return; } const t=document.elementFromPoint(e.clientX,e.clientY); const g=t&&t.closest&&t.closest('g[data-h]'); if(g) selectHole(+g.dataset.h); else clearHole(); } }
+  if (wasTap){ if(window.shotTap&&window.shotTap(e.clientX,e.clientY)) return; if(MS.on){ measureTap(e.clientX,e.clientY); return; } if(OS.on){ offTap(e.clientX,e.clientY); return; } const t=document.elementFromPoint(e.clientX,e.clientY); const rm=t&&t.closest&&t.closest('g[data-remh],g[data-remc]'); if(rm){ openRemFor(rm.dataset.remh,rm.dataset.remc); return; } const g=t&&t.closest&&t.closest('g[data-h]'); if(g) selectHole(+g.dataset.h); else clearHole(); } }
 function clearHole(){ if(S.sel==null && open1==null) return; S.sel=null; open1=null; try{ CURH=null; }catch(e){} drawMap(); posBubbles(); }
 svg.addEventListener('pointerup',endPtr); svg.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);pinch0=null;});
 svg.addEventListener('wheel',e=>{ e.preventDefault(); zoomAt(e.deltaY>0?1.15:1/1.15,e.clientX,e.clientY); },{passive:false});
@@ -1851,8 +1948,19 @@ document.getElementById('mBtn').onclick=()=>{ MS.on=!MS.on; MS.pts=[]; document.
   let hz=1, sel=null;
   function draw(){
     marks.innerHTML=comps.map(c=>`<div class="hpc" style="left:${c.l}%;top:${c.t}%;width:${c.r-c.l}%;height:${c.b-c.t}%"></div>`).join('')
-      + poles.map(p=>`<div class="hpp${p.h===sel?' sel':''}" style="left:${p.l}%;top:${p.t}%"><span>${p.h}</span></div>`).join('');
+      + poles.map(p=>`<div class="hpp${p.h===sel?' sel':''}" style="left:${p.l}%;top:${p.t}%"><span>${p.h}</span></div>`).join('')
+      + remMarks();
   }
+  const TRI='<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 1.5L23 20.5H1z"/><text x="12" y="18.3" text-anchor="middle">!</text></svg>';
+  function remMarks(){ let m, mc; try{ m=remByHole(); mc=remByComp(); }catch(e){ return ''; }
+    let out='';
+    for(const k in mc){ const late=mc[k].some(r=>remState(r)==='late'), tt=esc(mc[k].map(r=>r.text).join(' · ')), lab=esc(L('Reminder')+' · '+L(compName(k)));
+      const bx=compBoxes(k); let pts=bx.map(([x0,y0])=>[...toPct(x0,y0),1]);
+      if(!pts.length) pts=clusters(compHoles(k)).map(c=>{ const [ox,oy]=pxOf({x:Math.min(...c.map(h=>h.x)),y:Math.max(...c.map(h=>h.y))}); return [...toPct(ox,oy),0]; });
+      out+=pts.map(([l,t,cor])=>`<button class="hprem${late?' late':''}${cor?' corner':''}" data-remc="${k}" style="left:${l}%;top:${t}%" aria-label="${lab}" title="${tt}">${TRI}</button>`).join(''); }
+    return out+Object.keys(m).map(n=>{ const [ox,oy]=pxOf(BYH[n]); const [l,t]=toPct(ox,oy); const late=m[n].some(r=>remState(r)==='late');
+      return `<button class="hprem${late?' late':''}" data-remh="${n}" style="left:${l}%;top:${t}%" aria-label="${esc(L('Reminder')+' · '+(LANG==='es'?'Hoyo ':'Hole ')+n)}" title="${esc(m[n].map(r=>r.text).join(' · '))}"><svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 1.5L23 20.5H1z"/><text x="12" y="18.3" text-anchor="middle">!</text></svg></button>`; }).join(''); }
+  window.hpDraw=draw;
   function setZ(z, cx, cy){ // cx,cy = point in box client coords to keep still
     const r=box.getBoundingClientRect(); cx=cx??r.width/2; cy=cy??r.height/2;
     const fx=(box.scrollLeft+cx)/inn.offsetWidth, fy=(box.scrollTop+cy)/inn.offsetHeight;
@@ -1879,7 +1987,7 @@ document.getElementById('mBtn').onclick=()=>{ MS.on=!MS.on; MS.pts=[]; document.
   box.addEventListener('pointerdown',e=>{ down={x:e.clientX,y:e.clientY}; moved=false; });
   box.addEventListener('pointermove',e=>{ if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>8) moved=true; });
   box.addEventListener('click',e=>{
-    if(moved) return; const r=inn.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width*100, py=(e.clientY-r.top)/r.height*100;
+    if(moved) return; const rb=e.target.closest('[data-remh],[data-remc]'); if(rb){ openRemFor(rb.dataset.remh,rb.dataset.remc); return; } const r=inn.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width*100, py=(e.clientY-r.top)/r.height*100;
     let best=null,bd=1e9; for(const p of poles){ const dx=(p.l-px)/100*r.width, dy=(p.t-py)/100*r.height, d=Math.hypot(dx,dy); if(d<bd){bd=d;best=p;} }
     if(best&&bd<=22){ showPole(best.h); return; }
     const c=comps.find(c=>px>=c.l&&px<=c.r&&py>=c.t&&py<=c.b); if(c){ VSTACK=[]; openDoc(c.k); return; }
@@ -1997,9 +2105,256 @@ document.getElementById('oCard').addEventListener('click',e=>{
   offSave(); drawMap(); renderOffCard(); });
 document.getElementById('oCard').addEventListener('change',e=>{ if(e.target.id!=='oOff') return; const v=parseFloat(e.target.value); OFF.ref='center'; OFF.off=isNaN(v)?0:Math.max(0,v); offSave(); drawMap(); renderOffCard(); });
 
+
+// ---------- NOTES & REMINDERS ----------
+let REM = store.get('rem', []), NOTES = store.get('notes', []), NEDIT = null;
+function nSave(){
+  let ok=true; try{ const a=JSON.stringify(REM), b=JSON.stringify(NOTES); localStorage.setItem('swl_rem',a); localStorage.setItem('swl_notes',b);
+    ok = localStorage.getItem('swl_rem')===a && localStorage.getItem('swl_notes')===b; }catch(e){ ok=false; }
+  const w=document.getElementById('nSaveWarn'); if(w) w.hidden=ok;
+  if(ok && !nSave.asked && navigator.storage && navigator.storage.persist){ nSave.asked=true; navigator.storage.persist().catch(()=>{}); }
+  return ok; }
+// pick up changes made in another tab / the home-screen app
+addEventListener('storage',e=>{ if(e.key==='swl_rem'||e.key==='swl_notes'){ REM=store.get('rem',[]); NOTES=store.get('notes',[]); try{ renderNotes(); }catch(_){ } } });
+const nid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const NES = LANG === 'es', LOC = NES ? 'es-US' : 'en-US';
+const pad2 = n => String(n).padStart(2, '0');
+const toLocalInput = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+function dayDiff(t){ const a=new Date(), b=new Date(t); a.setHours(0,0,0,0); b.setHours(0,0,0,0); return Math.round((b-a)/864e5); }
+function whenLabel(t){
+  const d=new Date(t), dd=dayDiff(t), tm=d.toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'});
+  if(dd===0) return (NES?'Hoy ':'Today ')+tm;
+  if(dd===1) return (NES?'Mañana ':'Tomorrow ')+tm;
+  if(dd===-1) return (NES?'Ayer ':'Yesterday ')+tm;
+  return d.toLocaleDateString(LOC,{weekday:'short',month:'short',day:'numeric'})+' '+tm;
+}
+function stampLabel(t){ const d=new Date(t); return d.toLocaleDateString(LOC,{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'}); }
+function remState(r){ if(r.done||!r.when) return ''; const now=Date.now(); if(r.when<=now) return 'late'; if(dayDiff(r.when)===0) return 'due'; return ''; }
+function holeBtn(h){ return h ? `<button type="button" class="nhole" data-nhole="${esc(h)}">${NES?'Hoyo':'Hole'} ${esc(h)}</button>` : ''; }
+function cleanHole(v){ v=String(v||'').trim().replace(/^#/,''); return v; }
+function nBadge(){
+  const n=REM.filter(r=>!r.done && r.when && (r.when<=Date.now() || dayDiff(r.when)===0)).length;
+  const b=document.getElementById('nBadge'); b.hidden=!n; b.textContent=n; try{ window.hpDraw&&window.hpDraw(); }catch(e){}
+}
+function remRow(r){
+  const st=remState(r);
+  const when=r.when?`<span class="nwhen">${st==='late'?(NES?'Vencido · ':'Overdue · '):''}${esc(whenLabel(r.when))}</span>`:'';
+  const tg=remTargets(r), xh=tg.holes.filter(n=>String(n)!==String(r.hole)).map(n=>holeBtn(n)).join(''), cc=tg.comps.map(k=>`<button type="button" class="nhole ncomp" data-ncomp="${k}">⚠ ${esc(L(compName(k)))}</button>`).join('');
+  return `<div class="nitem ${st} ${r.done?'done':''}" data-rid="${r.id}">
+    <button class="nchk" data-rtog aria-label="${r.done?L('Mark not done'):L('Mark done')}">${r.done?'✓':''}</button>
+    <div class="nbody"><div class="ntxt" data-notr>${esc(r.text)}</div>${when||r.hole||xh||cc?`<div class="nmeta">${when}${holeBtn(r.hole)}${xh}${cc}</div>`:''}</div>
+    <div class="nact"><button data-rdel>${L('Delete')}</button></div></div>`;
+}
+function renderRem(){
+  const open=REM.filter(r=>!r.done).sort((a,b)=>(a.when||Infinity)-(b.when||Infinity)||a.made-b.made);
+  const done=REM.filter(r=>r.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
+  document.getElementById('remList').innerHTML=open.length?open.map(remRow).join(''):`<p class="nempty">${L('Nothing to remember right now.')}</p>`;
+  document.getElementById('remCount').textContent=open.length?(open.length+(NES?' pendiente'+(open.length>1?'s':''):' open')):'';
+  const dw=document.getElementById('remDoneWrap'); dw.hidden=!done.length;
+  document.getElementById('remDoneSum').textContent=(NES?'Hechos (':'Done (')+done.length+')';
+  document.getElementById('remDone').innerHTML=done.map(remRow).join('');
+  nBadge();
+}
+function noteRow(n){
+  return `<div class="nitem" data-nid="${n.id}"><div class="nbody"><div class="ntxt" data-notr>${esc(n.text)}</div>
+    <div class="nmeta"><span>${esc(stampLabel(n.made))}${n.edited?(NES?' · editada':' · edited'):''}</span>${holeBtn(n.hole)}</div></div>
+    <div class="nact"><button data-nedit>${L('Edit')}</button><button data-ndel>${L('Delete')}</button></div></div>`;
+}
+function renderNoteList(){
+  const q=document.getElementById('noteQ').value.trim().toLowerCase();
+  const list=NOTES.filter(n=>!q || n.text.toLowerCase().includes(q) || String(n.hole||'').toLowerCase()===q.replace(/^#/,'')).sort((a,b)=>b.made-a.made);
+  document.getElementById('noteList').innerHTML=list.length?list.map(noteRow).join(''):`<p class="nempty">${q?L('No notes match.'):L('No notes yet.')}</p>`;
+}
+function renderNotes(){ renderRem(); renderNoteList(); }
+function nGoHole(h){ const n=+h; if(BYH[n]){ location.hash='map'; route(); try{ selectHole(n); }catch(e){} } else { const m=document.getElementById('noteMsg'); m.textContent=L('No hole with that number'); setTimeout(()=>m.textContent='',2500); } }
+function nSure(btn, go){ if(btn.classList.contains('sure')){ go(); return; } btn.classList.add('sure'); btn.textContent=L('Sure?'); setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('sure'); btn.textContent=L('Delete'); } },3000); }
+
+document.getElementById('remQuick').addEventListener('click',e=>{
+  const b=e.target.closest('[data-rq]'); if(!b) return; const w=document.getElementById('remWhen'); const d=new Date(); d.setSeconds(0,0);
+  if(b.dataset.rq==='') { w.value=''; return; }
+  if(b.dataset.rq==='2h') d.setHours(d.getHours()+2);
+  if(b.dataset.rq==='eod'){ d.setHours(15,0,0,0); if(d<=new Date()) d.setHours(new Date().getHours()+1,0,0,0); }
+  if(b.dataset.rq==='am'){ d.setDate(d.getDate()+1); d.setHours(5,45,0,0); }
+  w.value=toLocalInput(d);
+});
+document.getElementById('remF').addEventListener('submit',e=>{
+  e.preventDefault(); const t=document.getElementById('remTxt'), w=document.getElementById('remWhen'), h=document.getElementById('remHole');
+  const text=t.value.trim(); if(!text){ t.focus(); return; }
+  const when=w.value?new Date(w.value).getTime():null;
+  REM.push({id:nid(),text,when:isNaN(when)?null:when,hole:cleanHole(h.value),made:Date.now(),done:false});
+  nSave(); t.value=''; w.value=''; h.value=''; renderRem();
+});
+document.querySelector('[data-view=notes]').addEventListener('click',e=>{
+  const hb=e.target.closest('[data-nhole]'); if(hb){ nGoHole(hb.dataset.nhole); return; }
+  const cb=e.target.closest('[data-ncomp]'); if(cb){ goComp(cb.dataset.ncomp); return; }
+  const ri=e.target.closest('[data-rid]');
+  if(ri){ const r=REM.find(x=>x.id===ri.dataset.rid); if(!r) return;
+    if(e.target.closest('[data-rtog]')){ r.done=!r.done; r.doneAt=r.done?Date.now():null; nSave(); renderRem(); return; }
+    const del=e.target.closest('[data-rdel]'); if(del){ nSure(del,()=>{ REM=REM.filter(x=>x!==r); nSave(); renderRem(); }); return; }
+  }
+  const ni=e.target.closest('[data-nid]');
+  if(ni){ const n=NOTES.find(x=>x.id===ni.dataset.nid); if(!n) return;
+    if(e.target.closest('[data-nedit]')){ NEDIT=n.id; document.getElementById('noteTxt').value=n.text; document.getElementById('noteHole').value=n.hole||'';
+      document.getElementById('noteAdd').textContent=L('Save changes'); document.getElementById('noteCancel').hidden=false;
+      document.getElementById('noteF').scrollIntoView({behavior:'smooth',block:'center'}); document.getElementById('noteTxt').focus(); return; }
+    const del=e.target.closest('[data-ndel]'); if(del){ nSure(del,()=>{ NOTES=NOTES.filter(x=>x!==n); if(NEDIT===n.id) nCancel(); nSave(); renderNoteList(); }); return; }
+  }
+});
+document.getElementById('remClear').addEventListener('click',e=>nSure(e.target,()=>{ REM=REM.filter(r=>!r.done); nSave(); renderRem(); }));
+function nCancel(){ NEDIT=null; document.getElementById('noteTxt').value=''; document.getElementById('noteHole').value=''; document.getElementById('noteAdd').textContent=L('Save note'); document.getElementById('noteCancel').hidden=true; }
+document.getElementById('noteCancel').addEventListener('click',nCancel);
+document.getElementById('noteF').addEventListener('submit',e=>{
+  e.preventDefault(); const t=document.getElementById('noteTxt'); const text=t.value.trim(); if(!text){ t.focus(); return; }
+  const hole=cleanHole(document.getElementById('noteHole').value);
+  if(NEDIT){ const n=NOTES.find(x=>x.id===NEDIT); if(n){ n.text=text; n.hole=hole; n.edited=Date.now(); } }
+  else NOTES.push({id:nid(),text,hole,made:Date.now()});
+  nSave(); nCancel(); renderNoteList();
+});
+document.getElementById('noteQ').addEventListener('input',renderNoteList);
+document.getElementById('noteCopy').addEventListener('click',async()=>{
+  const m=document.getElementById('noteMsg');
+  const open=REM.filter(r=>!r.done), list=[...NOTES].sort((a,b)=>a.made-b.made);
+  if(!open.length && !list.length){ m.textContent=L('No notes yet.'); return; }
+  let out=`${JOB.name} · ${JOB.place}\n`;
+  if(open.length) out+=`\n${NES?'RECORDATORIOS':'REMINDERS'}\n`+open.map(r=>`☐ ${r.text}${r.when?' ('+whenLabel(r.when)+')':''}${r.hole?' · '+(NES?'Hoyo ':'Hole ')+r.hole:''}`).join('\n')+'\n';
+  if(list.length) out+=`\n${NES?'NOTAS':'NOTES'}\n`+list.map(n=>`${stampLabel(n.made)}${n.hole?' · '+(NES?'Hoyo ':'Hole ')+n.hole:''}\n${n.text}`).join('\n\n')+'\n';
+  let ok=false; try{ await navigator.clipboard.writeText(out); ok=true; }catch(e){
+    try{ const ta=document.createElement('textarea'); ta.value=out; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); ok=document.execCommand('copy'); ta.remove(); }catch(e2){} }
+  m.textContent=ok?L('Copied. Paste it in a text or email.'):L("Couldn't copy on this phone.");
+  setTimeout(()=>m.textContent='',3000);
+});
+nBadge(); setInterval(()=>{ nBadge(); if(!document.querySelector('[data-view=notes]').hidden) renderRem(); },60000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ nBadge(); if(!document.querySelector('[data-view=notes]').hidden) renderRem(); } });
+
+
+// reminder markers on the layout map
+// --- recognise what a reminder is about: hole numbers or a component name ---
+const RALIAS={tables:['food court table','picnic table','table'],bounce:['bounce around','bounce'],tilt:['tilt n twirl','tilt and twirl','tilt'],
+ enh:['enhanced barrier'],button:['button step','button'],phone:['telephone tube','phone tube','talk tube','telephone'],
+ kick8:['small kickplate','small kick plate','kickplate','kick plate'],kick16:['large kickplate','large kick plate','kickplate','kick plate'],
+ velocity:['velocity slide','velocity'],pedal:['hand pedaler','pedaler','pedal'],alpine:['alpine climber','alpine'],bench:['bench'],
+ transfer:['slide transfer','transfer station','transfer'],arch:['offset entry archway','entry archway','archway'],uhandle:['u handle'],
+ sqshade:['square canopy','square shade'],hipshade:['hip shade'],strat:['stratascend','strata ascend','strat ascend'],
+ mhb:['handhold barrier','metal handhold'],loop:['loop ladder','horizontal loop'],ship:['ships wheel','ship wheel'],
+ sections:['slide sections','slide section','slide support'],cascade:['double cascade','cascade entrance','cascade'],
+ rnw:['rock n wave','rock and wave','rock wave','rocking wave'],ramp17:['ramp deck to deck','ramp'],ramp18:['ramp deck to deck','ramp'],rampg:['ramp to ground','ground ramp','ramp'],
+ gear:['gear panel','gears','gear'],pipewall:['pipe wall'],asl:['sign language'],coil:['coil climber','coil'],
+ stairs:['deck to deck stairs','stairs','vertical ladder'],paragon:['paragon'],hexshade:['hex shade','hex canopy','hexagon shade'],
+ shop:['shop panel'],balcony:['balcony'],drive:['driving panel','driving'],spiral:['spiral slide','spiral cascade','spiral'],
+ mfm:['made for me'],seats:['swing seat','swing hanger','seats','hangers'],drum:['drum line','drums','drum'],curb:['curb'],
+ spin:['spin and win','spin n win','spin panel'],conga:['conga'],saucer:['flying saucer','saucer'],meter:['activity meter','meter'],
+ jambox:['jambox','jam box'],sonata:['sonata'],sign:['welcome sign'],archswing:['arch swing','swing beam','swing set','swings'],
+ pinnacle:['double pinnacle','pinnacle']};
+const RHOLED={'Square hip shade / table area':'hipshade','Arch swing leg':'archswing','Food court table (pedestal)':'tables','Welcome sign':'sign','Rock-N-Wave':'rnw',
+ 'Tilt N’ Twirl':'tilt','Button step 10"':'button','Button step 20"':'button','Stratascend climber':'strat','Activity meter / Jambox':['meter','jambox'],
+ 'Single velocity slide':'velocity','Spiral slide support':'spiral','Spiral slide exit':'spiral','Sonata':'sonata','Conga':'conga','Large alpine climber':'alpine',
+ 'Double pinnacle climber':'pinnacle','Coil climber':'coil','2-seat bounce':'bounce','Cascade slide support':'cascade','Cascade slide exit':'cascade','Flying saucer swing':'saucer'};
+const rNorm=t=>' '+String(t||'').toLowerCase().replace(/[’']/g,'').replace(/&/g,' and ').replace(/[^a-z0-9ñáéíóú]+/g,' ').replace(/\s+/g,' ').trim()+' ';
+function lev(a,b){ if(Math.abs(a.length-b.length)>2) return 9; const d=Array.from({length:a.length+1},(_,i)=>[i]); for(let j=1;j<=b.length;j++) d[0][j]=j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[a.length][b.length]; }
+function remComps(text){
+  const t=rNorm(text), words=t.trim().split(' '), out=[];
+  for(const k in RALIAS){ if(!DOCS[k]) continue;
+    const hit=RALIAS[k].some(a=>{ if(t.includes(' '+a+' ')||t.includes(' '+a+'s ')||t.includes(' '+a+'es ')) return true;
+      if(!a.includes(' ')&&a.length>=6){ const lim=a.length>=9?2:1; return words.some(w=>w.length>=5&&lev(w,a)<=lim); } return false; });
+    if(hit) out.push(k); }
+  // keep the most specific: drop generic "ramp"/"kickplate" matches when a specific one matched
+  return out;
+}
+function remTargets(r){
+  if(r._k===r.text+'|'+r.hole) return r._t;
+  const holes=new Set(); if(r.hole && BYH[+r.hole]) holes.add(+r.hole);
+  for(const m of rNorm(r.text).matchAll(/ (?:hole|whole|hoyo)s? (?:number |no |num )?(\d{1,3})(?=[ ])/g)) if(BYH[+m[1]]) holes.add(+m[1]);
+  const comps=holes.size?[]:remComps(r.text);
+  const t={holes:[...holes],comps}; Object.defineProperty(r,'_t',{value:t,writable:true,enumerable:false,configurable:true}); Object.defineProperty(r,'_k',{value:r.text+'|'+r.hole,writable:true,enumerable:false,configurable:true}); return t;
+}
+function remByHole(){ const m={}; for(const r of REM){ if(r.done) continue; for(const n of remTargets(r).holes) (m[n]=m[n]||[]).push(r); } return m; }
+function remByComp(){ const m={}; for(const r of REM){ if(r.done) continue; for(const k of remTargets(r).comps) (m[k]=m[k]||[]).push(r); } return m; }
+// component geometry: plan boxes (image px) and layout points (plan inches)
+const RG={ IMG:[3400,2200] };
+function compHoles(k){ return HOLES.filter(h=>{ const v=RHOLED[h.d]; return v===k||(Array.isArray(v)&&v.includes(k)); }); }
+function compBoxes(k){ const HS=(JOB.hotspots||{})[362]||[], HSZ=JOB.hotspotSize||RG.IMG, sc=RG.IMG[0]/HSZ[0]; return HS.filter(z=>z[0]===k).map(([,x0,y0,x1,y1])=>[x0*sc,y0*sc,x1*sc,y1*sc]); }
+function clusters(hs){ const out=[]; for(const h of hs){ const c=out.find(c=>c.some(o=>Math.hypot(o.x-h.x,o.y-h.y)<=120)); if(c) c.push(h); else out.push([h]); }
+  // merge clusters that touch
+  for(let i=0;i<out.length;i++) for(let j=out.length-1;j>i;j--) if(out[i].some(a=>out[j].some(b=>Math.hypot(a.x-b.x,a.y-b.y)<=120))){ out[i].push(...out[j]); out.splice(j,1); }
+  return out; }
+function compLayoutPts(k){ const hs=compHoles(k);
+  if(hs.length) return clusters(hs).map(c=>({x:Math.min(...c.map(h=>h.x)),y:Math.max(...c.map(h=>h.y)),off:true}));
+  return compBoxes(k).map(([x0,y0,x1,y1])=>({x:FP.L+((x0+x1)/2-204)/2.08,y:FP.T-((y0+y1)/2-398)/2.08,off:false})); }
+function remTri(x,y,late,C,attrs){
+  const s=0.55, g=el('g',Object.assign({style:'cursor:pointer'},attrs));
+  el('circle',{cx:x,cy:y,r:0.9,fill:'transparent'},g);
+  el('path',{d:`M${x} ${y-s} L${x+s*1.05} ${y+s*0.75} L${x-s*1.05} ${y+s*0.75} Z`,fill:late?C('--bad'):'#f2a900',stroke:C('--panel'),'stroke-width':0.12,'stroke-linejoin':'round'},g);
+  const t=el('text',{x:x,y:y+s*0.62,'font-size':0.78,'text-anchor':'middle',fill:late?'#fff':'#15212b','font-weight':800,'font-family':'Barlow Condensed, sans-serif'},g); t.textContent='!';
+  return g; }
+function drawRemMarks(C){
+  const m=remByHole();
+  for(const n in m){ const h=BYH[n], late=m[n].some(r=>remState(r)==='late');
+    const g=remTri(mx(h.x)-0.95,my(h.y)-0.85,late,C,{'data-remh':n}); el('title',{},g).textContent=m[n].map(r=>r.text).join(' · '); }
+  const mc=remByComp();
+  for(const k in mc){ const late=mc[k].some(r=>remState(r)==='late');
+    for(const p of compLayoutPts(k)){ const g=remTri(mx(p.x)-(p.off?0.95:0),my(p.y)-(p.off?0.85:0),late,C,{'data-remc':k}); el('title',{},g).textContent=mc[k].map(r=>r.text).join(' · '); } }
+}
+function compName(k){ return (DOCS[k]&&DOCS[k][0]||k).replace(/\s*\(.*$/,'').replace(/\s*–.*$/,''); }
+function goComp(k){ const pts=compLayoutPts(k); if(!pts.length) return; location.hash='map'; route();
+  try{ const p=pts[0]; vb.x=mx(p.x)-vb.w/2; vb.y=my(p.y)-vb.h/2; applyVB(); drawMap(); }catch(e){} }
+function openRemFor(n,k){
+  location.hash='notes'; route();
+  setTimeout(()=>{ const rows=[...document.querySelectorAll('#remList [data-rid]')].filter(d=>{ const r=REM.find(x=>x.id===d.dataset.rid); if(!r) return false; const t=remTargets(r); return k?t.comps.includes(k):t.holes.includes(+n); });
+    if(rows[0]) rows[0].scrollIntoView({behavior:'smooth',block:'center'});
+    rows.forEach(d=>{ d.classList.remove('flash'); void d.offsetWidth; d.classList.add('flash'); }); },60);
+}
+
+// ---------- TALK-A-REMINDER on the Plan ----------
+function quickWhen(code){ if(!code) return null; const d=new Date(); d.setSeconds(0,0);
+  if(code==='2h') d.setHours(d.getHours()+2);
+  else if(code==='eod'){ d.setHours(15,0,0,0); if(d<=new Date()) d.setHours(new Date().getHours()+1,0,0,0); }
+  else if(code==='am'){ d.setDate(d.getDate()+1); d.setHours(5,45,0,0); }
+  else if(/^\d+h$/.test(code)) d.setHours(d.getHours()+parseInt(code));
+  return d.getTime(); }
+{
+  const P=document.getElementById('dicP'), T=document.getElementById('dicTxt'), ST=document.getElementById('dicStat'), DOT=document.getElementById('dicDot'), SEE=document.getElementById('dicSee'), AG=document.getElementById('dicAgain'), WH=document.getElementById('dicWhen');
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; let rec=null, listening=false, whenCode='', userPicked=false, base='';
+  const setWhen=c=>{ whenCode=c; WH.querySelectorAll('[data-dw]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dw===c)); };
+  const NUMW={one:1,two:2,three:3,four:4,five:5,six:6,uno:1,dos:2,tres:3,cuatro:4,cinco:5};
+  function guessWhen(t){ t=rNorm(t);
+    let m=t.match(/ in (\d+|one|two|three|four|five|six) hours? /)||t.match(/ en (\d+|uno|dos|tres|cuatro|cinco) horas? /); if(m) return (NUMW[m[1]]||+m[1])+'h';
+    if(/ (tomorrow|first thing|in the morning|mañana)/.test(t)) return 'am';
+    if(/ (end of (the )?day|this afternoon|before we leave|fin del dia|fin del día|esta tarde) /.test(t)) return 'eod';
+    if(/ in an hour | en una hora /.test(t)) return '1h';
+    return null; }
+  function preview(){ const r={text:T.value,hole:''}; const tg=remTargets(r);
+    SEE.innerHTML=tg.holes.map(n=>`<span class="nhole">${NES?'Hoyo':'Hole'} ${n}</span>`).join('')+tg.comps.map(k=>`<span class="nhole ncomp">⚠ ${esc(L(compName(k)))}</span>`).join('')
+      || (T.value.trim()?`<span class="muted small">${L('No part or hole heard: it will just go on the list.')}</span>`:'');
+    if(!userPicked){ const g=guessWhen(T.value); if(g) setWhen(g); } }
+  function stopRec(){ if(rec){ try{ rec.stop(); }catch(e){} } }
+  function listen(){
+    if(!SR){ noSpeech(); return; }
+    try{ rec=new SR(); }catch(e){ noSpeech(); return; }
+    rec.lang=LANG==='es'?'es-US':'en-US'; rec.interimResults=true; rec.continuous=false; base=T.value.trim();
+    rec.onresult=e=>{ let txt=''; for(let i=0;i<e.results.length;i++) txt+=e.results[i][0].transcript; T.value=(base?base+' ':'')+txt.trim(); preview(); };
+    rec.onerror=e=>{ listening=false; DOT.hidden=true; if(e.error==='not-allowed'||e.error==='service-not-allowed'||e.error==='audio-capture') noSpeech(); else if(e.error==='no-speech'){ ST.textContent=L("Didn't hear anything. Tap Talk again."); AG.hidden=false; } };
+    rec.onend=()=>{ listening=false; DOT.hidden=true; if(!/Tap the mic|Toca el micrófono|Didn|No escuché/.test(ST.textContent)) ST.textContent=T.value.trim()?L('Check it, then Save.'):L("Didn't hear anything. Tap Talk again."); AG.hidden=false; };
+    try{ rec.start(); listening=true; DOT.hidden=false; AG.hidden=true; ST.textContent=L('Listening… say the reminder'); }catch(e){ noSpeech(); }
+  }
+  function noSpeech(){ listening=false; DOT.hidden=true; AG.hidden=true; ST.textContent=L('Tap the mic on your keyboard and talk.'); T.focus(); }
+  function openP(){ P.hidden=false; T.value=''; userPicked=false; setWhen(''); preview(); P.scrollIntoView({behavior:'smooth',block:'nearest'}); listen(); }
+  function closeP(){ stopRec(); P.hidden=true; }
+  document.getElementById('dicBtn').onclick=()=>{ if(!P.hidden&&listening){ stopRec(); return; } openP(); };
+  AG.onclick=listen;
+  document.getElementById('dicCancel').onclick=closeP;
+  T.addEventListener('input',preview);
+  WH.addEventListener('click',e=>{ const b=e.target.closest('[data-dw]'); if(!b) return; userPicked=true; setWhen(b.dataset.dw); });
+  document.getElementById('dicSave').onclick=()=>{
+    stopRec(); const text=T.value.trim(); if(!text){ T.focus(); return; }
+    REM.push({id:nid(),text,when:quickWhen(whenCode),hole:'',made:Date.now(),done:false}); nSave(); renderRem();
+    closeP(); const h=document.getElementById('hpHint'), old=h.textContent; h.textContent=L('Reminder saved ✓'); h.style.color='var(--good)'; h.style.fontWeight='700';
+    setTimeout(()=>{ h.textContent=old; h.style.color=''; h.style.fontWeight=''; },3000);
+  };
+}
 // ---------- ROUTING ----------
-const GROUPS={home:['home','map','footings','poles'],tapes:['tapes','offset','points'],docs:['hardware','docs']};
-const SUBLAB={home:'Plan',map:'Layout',footings:'Footings',poles:'Poles',tapes:'Tape list',offset:'Offset',points:'Points',hardware:'Hardware',docs:'Install docs'};
+const GROUPS={home:['home','map','footings','poles'],tapes:['tapes','offset','points'],docs:['hardware','docs'],notes:['notes']};
+const SUBLAB={home:'Plan',map:'Layout',footings:'Footings',poles:'Poles',tapes:'Tape list',offset:'Offset',points:'Points',hardware:'Hardware',docs:'Install docs',notes:'Notes'};
 const TABS=Object.values(GROUPS).flat();
 const groupOf=v=>Object.keys(GROUPS).find(g=>GROUPS[g].includes(v));
 function route(){ let t=location.hash.slice(1); if(t==='more') t='hardware'; if(!TABS.includes(t)) t='home';
@@ -2019,6 +2374,7 @@ function route(){ let t=location.hash.slice(1); if(t==='more') t='hardware'; if(
   if(t==='footings'){ if(!fvb) ffit(); drawFoot(); renderPick(); }
   if(t==='home'||t==='tapes') renderHome();
   if(t==='offset') renderOffset();
+  if(t==='notes') renderNotes();
   posBubbles(); }
 window.addEventListener('hashchange',route);window.addEventListener('hashchange',()=>setTimeout(()=>{try{posShotTags()}catch(e){}},60));window.addEventListener('resize',()=>{try{posShotTags()}catch(e){}});
 const LAST={}; Object.keys(GROUPS).forEach(g=>{ try{ const v=store.get('last_'+g,null); if(GROUPS[g].includes(v)) LAST[g]=v; }catch(e){} });
