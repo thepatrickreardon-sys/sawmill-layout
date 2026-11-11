@@ -168,23 +168,24 @@
   .ty-in{min-height:100%;max-width:520px;margin:0 auto;padding:48px 22px calc(36px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center}
   .ty svg.mark{width:min(230px,62vw);height:auto;overflow:visible;margin-bottom:8px}
   .ty .sun{transform-origin:100px 110px;transform:scale(0);opacity:0}
-  .ty .blade{transform:scale(1,0);opacity:0}
+  .ty .grow{stroke-dasharray:1 1;stroke-dashoffset:1}
   .ty .ground{stroke-dasharray:160;stroke-dashoffset:160}
   .ty.play .sun{animation:sunUp .7s cubic-bezier(.2,.9,.3,1.25) .15s forwards}
   .ty.play .ground{animation:draw .6s ease-out .55s forwards}
-  .ty.play .b1{animation:grow 1s cubic-bezier(.25,.8,.3,1) .95s forwards}
-  .ty.play .b2{animation:grow 1.15s cubic-bezier(.25,.8,.3,1) 1.15s forwards}
-  .ty.play .b3{animation:grow .9s cubic-bezier(.25,.8,.3,1) 1.35s forwards}
-  .ty.play .sway{animation:sway 4s ease-in-out 2.6s infinite}
+  .ty.play .g1{animation:grow 1.4s cubic-bezier(.3,0,.15,1) .9s forwards}
+  .ty.play .g2{animation:grow 1.7s cubic-bezier(.3,0,.15,1) 1.1s forwards}
+  .ty.play .g3{animation:grow 1.3s cubic-bezier(.3,0,.15,1) 1.35s forwards}
+  .ty.play .sway{animation:sway 5s ease-in-out 2.8s infinite}
+  .ty .sway{will-change:transform}
   @keyframes sunUp{to{transform:scale(1);opacity:1}}
   @keyframes draw{to{stroke-dashoffset:0}}
-  @keyframes grow{0%{transform:scale(.6,0);opacity:1}70%{transform:scale(1.02,1.04);opacity:1}100%{transform:scale(1,1);opacity:1}}
-  @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.6deg)}}
+  @keyframes grow{to{stroke-dashoffset:0}}
+  @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.4deg)}}
   .ty h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 0}
   .ty p{color:rgba(255,255,255,.8);font-size:16px;margin:12px 0 0}
   .ty .fade{opacity:0;transform:translateY(8px)}
   .ty.play .fade{animation:up .5s ease-out forwards}
-  .ty.play .f1{animation-delay:1.9s}.ty.play .f2{animation-delay:2.05s}.ty.play .f3{animation-delay:2.2s}.ty.play .f4{animation-delay:2.35s}
+  .ty.play .f1{animation-delay:2.2s}.ty.play .f2{animation-delay:2.35s}.ty.play .f3{animation-delay:2.5s}.ty.play .f4{animation-delay:2.65s}
   @keyframes up{to{opacity:1;transform:none}}
   .ty-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:22px}
   .ty-sum div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px}
@@ -247,12 +248,15 @@
 
 <div class="ty" id="thanks" role="dialog" aria-modal="true" aria-labelledby="tyTitle"><div class="ty-in">
   <svg class="mark" viewBox="40 -12 160 170" aria-hidden="true">
-    <defs><clipPath id="tyClip"><rect x="0" y="-40" width="240" height="179"/></clipPath></defs>
+    <defs><clipPath id="tyClip"><rect x="0" y="-40" width="240" height="179"/></clipPath>
+      <mask id="tyM1" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g1" pathLength="1" d="M77.5,146 L77.5,139 C77,95 84,57 110.6,27.8 L116,22" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask>
+      <mask id="tyM2" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g2" pathLength="1" d="M91.2,146 L91.2,139 C95,80 128,28 180.6,-4 L188,-9" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/></mask>
+      <mask id="tyM3" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g3" pathLength="1" d="M108.2,146 L108.2,139 C110,105 124,78 148.8,58.6 L154,54" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask></defs>
     <circle class="sun" cx="100" cy="110" r="52" fill="#e2e773" clip-path="url(#tyClip)"/>
     <g class="sway" style="transform-origin:95px 139px">
-      <path class="blade b1" style="transform-origin:77px 139px" d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
-      <path class="blade b2" style="transform-origin:91px 139px" d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
-      <path class="blade b3" style="transform-origin:108px 139px" d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
+      <path class="blade" mask="url(#tyM1)" d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
+      <path class="blade" mask="url(#tyM2)" d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
+      <path class="blade" mask="url(#tyM3)" d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
     </g>
     <line class="ground" x1="20" y1="146" x2="180" y2="146" stroke="#86c440" stroke-width="4" stroke-linecap="round"/>
   </svg>
