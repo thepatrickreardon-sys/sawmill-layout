@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8590c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TT Jobs">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<title>Turf Tek Jobs</title>
+<style>
+:root{--bg:#eef2f4;--panel:#fff;--ink:#15212b;--muted:#5b6b78;--line:#d3dce2;--paint:#e8590c;--paintsoft:#fff0e6;--steel:#1f5f8b;--steelsoft:#e6f0f7;--good:#1e7d45;--goodbg:#e3f3e9;--warn:#a86500;--warnbg:#fbefd9;--bad:#b42318;--badbg:#fbe4e1;--shadow:0 1px 2px rgba(21,33,43,.06),0 4px 14px rgba(21,33,43,.06);--display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:"Atkinson Hyperlegible",system-ui,sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px}
+button,input,select,textarea{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.04em}
+.brand b{color:var(--paint)}
+.sub{font-size:13px;opacity:.75}
+.top .sp{flex:1}
+.iconbtn{background:none;border:0;color:#fff;font-size:22px;padding:6px 8px;border-radius:8px}
+main{padding:12px 12px calc(90px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--panel);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.tabs button{flex:1;background:none;border:0;padding:9px 0 8px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.03em;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.tabs button span{font-size:20px;line-height:1}
+.tabs button.on{color:var(--paint)}
+h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.03em;text-transform:uppercase;margin:18px 2px 8px;color:var(--muted)}
+h2:first-child{margin-top:4px}
+.card{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin-bottom:10px}
+.today-date{font-family:var(--display);font-weight:700;font-size:30px;line-height:1}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.row{display:flex;align-items:center;gap:8px}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:700;background:var(--steelsoft);color:var(--steel);cursor:pointer}
+.btn.paint{background:var(--paint);color:#fff}
+.btn.big{width:100%;padding:15px;font-family:var(--display);font-size:21px;letter-spacing:.04em;text-transform:uppercase}
+.btn.ghost{background:none;color:var(--steel);padding:8px 6px}
+.btn.danger{background:var(--badbg);color:var(--bad)}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.quick .btn{padding:13px 8px;font-size:15px}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.chip.on{border-color:var(--paint);background:var(--paintsoft);color:#8a3305;font-weight:700}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:2px 7px;background:var(--steelsoft);color:var(--steel);white-space:nowrap}
+.tag.lsi{background:#e6f0f7;color:#1f5f8b}.tag.pp{background:#fff0e6;color:#a64009}.tag.kompan{background:#e3f3e9;color:#1e7d45}
+.tag.warn{background:var(--warnbg);color:var(--warn)}.tag.bad{background:var(--badbg);color:var(--bad)}.tag.good{background:var(--goodbg);color:var(--good)}
+.list{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:10px}
+.item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item.tap{cursor:pointer}
+.item .t{font-weight:700}
+.check{width:26px;height:26px;flex:none;border:2px solid var(--line);border-radius:7px;background:#fff;display:grid;place-items:center;font-weight:700;color:#fff;cursor:pointer;margin-top:-1px}
+.check.on{background:var(--good);border-color:var(--good)}
+.done .t,.done .txt{text-decoration:line-through;color:var(--muted)}
+.empty{padding:16px;text-align:center;color:var(--muted);font-size:14px}
+.seg{display:flex;background:#dde4e9;border-radius:11px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:8px 4px;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.jobcard{cursor:pointer}
+.jobname{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.05}
+.bar{height:7px;background:#e3e9ed;border-radius:9px;overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;background:var(--good)}
+.stats{display:flex;gap:14px;margin-top:8px;font-size:13px;color:var(--muted)}
+.stats b{color:var(--ink);font-size:15px}
+.back{display:inline-flex;gap:4px;align-items:center;border:0;background:none;color:var(--steel);font-weight:700;padding:4px 0 8px}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:15px}
+.kv div:nth-child(odd){color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:8px 6px;border-top:1px solid var(--line);text-align:left}
+th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-top:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.addrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+.addrow input{flex:1;min-width:0}
+input[type=text],input[type=date],input[type=number],input[type=search],input[type=url],select,textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;font-size:16px}
+textarea{min-height:80px;resize:vertical}
+label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 5px}
+.day{display:flex;gap:12px;align-items:center}
+.daynum{width:46px;text-align:center;flex:none}
+.daynum b{display:block;font-family:var(--display);font-size:26px;line-height:1}
+.daynum span{font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.istoday{background:var(--paintsoft)}
+.istoday .daynum b{color:var(--paint)}
+.sheetbg{position:fixed;inset:0;background:rgba(10,18,25,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+.sheet h3{font-family:var(--display);font-size:24px;margin:0 0 4px}
+.sheet .actions{display:flex;gap:8px;margin-top:16px}
+.sheet .actions .btn{flex:1}
+.mic{flex:none;width:48px;border:0;border-radius:10px;background:var(--paint);color:#fff;font-size:20px}
+.mic.live{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.5}}
+.hit{font-size:14px}
+.hit mark{background:#ffe08a;border-radius:3px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header class="top">
+  <div><div class="brand">TURF TEK <b>JOBS</b></div><div class="sub" id="hdrSub"></div></div>
+  <div class="sp"></div>
+  <button class="iconbtn" id="gear" aria-label="Settings">⚙︎</button>
+</header>
+<main id="view"></main>
+<nav class="tabs" id="tabs">
+  <button data-tab="today"><span>☀︎</span>Today</button>
+  <button data-tab="jobs"><span>▦</span>Jobs</button>
+  <button data-tab="sched"><span>▤</span>Schedule</button>
+  <button data-tab="brain"><span>⌕</span>Brain</button>
+</nav>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+const LAYOUT_BASE='https://thepatrickreardon-sys.github.io/sawmill-layout/';
+const KEY='hub_db';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const iso=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const TODAY=()=>iso(new Date());
+const parseISO=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{const d=parseISO(s);d.setDate(d.getDate()+n);return iso(d)};
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmt=s=>{if(!s)return'';const d=parseISO(s);return DOW[d.getDay()]+' '+MON[d.getMonth()]+' '+d.getDate()};
+const num=n=>Math.round(n*10)/10;
+
+function seed(){
+  const sec=names=>names.map(n=>({id:uid(),name:n,done:false}));
+  return {v:1,crew:[],rem:[],sched:{},jobs:[
+    {id:'sawmill',name:'Sawmill',mfr:'Play & Park',site:'',status:'active',start:'',contact:'',notes:'',layout:'',remKey:'swl_rem',sections:[],punch:[],logs:[],docs:[]},
+    {id:'hagedorn',name:'Hagedorn',mfr:'Landscape Structures',site:'',status:'active',start:'',contact:'',notes:'',layout:'hagedorn/',remKey:'hgl_rem',sections:[],punch:[],logs:[],docs:[]},
+    {id:'neary',name:'Neary Elementary',mfr:'Kompan',site:'',status:'active',start:'',contact:'',notes:'',layout:'neary/',remKey:'nry_rem',sections:[],punch:[],logs:[],docs:[]},
+    {id:'bear-mountain',name:'Bear Mountain State Park',mfr:'Landscape Structures',site:'Tomkins Cove, NY',status:'upcoming',start:'',contact:'',notes:'~60 working days, 6-man crew. Bill by section.',layout:'bear-mountain/',remKey:'bm_rem',
+      sections:sec(['Shades','Walkway','142" + embankment slides','Snag tower','23\' RPL tower + Adventurescapes + long slide','2–5 area','Misc / punch list']),punch:[],logs:[],docs:[]}
+  ]};
+}
+let DB;
+try{DB=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!DB||!DB.jobs)DB=seed();
+DB.crew??=[];DB.rem??=[];DB.sched??={};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Could not save on this device')}};
+save();
+
+const S={tab:'today',job:null,jtab:'overview',filter:'active',q:''};
+const job=id=>DB.jobs.find(j=>j.id===id);
+const layoutURL=j=>j.layout===null||j.layout===undefined?null:(/^https?:/.test(j.layout)?j.layout:LAYOUT_BASE+j.layout);
+const mfrTag=m=>{const k=/kompan/i.test(m)?'kompan':/landscape|lsi/i.test(m)?'lsi':/play|park|supermax/i.test(m)?'pp':'';return m?`<span class="tag ${k}">${esc(m)}</span>`:''};
+const manHours=l=>(Number(l.hours)||0)*Math.max(1,(l.crew||[]).length);
+const jobHours=j=>j.logs.reduce((a,l)=>a+manHours(l),0);
+function layoutRems(j){
+  if(!j.remKey)return[];
+  try{return (JSON.parse(localStorage.getItem(j.remKey))||[]).filter(r=>r&&!r.done&&r.text)}catch(e){return[]}
+}
+function dayPlan(d){return DB.sched[d]||{}}
+function todayJob(){const p=dayPlan(TODAY());return job(p.job)||null}
+
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800)}
+
+/* ---------- bottom sheet ---------- */
+function sheet(html,mount){
+  const bg=document.createElement('div');bg.className='sheetbg';
+  bg.innerHTML=`<div class="sheet">${html}</div>`;
+  bg.addEventListener('click',e=>{if(e.target===bg)close()});
+  document.body.appendChild(bg);
+  const close=()=>bg.remove();
+  bg.querySelectorAll('[data-close]').forEach(b=>b.onclick=close);
+  mount&&mount(bg.querySelector('.sheet'),close);
+  return close;
+}
+
+/* ---------- dictation ---------- */
+function micFor(btn,input){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  btn.onclick=()=>{
+    if(!SR){input.focus();toast('Tap the mic on your keyboard to talk');return}
+    const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;
+    btn.classList.add('live');
+    r.onresult=e=>{input.value=Array.from(e.results).map(x=>x[0].transcript).join(' ')};
+    r.onend=()=>btn.classList.remove('live');
+    r.onerror=()=>{btn.classList.remove('live');input.focus()};
+    r.start();
+  };
+}
+const jobOptions=(sel,blank='— none —')=>`<option value="">${blank}</option>`+DB.jobs.filter(j=>j.status!=='done'||j.id===sel).map(j=>`<option value="${j.id}"${j.id===sel?' selected':''}>${esc(j.name)}</option>`).join('');
+
+/* ---------- forms ---------- */
+function addReminder(jobId,autoMic){
+  sheet(`<h3>Reminder</h3>
+    <label class="f">What</label>
+    <div class="row"><input type="text" id="rt" placeholder="e.g. order 2 more bags of concrete"><button class="mic" id="rm">🎤</button></div>
+    <label class="f">Job</label><select id="rj">${jobOptions(jobId??todayJob()?.id,'General')}</select>
+    <label class="f">Due (optional)</label><input type="date" id="rd">
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn paint" id="rs">Save</button></div>`,
+  (el,close)=>{
+    const t=el.querySelector('#rt');micFor(el.querySelector('#rm'),t);
+    if(autoMic)el.querySelector('#rm').click();else setTimeout(()=>t.focus(),50);
+    el.querySelector('#rs').onclick=()=>{
+      const text=t.value.trim();if(!text)return t.focus();
+      DB.rem.push({id:uid(),text,job:el.querySelector('#rj').value||null,when:el.querySelector('#rd').value||null,done:false,made:Date.now()});
+      save();close();render();toast('Reminder saved');
+    };
+  });
+}
+function addLog(jobId,existing){
+  const l=existing||{date:TODAY(),crew:[...(dayPlan(TODAY()).crew||[])],hours:8,section:'',note:''};
+  const j0=job(jobId)||todayJob();
+  const secOpts=j=>`<option value="">— whole job —</option>`+(j?j.sections:[]).map(s=>`<option${s.name===l.section?' selected':''}>${esc(s.name)}</option>`).join('');
+  sheet(`<h3>${existing?'Edit day':'Log a day'}</h3>
+    <label class="f">Job</label><select id="lj">${jobOptions(j0?.id,'Pick a job')}</select>
+    <label class="f">Date</label><input type="date" id="ld" value="${l.date}">
+    <label class="f">Crew on site</label><div class="row wrap" id="lc">${DB.crew.length?DB.crew.map(c=>`<button class="chip${l.crew.includes(c)?' on':''}">${esc(c)}</button>`).join(''):'<span class="muted small">Add your crew in ⚙︎ Settings</span>'}</div>
+    <label class="f">Hours on site (each)</label><input type="number" id="lh" inputmode="decimal" step="0.5" value="${l.hours}">
+    <div class="small muted" id="lmh" style="margin-top:5px"></div>
+    <label class="f">Section worked on</label><select id="ls">${secOpts(j0)}</select>
+    <label class="f">What got done</label>
+    <div class="row" style="align-items:stretch"><textarea id="ln" placeholder="Poured footings for snag tower, set 6 poles…">${esc(l.note)}</textarea><button class="mic" id="lm">🎤</button></div>
+    <div class="actions">${existing?'<button class="btn danger" id="ldel">Delete</button>':''}<button class="btn" data-close>Cancel</button><button class="btn paint" id="lsv">Save</button></div>`,
+  (el,close)=>{
+    const crew=new Set(l.crew);
+    const upd=()=>{const h=Number(el.querySelector('#lh').value)||0;el.querySelector('#lmh').textContent=`${Math.max(1,crew.size)} ${crew.size===1?'person':'people'} × ${h} hrs = ${num(h*Math.max(1,crew.size))} man-hours`};
+    el.querySelectorAll('#lc .chip').forEach(b=>b.onclick=()=>{const n=b.textContent;crew.has(n)?crew.delete(n):crew.add(n);b.classList.toggle('on');upd()});
+    el.querySelector('#lh').oninput=upd;upd();
+    el.querySelector('#lj').onchange=e=>{el.querySelector('#ls').innerHTML=secOpts(job(e.target.value))};
+    micFor(el.querySelector('#lm'),el.querySelector('#ln'));
+    if(existing)el.querySelector('#ldel').onclick=()=>{const j=job(jobId);j.logs=j.logs.filter(x=>x!==existing);save();close();render()};
+    el.querySelector('#lsv').onclick=()=>{
+      const j=job(el.querySelector('#lj').value);if(!j)return toast('Pick a job');
+      const rec={id:l.id||uid(),date:el.querySelector('#ld').value||TODAY(),crew:[...crew],hours:Number(el.querySelector('#lh').value)||0,section:el.querySelector('#ls').value,note:el.querySelector('#ln').value.trim(),made:l.made||Date.now()};
+      if(existing){const old=job(jobId);old.logs=old.logs.filter(x=>x!==existing)}
+      j.logs.push(rec);save();close();render();toast('Day logged');
+    };
+  });
+}
+function addPunch(jobId){
+  sheet(`<h3>Punch list item</h3>
+    <label class="f">Job</label><select id="pj">${jobOptions(jobId??todayJob()?.id,'Pick a job')}</select>
+    <label class="f">Item</label><div class="row"><input type="text" id="pt" placeholder="e.g. touch-up paint on deck 3"><button class="mic" id="pm">🎤</button></div>
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn paint" id="ps">Add</button></div>`,
+  (el,close)=>{
+    const t=el.querySelector('#pt');micFor(el.querySelector('#pm'),t);setTimeout(()=>t.focus(),50);
+    el.querySelector('#ps').onclick=()=>{const j=job(el.querySelector('#pj').value);if(!j)return toast('Pick a job');if(!t.value.trim())return;
+      j.punch.push({id:uid(),text:t.value.trim(),done:false,made:Date.now()});save();close();render();toast('Added to punch list')};
+  });
+}
+function editJob(j){
+  const isNew=!j;j=j||{id:uid(),name:'',mfr:'',site:'',status:'upcoming',start:'',contact:'',notes:'',layout:null,remKey:'',sections:[],punch:[],logs:[],docs:[]};
+  sheet(`<h3>${isNew?'New job':'Edit job'}</h3>
+    <label class="f">Job name</label><input type="text" id="jn" value="${esc(j.name)}">
+    <label class="f">Manufacturer</label><select id="jm">${['','Landscape Structures','Play & Park','Kompan','Other'].map(m=>`<option${m===j.mfr?' selected':''}>${m}</option>`).join('')}</select>
+    <label class="f">Site / address</label><input type="text" id="js" value="${esc(j.site)}">
+    <label class="f">Status</label><select id="jt">${[['upcoming','Upcoming'],['active','Active'],['done','Completed']].map(([v,t])=>`<option value="${v}"${v===j.status?' selected':''}>${t}</option>`).join('')}</select>
+    <label class="f">Start date</label><input type="date" id="jd" value="${j.start||''}">
+    <label class="f">Contact (GC / owner / rep)</label><input type="text" id="jc" value="${esc(j.contact)}">
+    <label class="f">Layout app link (if it has one)</label><input type="url" id="jl" placeholder="${LAYOUT_BASE}jobname/" value="${j.layout===null?'':esc(layoutURL(j))}">
+    <label class="f">Notes</label><textarea id="jo">${esc(j.notes)}</textarea>
+    <div class="actions">${isNew?'':'<button class="btn danger" id="jx">Delete</button>'}<button class="btn" data-close>Cancel</button><button class="btn paint" id="jsv">Save</button></div>`,
+  (el,close)=>{
+    if(!isNew)el.querySelector('#jx').onclick=()=>{if(confirm(`Delete ${j.name} and everything logged on it?`)){DB.jobs=DB.jobs.filter(x=>x!==j);save();close();S.job=null;render()}};
+    el.querySelector('#jsv').onclick=()=>{
+      const name=el.querySelector('#jn').value.trim();if(!name)return el.querySelector('#jn').focus();
+      Object.assign(j,{name,mfr:el.querySelector('#jm').value,site:el.querySelector('#js').value.trim(),status:el.querySelector('#jt').value,start:el.querySelector('#jd').value,contact:el.querySelector('#jc').value.trim(),notes:el.querySelector('#jo').value.trim()});
+      const lu=el.querySelector('#jl').value.trim();
+      j.layout=!lu?null:(lu.startsWith(LAYOUT_BASE)?lu.slice(LAYOUT_BASE.length):lu);
+      if(isNew)DB.jobs.push(j);save();close();if(isNew){S.tab='jobs';S.job=j.id;S.jtab='overview'}render();
+    };
+  });
+}
+function editDay(d){
+  const p=dayPlan(d);
+  sheet(`<h3>${fmt(d)}</h3>
+    <label class="f">Job</label><select id="dj">${jobOptions(p.job,'Off / no job')}</select>
+    <label class="f">Crew</label><div class="row wrap" id="dc">${DB.crew.length?DB.crew.map(c=>`<button class="chip${(p.crew||[]).includes(c)?' on':''}">${esc(c)}</button>`).join(''):'<span class="muted small">Add your crew in ⚙︎ Settings</span>'}</div>
+    <label class="f">Plan for the day</label><div class="row" style="align-items:stretch"><textarea id="dn" placeholder="Dig footings area 2–5, concrete truck 9am">${esc(p.note||'')}</textarea><button class="mic" id="dm">🎤</button></div>
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn paint" id="ds">Save</button></div>`,
+  (el,close)=>{
+    const crew=new Set(p.crew||[]);
+    el.querySelectorAll('#dc .chip').forEach(b=>b.onclick=()=>{const n=b.textContent;crew.has(n)?crew.delete(n):crew.add(n);b.classList.toggle('on')});
+    micFor(el.querySelector('#dm'),el.querySelector('#dn'));
+    el.querySelector('#ds').onclick=()=>{
+      const v={job:el.querySelector('#dj').value||null,crew:[...crew],note:el.querySelector('#dn').value.trim()};
+      if(!v.job&&!v.crew.length&&!v.note)delete DB.sched[d];else DB.sched[d]=v;
+      save();close();render();
+    };
+  });
+}
+function settings(){
+  sheet(`<h3>Settings</h3>
+    <label class="f">Crew</label>
+    <div class="list" id="cl"></div>
+    <label class="f">Backup</label>
+    <div class="small muted">Everything saves on this phone. Make a backup now and then, or to move it to another device.</div>
+    <div class="row" style="margin-top:8px"><button class="btn grow" id="ex">Save backup file</button><button class="btn grow" id="im">Load backup</button></div>
+    <input type="file" id="imf" accept=".json,application/json" hidden>
+    <div class="actions"><button class="btn paint" data-close>Done</button></div>`,
+  (el)=>{
+    const draw=()=>{el.querySelector('#cl').innerHTML=DB.crew.map((c,i)=>`<div class="item"><div class="grow">${esc(c)}</div><button class="btn ghost" data-i="${i}">Remove</button></div>`).join('')+
+      `<div class="addrow"><input type="text" id="cn" placeholder="Add a name"><button class="btn paint" id="ca">Add</button></div>`;
+      el.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{DB.crew.splice(+b.dataset.i,1);save();draw()});
+      const add=()=>{const n=el.querySelector('#cn').value.trim();if(n&&!DB.crew.includes(n)){DB.crew.push(n);save();draw();el.querySelector('#cn').focus()}};
+      el.querySelector('#ca').onclick=add;el.querySelector('#cn').onkeydown=e=>{if(e.key==='Enter')add()};};
+    draw();
+    el.querySelector('#ex').onclick=()=>{const b=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`turftek-jobs-${TODAY()}.json`;a.click()};
+    el.querySelector('#im').onclick=()=>el.querySelector('#imf').click();
+    el.querySelector('#imf').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());if(!d.jobs)throw 0;if(confirm('Replace everything on this phone with the backup?')){DB=d;save();render();toast('Backup loaded')}}catch(_){toast('That file is not a backup')}};
+  });
+}
+
+/* ---------- views ---------- */
+function vToday(){
+  const t=TODAY(),p=dayPlan(t),j=todayJob();
+  const lu=j&&layoutURL(j);
+  const hubRems=DB.rem.filter(r=>!r.done).sort((a,b)=>(a.when||'9999').localeCompare(b.when||'9999')||a.made-b.made);
+  const layRems=DB.jobs.filter(x=>x.status!=='done').flatMap(x=>layoutRems(x).map(r=>({...r,_job:x})));
+  const remItem=r=>{const jj=job(r.job);const due=r.when?(r.when<t?`<span class="tag bad">Overdue · ${fmt(r.when)}</span>`:r.when===t?'<span class="tag warn">Today</span>':`<span class="tag">${fmt(r.when)}</span>`):'';
+    return `<div class="item"><button class="check" data-rem="${r.id}"></button><div class="grow"><div class="txt">${esc(r.text)}</div><div class="row wrap small" style="margin-top:4px">${jj?`<span class="tag">${esc(jj.name)}</span>`:''}${due}</div></div></div>`};
+  const next=[1,2,3,4,5,6].map(n=>addDays(t,n)).filter(d=>DB.sched[d]&&(DB.sched[d].job||DB.sched[d].note));
+  return `
+  <div class="card">
+    <div class="muted small" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}</div>
+    <div class="today-date">${MON[new Date().getMonth()]} ${new Date().getDate()}</div>
+    <div style="margin-top:12px" class="row"><div class="grow">
+      ${j?`<div class="jobname">${esc(j.name)}</div><div class="row wrap" style="margin-top:4px">${mfrTag(j.mfr)}${j.site?`<span class="small muted">${esc(j.site)}</span>`:''}</div>`:'<div class="muted">No job set for today</div>'}
+      ${p.crew&&p.crew.length?`<div class="small muted" style="margin-top:6px">Crew: ${p.crew.map(esc).join(', ')}</div>`:''}
+      ${p.note?`<div style="margin-top:6px">${esc(p.note)}</div>`:''}
+    </div><button class="btn ghost" id="setday">Edit</button></div>
+    ${lu?`<a class="btn paint big" style="display:block;text-align:center;text-decoration:none;margin-top:12px" href="${esc(lu)}">Open layout ›</a>`:''}
+    ${j?`<button class="btn big" style="margin-top:8px" data-openjob="${j.id}">Job folder ›</button>`:''}
+    <div class="quick">
+      <button class="btn" id="qrem">🎤 Reminder</button>
+      <button class="btn" id="qlog">＋ Log hours</button>
+      <button class="btn" id="qpunch">＋ Punch item</button>
+      <button class="btn" id="qsched">📅 Plan the week</button>
+    </div>
+  </div>
+  <h2>Reminders</h2>
+  <div class="list">${hubRems.length?hubRems.map(remItem).join(''):'<div class="empty">Nothing on the list. Tap 🎤 Reminder to add one.</div>'}</div>
+  ${layRems.length?`<h2>From the layout apps</h2><div class="list">${layRems.map(r=>`<a class="item tap" style="color:inherit;text-decoration:none" href="${esc(layoutURL(r._job))}"><span style="color:var(--warn);font-size:18px">⚠</span><div class="grow"><div class="txt">${esc(r.text)}</div><div class="row wrap small" style="margin-top:4px"><span class="tag">${esc(r._job.name)}</span>${r.hole?`<span class="tag warn">${esc(r.hole)}</span>`:''}</div></div><span class="muted">›</span></a>`).join('')}</div>`:''}
+  <h2>Coming up</h2>
+  <div class="list">${next.length?next.map(d=>{const q=DB.sched[d];const jj=job(q.job);return `<div class="item tap" data-day="${d}"><div class="grow"><div class="t">${fmt(d)}</div><div class="small muted">${jj?esc(jj.name):'—'}${q.note?' · '+esc(q.note):''}</div></div><span class="muted">›</span></div>`}).join(''):'<div class="empty">Nothing scheduled this week. Plan it in Schedule.</div>'}</div>`;
+}
+function vJobs(){
+  if(S.job&&job(S.job))return vJob(job(S.job));
+  const counts={active:0,upcoming:0,done:0};DB.jobs.forEach(j=>counts[j.status]=(counts[j.status]||0)+1);
+  const list=DB.jobs.filter(j=>j.status===S.filter);
+  return `<div class="seg">${[['active','Active'],['upcoming','Upcoming'],['done','Completed']].map(([v,t])=>`<button data-filter="${v}" class="${S.filter===v?'on':''}">${t} (${counts[v]||0})</button>`).join('')}</div>
+  ${list.map(j=>{const sd=j.sections.filter(s=>s.done).length,st=j.sections.length,open=j.punch.filter(p=>!p.done).length;
+    return `<div class="card jobcard" data-openjob="${j.id}"><div class="row"><div class="grow"><div class="jobname">${esc(j.name)}</div><div class="row wrap" style="margin-top:5px">${mfrTag(j.mfr)}${j.site?`<span class="small muted">${esc(j.site)}</span>`:''}</div></div><span class="muted" style="font-size:22px">›</span></div>
+    ${st?`<div class="bar"><i style="width:${Math.round(sd/st*100)}%"></i></div>`:''}
+    <div class="stats"><span><b>${num(jobHours(j))}</b> man-hrs</span><span><b>${j.logs.length}</b> days logged</span>${st?`<span><b>${sd}/${st}</b> sections</span>`:''}${open?`<span><b>${open}</b> punch</span>`:''}</div></div>`}).join('')||'<div class="card empty">No jobs here yet.</div>'}
+  <button class="btn big" id="newjob">＋ New job</button>`;
+}
+function vJob(j){
+  const lu=layoutURL(j);
+  const tabs=[['overview','Overview'],['punch','Punch'],['log','Daily log'],['hours','Hours']];
+  let body='';
+  if(S.jtab==='overview'){
+    body=`${lu?`<a class="btn paint big" style="display:block;text-align:center;text-decoration:none;margin-bottom:10px" href="${esc(lu)}">Open layout app ›</a>`:''}
+    <div class="card"><div class="kv">
+      <div>Manufacturer</div><div>${esc(j.mfr)||'—'}</div>
+      <div>Site</div><div>${esc(j.site)||'—'}</div>
+      <div>Start</div><div>${j.start?fmt(j.start):'—'}</div>
+      <div>Contact</div><div>${esc(j.contact)||'—'}</div>
+    </div>${j.notes?`<div style="margin-top:10px;white-space:pre-wrap">${esc(j.notes)}</div>`:''}
+    <button class="btn ghost" id="editjob" style="margin-top:6px">Edit job details</button></div>
+    <h2>Sections / billing</h2>
+    <div class="list">${j.sections.map(s=>{const h=j.logs.filter(l=>l.section===s.name).reduce((a,l)=>a+manHours(l),0);return `<div class="item ${s.done?'done':''}"><button class="check ${s.done?'on':''}" data-sec="${s.id}">${s.done?'✓':''}</button><div class="grow"><div class="t">${esc(s.name)}</div><div class="small muted">${num(h)} man-hrs${s.done?' · done, ready to bill':''}</div></div><button class="btn ghost" data-delsec="${s.id}">✕</button></div>`}).join('')}
+      <div class="addrow"><input type="text" id="secn" placeholder="Add a section (e.g. Snag tower)"><button class="btn paint" id="seca">Add</button></div></div>
+    <h2>Docs & links</h2>
+    <div class="list">${j.docs.map((d,i)=>`<div class="item"><a class="grow" href="${esc(d.url)}" target="_blank" rel="noopener" style="color:var(--steel);font-weight:700">${esc(d.name)}</a><button class="btn ghost" data-deldoc="${i}">✕</button></div>`).join('')}
+      <div class="addrow"><button class="btn grow" id="adddoc">＋ Add a link (Drive, PDF, plans…)</button></div></div>`;
+  }else if(S.jtab==='punch'){
+    const ps=[...j.punch].sort((a,b)=>a.done-b.done);
+    body=`<div class="list">${ps.map(p=>`<div class="item ${p.done?'done':''}"><button class="check ${p.done?'on':''}" data-punch="${p.id}">${p.done?'✓':''}</button><div class="grow txt">${esc(p.text)}</div><button class="btn ghost" data-delpunch="${p.id}">✕</button></div>`).join('')||'<div class="empty">Punch list is clear.</div>'}</div>
+    <button class="btn big" id="addpunch">＋ Add punch item</button>`;
+  }else if(S.jtab==='log'){
+    const ls=[...j.logs].sort((a,b)=>b.date.localeCompare(a.date)||b.made-a.made);
+    body=`<button class="btn paint big" id="addlog" style="margin-bottom:10px">＋ Log a day</button>
+    <div class="list">${ls.map(l=>`<div class="item tap" data-log="${l.id}"><div class="grow"><div class="row"><div class="t grow">${fmt(l.date)}</div><span class="tag">${num(manHours(l))} man-hrs</span></div>
+      ${l.section?`<div class="small" style="margin-top:3px"><span class="tag good">${esc(l.section)}</span></div>`:''}
+      ${l.note?`<div style="margin-top:5px">${esc(l.note)}</div>`:''}
+      ${l.crew.length?`<div class="small muted" style="margin-top:4px">${l.crew.map(esc).join(', ')} · ${l.hours} hrs</div>`:''}</div></div>`).join('')||'<div class="empty">No days logged yet.</div>'}</div>`;
+  }else{
+    const by={};j.logs.forEach(l=>{const k=l.section||'Whole job / other';by[k]=(by[k]||0)+manHours(l)});
+    const days={};j.logs.forEach(l=>{days[l.date]=(days[l.date]||0)+manHours(l)});
+    const total=jobHours(j);
+    body=`<div class="card"><div class="muted small" style="font-weight:700">TOTAL</div><div class="today-date">${num(total)} <span style="font-size:18px" class="muted">man-hours</span></div><div class="small muted" style="margin-top:4px">${Object.keys(days).length} days on site</div></div>
+    <h2>By section</h2><div class="card"><table><tr><th>Section</th><th class="n">Man-hrs</th></tr>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${num(v)}</td></tr>`).join('')||'<tr><td colspan=2 class="muted">Nothing logged yet</td></tr>'}</table></div>
+    <h2>By day</h2><div class="card"><table><tr><th>Day</th><th class="n">Man-hrs</th></tr>${Object.entries(days).sort((a,b)=>b[0].localeCompare(a[0])).map(([k,v])=>`<tr><td>${fmt(k)}</td><td class="n">${num(v)}</td></tr>`).join('')||'<tr><td colspan=2 class="muted">Nothing logged yet</td></tr>'}</table></div>`;
+  }
+  return `<button class="back" id="back">‹ All jobs</button>
+  <div class="row" style="margin-bottom:10px"><div class="grow"><div class="jobname" style="font-size:30px">${esc(j.name)}</div><div class="row wrap" style="margin-top:4px">${mfrTag(j.mfr)}<span class="tag ${j.status==='active'?'good':j.status==='done'?'':'warn'}">${{active:'Active',upcoming:'Upcoming',done:'Completed'}[j.status]}</span></div></div></div>
+  <div class="seg">${tabs.map(([v,t])=>`<button data-jtab="${v}" class="${S.jtab===v?'on':''}">${t}</button>`).join('')}</div>${body}`;
+}
+function vSched(){
+  const t=TODAY();const start=addDays(t,-((parseISO(t).getDay()+6)%7)); // this Monday
+  const days=[...Array(21)].map((_,i)=>addDays(start,i));
+  let out='',wk=-1;
+  days.forEach((d,i)=>{
+    if(Math.floor(i/7)!==wk){wk=Math.floor(i/7);out+=(out?'</div>':'')+`<h2>${['This week','Next week','In 2 weeks'][wk]}</h2><div class="list">`}
+    const p=DB.sched[d]||{},jj=job(p.job),dd=parseISO(d);
+    out+=`<div class="item tap day ${d===t?'istoday':''}" data-day="${d}"><div class="daynum"><span>${DOW[dd.getDay()]}</span><b>${dd.getDate()}</b></div><div class="grow">${jj?`<div class="t">${esc(jj.name)}</div>`:`<div class="muted">${dd.getDay()%6===0?'Weekend':'—'}</div>`}${p.note?`<div class="small">${esc(p.note)}</div>`:''}${p.crew&&p.crew.length?`<div class="small muted">${p.crew.map(esc).join(', ')}</div>`:''}</div><span class="muted">›</span></div>`;
+  });
+  return out+'</div>';
+}
+function vBrain(){
+  const q=S.q.trim().toLowerCase();
+  let res='';
+  if(q){
+    const hits=[];const m=s=>s&&String(s).toLowerCase().includes(q);
+    DB.jobs.forEach(j=>{
+      if(m(j.name)||m(j.site)||m(j.notes)||m(j.contact)||m(j.mfr))hits.push({j,type:'Job',text:[j.site,j.notes,j.contact].filter(Boolean).join(' · ')||j.mfr});
+      j.sections.forEach(s=>m(s.name)&&hits.push({j,type:'Section',text:`${s.name} — ${num(j.logs.filter(l=>l.section===s.name).reduce((a,l)=>a+manHours(l),0))} man-hrs${s.done?' (done)':''}`}));
+      j.logs.forEach(l=>(m(l.note)||m(l.section)||l.crew.some(m))&&hits.push({j,type:'Log',date:l.date,text:`${l.section?l.section+': ':''}${l.note} (${num(manHours(l))} man-hrs)`}));
+      j.punch.forEach(p=>m(p.text)&&hits.push({j,type:p.done?'Punch (done)':'Punch',text:p.text}));
+      layoutRems(j).forEach(r=>m(r.text)&&hits.push({j,type:'Layout reminder',text:r.text}));
+    });
+    DB.rem.forEach(r=>m(r.text)&&hits.push({j:job(r.job),type:r.done?'Reminder (done)':'Reminder',text:r.text}));
+    const hl=s=>esc(s).replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),x=>`<mark>${x}</mark>`);
+    res=`<div class="list">${hits.slice(0,80).map(h=>`<div class="item ${h.j?'tap':''} hit" ${h.j?`data-openjob="${h.j.id}"`:''}><div class="grow"><div class="row wrap small" style="margin-bottom:3px"><span class="tag">${esc(h.type)}</span>${h.j?`<b>${esc(h.j.name)}</b>`:''}${h.date?`<span class="muted">${fmt(h.date)}</span>`:''}</div>${hl(h.text)}</div></div>`).join('')||'<div class="empty">Nothing found across your jobs.</div>'}</div>`;
+  }else{
+    const secs={};DB.jobs.forEach(j=>j.logs.forEach(l=>{if(!l.section)return;const k=l.section.toLowerCase();secs[k]??={name:l.section,h:0,jobs:new Set};secs[k].h+=manHours(l);secs[k].jobs.add(j.name)}));
+    const totalH=DB.jobs.reduce((a,j)=>a+jobHours(j),0);
+    res=`<h2>Every job</h2><div class="card" style="padding:6px 10px"><table><tr><th>Job</th><th class="n">Days</th><th class="n">Man-hrs</th><th class="n">Punch</th></tr>
+      ${DB.jobs.map(j=>`<tr data-openjob="${j.id}" style="cursor:pointer"><td><b>${esc(j.name)}</b><div class="small muted">${{active:'Active',upcoming:'Upcoming',done:'Completed'}[j.status]}</div></td><td class="n">${new Set(j.logs.map(l=>l.date)).size}</td><td class="n">${num(jobHours(j))}</td><td class="n">${j.punch.filter(p=>!p.done).length}</td></tr>`).join('')}
+      <tr><td><b>All jobs</b></td><td></td><td class="n"><b>${num(totalH)}</b></td><td></td></tr></table></div>
+    <h2>What things really take</h2>
+    <div class="card" style="padding:6px 10px">${Object.keys(secs).length?`<table><tr><th>Section</th><th class="n">Man-hrs</th></tr>${Object.values(secs).sort((a,b)=>b.h-a.h).map(s=>`<tr><td>${esc(s.name)}<div class="small muted">${[...s.jobs].map(esc).join(', ')}</div></td><td class="n">${num(s.h)}</td></tr>`).join('')}</table>`:'<div class="empty">Log days with a section picked and this fills in with real hours for towers, slides, shades… the numbers you bid from.</div>'}</div>`;
+  }
+  return `<input type="search" id="q" placeholder="Search every job: RPL tower, concrete, Kompan…" value="${esc(S.q)}" style="margin-bottom:10px">${res}`;
+}
+
+/* ---------- render + events ---------- */
+function render(){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===S.tab));
+  const active=DB.jobs.filter(j=>j.status==='active').length;
+  $('#hdrSub').textContent=`${active} active job${active===1?'':'s'}`;
+  const v=$('#view');
+  v.innerHTML=S.tab==='today'?vToday():S.tab==='jobs'?vJobs():S.tab==='sched'?vSched():vBrain();
+  bind(v);
+}
+function bind(v){
+  const on=(sel,fn)=>v.querySelectorAll(sel).forEach(el=>el.addEventListener('click',e=>fn(el,e)));
+  on('[data-openjob]',el=>{S.tab='jobs';S.job=el.dataset.openjob;S.jtab='overview';render();scrollTo(0,0)});
+  on('[data-day]',el=>editDay(el.dataset.day));
+  on('[data-rem]',el=>{const r=DB.rem.find(x=>x.id===el.dataset.rem);r.done=true;r.doneAt=Date.now();save();el.classList.add('on');el.textContent='✓';setTimeout(render,350);toast('Done')});
+  on('[data-filter]',el=>{S.filter=el.dataset.filter;render()});
+  on('[data-jtab]',el=>{S.jtab=el.dataset.jtab;render()});
+  const j=S.job&&job(S.job);
+  on('[data-sec]',el=>{const s=j.sections.find(x=>x.id===el.dataset.sec);s.done=!s.done;save();render()});
+  on('[data-delsec]',el=>{const s=j.sections.find(x=>x.id===el.dataset.delsec);if(confirm(`Remove section "${s.name}"?`)){j.sections=j.sections.filter(x=>x!==s);save();render()}});
+  on('[data-punch]',el=>{const p=j.punch.find(x=>x.id===el.dataset.punch);p.done=!p.done;save();render()});
+  on('[data-delpunch]',el=>{j.punch=j.punch.filter(x=>x.id!==el.dataset.delpunch);save();render()});
+  on('[data-deldoc]',el=>{j.docs.splice(+el.dataset.deldoc,1);save();render()});
+  on('[data-log]',el=>addLog(j.id,j.logs.find(x=>x.id===el.dataset.log)));
+  const id=(x,fn)=>{const el=v.querySelector('#'+x);if(el)el.onclick=fn};
+  id('setday',()=>editDay(TODAY()));
+  id('qrem',()=>addReminder(undefined,true));id('qsched',()=>{S.tab='sched';render();scrollTo(0,0)});
+  id('qlog',()=>addLog(todayJob()?.id));id('qpunch',()=>addPunch());
+  id('newjob',()=>editJob());id('editjob',()=>editJob(j));
+  id('back',()=>{S.job=null;render()});
+  id('addpunch',()=>addPunch(j.id));id('addlog',()=>addLog(j.id));
+  id('adddoc',()=>{const name=prompt('Name (e.g. Install manual, Site plan)');if(!name)return;const url=prompt('Link (paste the URL)');if(!url)return;j.docs.push({name,url});save();render()});
+  const sa=v.querySelector('#seca');if(sa){const inp=v.querySelector('#secn');const add=()=>{const n=inp.value.trim();if(!n)return;j.sections.push({id:uid(),name:n,done:false});save();render()};sa.onclick=add;inp.onkeydown=e=>{if(e.key==='Enter')add()}}
+  const q=v.querySelector('#q');if(q){q.oninput=()=>{S.q=q.value;const pos=q.selectionStart;render();const n=$('#q');n.focus();n.setSelectionRange(pos,pos)}}
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{if(S.tab===b.dataset.tab&&b.dataset.tab==='jobs')S.job=null;S.tab=b.dataset.tab;render();scrollTo(0,0)});
+$('#gear').onclick=settings;
+addEventListener('storage',render);
+addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
+render();
+if('serviceWorker' in navigator&&location.protocol==='https:'&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
