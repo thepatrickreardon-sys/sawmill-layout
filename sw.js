@@ -1,4 +1,4 @@
-const V='sawmill-v12';
+const V='sawmill-v13';
 const CORE=['./','index.html','docs-text.json','hardware.json','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png','icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{

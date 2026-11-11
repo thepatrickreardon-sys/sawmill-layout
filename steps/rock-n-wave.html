@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#e8590c">
+<title>Rock-N-Wave · Step by step</title>
+<style>
+:root{--bg:#eef2f4;--panel:#fff;--ink:#15212b;--muted:#5b6b78;--line:#d3dce2;--paint:#e8590c;--paintsoft:#fff0e6;--steel:#1f5f8b;--steelsoft:#e6f0f7;--warn:#a86500;--warnbg:#fbefd9;--bad:#b42318;--badbg:#fbe4e1;--good:#1e7d45;--goodbg:#e3f3e9;
+--display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0d141a;--panel:#16212a;--ink:#e6edf2;--muted:#93a4b1;--line:#293844;--paint:#ff7a2e;--paintsoft:#3a2414;--steel:#6fb3e6;--steelsoft:#14283a;--warn:#f0a63a;--warnbg:#3a2a10;--bad:#ff7466;--badbg:#3d1915;--good:#4cc47e;--goodbg:#163626;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 var(--body)}
+header{position:sticky;top:0;z-index:5;background:var(--paint);color:#fff;padding:10px 14px calc(10px) 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:15px;border:1.5px solid rgba(255,255,255,.7);border-radius:8px;padding:5px 10px;white-space:nowrap}
+header h1{font:700 22px/1.1 var(--display);margin:0;flex:1;letter-spacing:.3px}
+header .prog{font:700 15px var(--display);background:rgba(0,0,0,.2);border-radius:20px;padding:4px 10px;white-space:nowrap}
+main{max-width:720px;margin:0 auto;padding:12px 12px 80px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)}
+h2{font:700 20px var(--display);text-transform:uppercase;letter-spacing:.6px;color:var(--steel);margin:22px 4px 8px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.step.done{opacity:.55}
+.step.done .num{background:var(--good)}
+.top{display:flex;gap:12px;padding:12px 14px 6px;align-items:flex-start}
+.num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--paint);color:#fff;font:700 22px/40px var(--display);text-align:center;border:0;cursor:pointer}
+.what{font-weight:700;font-size:18px;padding-top:7px}
+.body{padding:0 14px 12px 66px}
+.hw{list-style:none;margin:6px 0 0;padding:0;font-size:15px}
+.hw li{padding:5px 0;border-top:1px dashed var(--line)}
+.hw li:first-child{border-top:0}
+.hw .q{display:inline-block;min-width:0;font-weight:700;color:var(--steel)}
+.pn{color:var(--muted);font-size:13px}
+.note{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--warnbg);color:var(--warn);font-size:15px;font-weight:700}
+.note.bad{background:var(--badbg);color:var(--bad)}
+.tip{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--steelsoft);color:var(--steel);font-size:15px}
+figure{margin:0;background:#fff;border-top:1px solid var(--line);padding:8px;text-align:center}
+figure img{max-width:100%;height:auto;max-height:340px;cursor:zoom-in}
+figcaption{font:700 14px var(--display);color:#5b6b78;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.figs{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:620px){.figs.two{grid-template-columns:1fr 1fr}}
+#zoom{position:fixed;inset:0;background:#fff;z-index:20;overflow:auto;display:none}
+#zoom.on{display:block}
+#zoom img{width:200%;max-width:none;display:block}
+#zoom button{position:fixed;top:10px;right:10px;font:700 17px var(--body);background:var(--paint);color:#fff;border:0;border-radius:10px;padding:10px 16px}
+.reset{display:block;margin:20px auto;font:15px var(--body);background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 14px}
+</style></head><body>
+<header><a href="../">‹ App</a><h1>Rock-N-Wave · step by step</h1><span class="prog" id="prog"></span></header>
+<main>
+<div class="intro"><b>SuperMax 72062 2' Rock N Wave</b> (this job's deck is 2'-0"). Book steps 1–32 are rewritten here with the detail drawing and hardware under each step, so you don't have to flip pages. <b>Tap the orange number</b> to check a step off. <b>Tap a drawing</b> to blow it up. The steps are the same for the 1'-4" model, and only the panels and extenders are different.</div>
+<div id="list"></div>
+<button class="reset" id="reset">Clear all check marks</button>
+</main>
+<div id="zoom"><button id="zclose">Close</button><img alt=""></div>
+<script>
+const D='rnw/';
+const S=[
+{sec:'Slab & anchors (pour first)'},
+{n:1,t:'Pour the level slab at the deck opening',
+ hw:[['Slab','48" × 54", 12" thick'],['Top of concrete','12" below finished surface'],['Base','4" compacted gravel'],['Rebar','#5 @ 12" O.C. each way, centered'],['Concrete','3,000 psi min · about 0.67 yd³']],
+ notes:[['Slab MUST be level.','bad']],tip:'Top of deck is 24" above finished surface. Forms and framing are supplied by others.',figs:[['slab','Sheet 10 – 2\' elevation views']]},
+{n:2,t:'Set the 8 J-bolts with the metal template',
+ hw:[['8×','½" anchor (J) bolt','800000'],['','Extra ½" hex nuts hold the J-bolts in the template','']],
+ notes:[['Deck uprights must already be in place, because the template spaces the bolts off the deck.'],['At least 1" of thread above the template.'],['Once the concrete holds the bolts, pull the template and throw it out. Cure 72 hrs before going on (7 days before kids use it).','bad']],
+ tip:'Plan view: 67¾" (4 plcs), 25" off the deck uprights (4 plcs), 15 11/16" and 15⅝" spacing, 1¾" from the deck edge.',figs:[['anchors','Sheet 11 – Anchor bolt placement']]},
+{sec:'Base & track'},
+{n:3,t:'Bolt the Base Assembly to the anchor bolts',d:['653'],
+ hw:[['8×','½" flat washer (2" OD)','817413'],['8×','½" lock washer','817342'],['8×','½" hex nut','804055']],
+ notes:[['Take off the template and the ½" hex nuts from step 2 first.']]},
+{n:4,t:'Bolt the two Coated Platforms together',d:['1226'],
+ hw:[['','⅜" × 1¼" BHCS','811051'],['','⅜" flat washer (1¼" OD), both sides','817424'],['','⅜" lock nut','804353']],
+ notes:[['Hole orientation is critical.','bad']]},
+{n:5,t:'Bolt the platforms to the Carriage Assembly',d:['1231'],
+ hw:[['','⅜" × 4" hex head bolt','801015'],['','⅜" flat washer (1¼" OD), both sides','817424'],['','⅜" lock nut','804353']]},
+{n:6,t:'HDPE Base Panel 1 to the Base Assembly',d:['1232'],
+ hw:[['','⅜" × 3½" BHCS','811075'],['','⅜" flat washer, both sides','817410'],['','⅜" lock nut','804353']]},
+{n:7,t:'HDPE Base Panel 2 to the Base Assembly',d:['1233'],
+ hw:[['','⅜" × 2½" BHCS','811057'],['','⅜" flat washer, both sides','817410'],['','⅜" nylock SS hex nut','804380']]},
+{n:8,t:'Rubber Bumper onto the Bumper Weld Assembly',d:['1234'],
+ hw:[['','⅜" × 1½" BHCS','811053'],['','⅜" flat washer, both sides','817410'],['','⅜" lock nut','804353']]},
+{n:9,t:'Bolt ONE Bumper Weld Assembly to the base',d:['1235'],
+ hw:[['','⅜" × 1½" BHCS','811053'],['','⅜" flat washer, both sides','817410'],['','⅜" lock nut','804353']],
+ notes:[['Only one bumper now. The second one goes on in step 11, after the carriage is in the track.','bad']]},
+{n:10,t:'Slide the carriage + platform into the HDPE track',
+ tip:'The track is the base panels from steps 6 and 7. Do this before the second bumper goes on.'},
+{n:11,t:'Bolt on the second Bumper Weld Assembly',d:['1235'],
+ hw:[['','Same as step 9: ⅜" × 1½" BHCS, washers, ⅜" lock nut','']],
+ notes:[['Rock the platform back and forth to check the movement.']]},
+{n:12,t:'HDPE Base Side Panel to the Base Assembly',d:['1236'],
+ hw:[['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410']]},
+{sec:'Platform, handholds & panels'},
+{n:13,t:'Handholds and Seat Handholds onto the platforms',d:['648'],
+ hw:[['','⅜" × ¾" PBHCS w/patch','812052'],['','⅜" lock washer','817334'],['','⅜" T-nut (under deck)','804556']]},
+{n:14,t:'Hammer Clip-On Nuts onto the platform holes, all 4 sides',d:['1237'],
+ hw:[['','No-slip clip-on nut','221543']],
+ tip:'These are the clip-on nuts for steps 18 and 26.'},
+{n:15,t:'Left + Right Back Panels with the Flat Stiffener to the platforms',d:['1216','1219'],
+ hw:[['To platform:','⅜" × 1½" PBHCS w/patch + ⅜" flat washer into the clip-on nut','812053 / 817410'],['Panels + stiffener:','5/16" × ¾" PBHCS w/patch, 5/16" flat washer (11/16" OD), 5/16" insert nut','812040 / 817406 / HWN0149']],
+ notes:[['The notch in the Flat Stiffener Plate goes at the BOTTOM of the panel.'],['Insert nuts (HWN0149): hand tools only, NO impact.','bad']]},
+{n:16,t:'PPS Logo Panel to the back panels, 2 OUTSIDE holes',d:['1221'],
+ hw:[['','5/16" × 1¼" PBHCS w/patch','812044'],['','5/16" flat washer (11/16" OD)','817406'],['','5/16" insert nut (in the ½" HDPE)','HWN0149']],
+ notes:[['Hand tools only on the insert nuts, NO impact.','bad']]},
+{n:17,t:'Logo Panel through the stiffener, 2 CENTER holes',d:['1220'],
+ hw:[['','5/16" × 1¼" PBHCS w/patch','812044'],['','5/16" flat washer (11/16" OD)','817406'],['','5/16" insert nut','HWN0149']],
+ tip:'Stack: ½" HDPE logo, ¾" HDPE, stiffener plate, ¾" HDPE.',notes:[['Hand tools only, NO impact.','bad']]},
+{n:18,t:'Left + Right Front Panels to the platforms',d:['1216'],
+ hw:[['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410'],['','Into the step 14 clip-on nuts','221543']]},
+{sec:'Bench, tabs & under-seat panels'},
+{n:19,t:'Bench Weld Assembly to the Seat Handholds',d:['1239'],
+ hw:[['','⅜" × ¾" PBHCS w/patch','812052'],['','⅜" flat washer','817410'],['','⅜" acorn nut','804002']]},
+{n:20,t:'Bench (seat) to the front and back HDPE panels',d:['1228'],
+ hw:[['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410']],
+ tip:'The book text scan says 1226, but the printed book says Detail 1228. 1228 is the seat-to-panel drawing.'},
+{n:21,t:'Handholds to the front and back panels',d:['1229'],
+ hw:[['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410']]},
+{n:22,t:'Formed Tabs to the front and back panels',d:['1218'],
+ hw:[['','⅜" × 1" PBHCS w/patch','812050'],['','⅜" flat washer','817410'],['','⅜" T-nut','804556'],['','Formed tab','201230']]},
+{n:23,t:'Clip-On Nuts on the tabs, then the Under Seat Panels',d:['1230'],
+ hw:[['','No-slip clip-on nut (hammer onto tab)','221543'],['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410']],
+ notes:[['Step 22 must be done first, because of the finished surface.']]},
+{n:24,t:'Corner Braces to the front/back and under-seat panels',d:['1227'],
+ hw:[['','⅜" × 1" PBHCS w/patch','812050'],['','⅜" flat washer','817410'],['','⅜" T-nut','804556'],['','Corner brace','221506']]},
+{n:25,t:'Under Seat Panel to the Seat Handholds',d:['1229'],
+ hw:[['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410']]},
+{n:26,t:'Under Seat Panel to the platforms',d:['1216'],
+ hw:[['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washer','817410'],['','Into the step 14 clip-on nuts','221543']]},
+{n:'+',t:'HDPE Extenders + Bracket Extenders (not in the step list)',d:['1240'],
+ hw:[['','⅜" × 1" PBHCS w/patch','812050'],['','⅜" × 1½" PBHCS w/patch','812053'],['','⅜" flat washers','817410'],['','⅜" T-nut','804556'],['','Clip-on nuts on the bracket extender','221543']],
+ tip:'Detail 1240 is on sheet 17, but no step calls for it. On the 2\' model the 2\' front/back HDPE extenders go on the panels. Do it with the panels.'},
+{sec:'Deck extension'},
+{n:27,t:'Filler Plate to the Deck Extension',d:['651'],
+ hw:[['','5/16" × 1¼" BHCS','811044'],['','5/16" flat washer (11/16" OD), both sides','817406'],['','5/16" lock washer','817330'],['','5/16" hex nut','804052']],
+ notes:[['Leave a ¼" gap from the filler plate to the HDPE back panels.','bad']]},
+{n:28,t:'Deck Extension Supports to the existing uprights',d:['1217'],
+ hw:[['','Ring half clamp','309913'],['','⅜" × 1¼" PBHCS w/patch + ⅜" flat washer','812051 / 817410'],['','⅜" flat washer (1¼" OD) + ⅜" heavy hex nut','817424 / 804200']]},
+{n:29,t:'Deck Extension onto the supports',d:['1217'],
+ hw:[['','⅜" × 1" PBHCS w/patch','812050'],['','⅜" flat washer (1¼" OD)','817424'],['','⅜" lock washer','817334'],['','⅜" hex nut','804053']]},
+{n:30,t:'Deck Extension to the existing deck',d:['061'],
+ hw:[['','⅜" × ¾" PBHCS w/patch','812052'],['','⅜" lock washer','817334'],['','⅜" flat washer (1¼" OD)','817424'],['','⅜" T-nut','804556']],
+ notes:[['Rock it back and forth again and fix any clearance problems.']]},
+{sec:'Finish'},
+{n:31,t:'Plumb and level everything, tighten all fasteners'},
+{n:32,t:'Deburr hardware and install the surfacing',
+ notes:[['Cut off any bolt sticking out more than 2 threads past the nut, then file it smooth and treat it.'],['Use Loctite on any hardware without a patch.']],
+ tip:'Resilient surfacing in the use zone per ASTM F1292.',figs:[['finished','Sheet 6 – Finished assembly (2\')']]}
+];
+const KEY='rnw-steps-done';
+let done={}; try{done=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+  let h='';
+  for(const s of S){
+    if(s.sec){h+=`<h2>${esc(s.sec)}</h2>`;continue;}
+    const id=String(s.n);
+    const figs=(s.d||[]).map(k=>[D+'d'+k+'.jpg','Detail '+k]).concat((s.figs||[]).map(([f,c])=>[D+f+'.jpg',c]));
+    h+=`<section class="step${done[id]?' done':''}" data-id="${esc(id)}"><div class="top"><button class="num" aria-label="Check off step ${esc(id)}">${done[id]?'✓':esc(id)}</button><div class="what">${esc(s.t)}${s.d?` <span class="pn">· Detail ${s.d.join(' & ')}</span>`:''}</div></div>`;
+    if(s.hw||s.notes||s.tip){h+='<div class="body">';
+      if(s.hw) h+='<ul class="hw">'+s.hw.map(([q,w,p])=>`<li>${q?`<span class="q">${esc(q)}</span> `:''}${esc(w)}${p?` <span class="pn">${esc(p)}</span>`:''}</li>`).join('')+'</ul>';
+      for(const [t,c] of (s.notes||[])) h+=`<div class="note ${c||''}">⚠ ${esc(t)}</div>`;
+      if(s.tip) h+=`<div class="tip">${esc(s.tip)}</div>`;
+      h+='</div>';}
+    if(figs.length) h+=`<div class="figs${figs.length>1?' two':''}">`+figs.map(([src,c])=>`<figure><figcaption>${esc(c)}</figcaption><img src="${src}" alt="${esc(c)}" loading="lazy"></figure>`).join('')+'</div>';
+    h+='</section>';
+  }
+  document.getElementById('list').innerHTML=h;
+  const steps=S.filter(s=>!s.sec), n=steps.filter(s=>done[String(s.n)]).length;
+  document.getElementById('prog').textContent=n+' / '+steps.length;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.num'); if(b){const id=b.closest('.step').dataset.id; done[id]=!done[id]; if(!done[id]) delete done[id]; try{localStorage.setItem(KEY,JSON.stringify(done))}catch(_){} render(); return;}
+  const im=e.target.closest('figure img'); if(im){const z=document.getElementById('zoom'); z.querySelector('img').src=im.src; z.classList.add('on'); z.scrollTo(0,0); return;}
+});
+document.getElementById('zclose').onclick=()=>document.getElementById('zoom').classList.remove('on');
+document.getElementById('reset').onclick=()=>{ if(confirm('Clear all check marks?')){done={}; try{localStorage.removeItem(KEY)}catch(_){} render();} };
+render();
+</script>
+</body></html>
