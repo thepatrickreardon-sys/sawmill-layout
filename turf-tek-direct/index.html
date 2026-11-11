@@ -298,7 +298,7 @@
   <h2 id="tyTitle" class="fade f1">Thank you<span id="tyName"></span></h2>
   <p class="fade f2">Your quote request has been sent to the Turf Tek Direct sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.</p>
   <div class="ty-sum fade f3"><div><b id="tySf">–</b><span>sq ft</span></div><div><b id="tyRolls">–</b><span>rolls</span></div><div><b id="tyAreas">–</b><span>areas</span></div></div>
-  <p class="ty-note fade f3" id="tyMail" style="display:none">Your email app opened with the request filled in. Make sure you tap <b>Send</b> there so it reaches us.</p>
+  <p class="ty-note" id="tyMail" style="display:none">We couldn't send your request automatically. <a id="tyMailBtn" href="#" style="color:#fff;font-weight:700">Tap here to email it to us instead</a> — everything's already filled in.</p>
   <div class="ty-btns fade f4">
     <button class="btn" type="button" id="tyBack">Back to my layout</button>
     <button class="btn alt" type="button" id="tyNew">Start a new job</button>
@@ -314,6 +314,7 @@
 /* ================= SETTINGS (Turf Tek can adjust these) ================= */
 const C = {
   SALES_EMAIL: "",               // where quote requests go, e.g. "sales@yourdomain.com"
+  FORMSUBMIT_ID: "",             // optional: the random ID FormSubmit gives after activation, hides the email address in the page
   QUOTE_ENDPOINT: "",            // optional: website form URL that accepts a JSON POST. If set, requests send directly (no email app).
   ROLL_WIDTH_FT: 15,             // roll width as ordered
   FULL_COVER_FT: 14 + 10/12,     // usable width after trimming (14'10")
@@ -938,26 +939,30 @@ $('#quote').addEventListener('submit', e => {
   }
   const body = buildSummary(T);
   const subj = `Turf quote request — ${c.company || c.name}${c.job ? ' — ' + c.job : ''}`;
-  const mail = () => {
-    const a = document.createElement('a');
-    a.href = `mailto:${C.SALES_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-    document.body.appendChild(a); a.click(); a.remove();
-    showThanks(T, c, true);
-  };
-  if (!C.QUOTE_ENDPOINT) return mail();
-  const btn = e.submitter || $('#quote button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending…';
-  fetch(C.QUOTE_ENDPOINT, {method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({subject:subj, summary:body, contact:c, sqft:Math.round(T.sf), rolls:T.pieces.length, areas:state.areas})})
-    .then(r => { if (!r.ok) throw 0; showThanks(T, c, false); })
-    .catch(() => mail())
-    .finally(() => { btn.disabled = false; btn.innerHTML = 'Send my quote request <span aria-hidden="true">→</span>'; });
+  const mailHref = `mailto:${C.SALES_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  // Show the thank-you screen right away; the request sends quietly in the background.
+  showThanks(T, c, mailHref);
+  const fail = () => $('#tyMail').style.display = '';
+  let url, payload;
+  if (C.QUOTE_ENDPOINT){
+    url = C.QUOTE_ENDPOINT;
+    payload = {subject:subj, summary:body, contact:c, sqft:Math.round(T.sf), rolls:T.pieces.length, areas:state.areas};
+  } else if (C.SALES_EMAIL || C.FORMSUBMIT_ID){
+    url = 'https://formsubmit.co/ajax/' + (C.FORMSUBMIT_ID || C.SALES_EMAIL);
+    payload = {_subject:subj, _template:'box', _captcha:'false', ...(c.email ? {_replyto:c.email} : {}),
+      Name:c.name, Company:c.company || '-', Phone:c.phone || '-', Email:c.email || '-', Job:c.job || '-', 'Quote request':body};
+  } else return fail();
+  fetch(url, {method:'POST', headers:{'Content-Type':'application/json', 'Accept':'application/json'}, body:JSON.stringify(payload)})
+    .then(r => r.ok ? r.json().catch(() => ({})) : Promise.reject())
+    .then(j => { if (j && (j.success === false || j.success === 'false')) fail(); })
+    .catch(fail);
 });
 
-function showThanks(T, c, viaMail){
+function showThanks(T, c, mailHref){
   const ty = $('#thanks');
   $('#tyName').textContent = c.name ? ', ' + c.name.split(/\s+/)[0] : '';
   $('#tySf').textContent = n0(T.sf); $('#tyRolls').textContent = T.pieces.length; $('#tyAreas').textContent = T.areas.length;
-  $('#tyMail').style.display = viaMail ? '' : 'none';
+  $('#tyMail').style.display = 'none'; $('#tyMailBtn').href = mailHref;
   ty.classList.remove('play'); ty.classList.add('show'); void ty.offsetWidth; ty.classList.add('play');
   ty.scrollTop = 0; document.body.style.overflow = 'hidden';
 }
