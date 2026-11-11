@@ -55,7 +55,7 @@
   .area-head input:focus{border-bottom-color:var(--brand);outline:none}
   .x{flex:none;width:36px;height:36px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--mute);border-radius:10px;cursor:pointer;font-size:20px;line-height:1}
   .x:hover{color:var(--red);border-color:#f0c9c4;background:#fff7f6}
-  .seg{display:flex;background:#f0f3ee;border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
+  .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));background:#f0f3ee;border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
   .seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:none;padding:9px 4px;border-radius:9px;font:inherit;font-weight:600;font-size:14.5px;color:var(--mute);cursor:pointer;transition:all .15s}
   .seg button svg{width:20px;height:16px}
   .seg button.on{background:#fff;color:var(--forest2);box-shadow:0 1px 4px rgba(0,0,0,.1)}
@@ -132,6 +132,13 @@
   footer img{width:90px;opacity:.75;display:block;margin:0 auto 6px}
   .shape-hint{display:flex;gap:12px;align-items:center;font-size:13px;color:var(--mute);margin:-2px 0 12px;background:#f6f8f4;border-radius:12px;padding:8px 10px}
   .shape-hint svg{width:64px;flex:none}
+  .pts{display:grid;gap:8px}
+  .pt{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:8px;align-items:center}
+  .pt .pn{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#1b4d1f;color:#fff;font-size:12.5px;font-weight:700}
+  .pt-h span{font-size:12.5px;font-weight:600;color:var(--mute)}
+  .x:disabled{opacity:.35;cursor:default}
+  .add.sm{margin-top:10px;padding:10px;font-size:14.5px;border-width:1.5px}
+  .add.sm span{width:20px;height:20px;font-size:15px}
   /* dock */
   .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(16,38,26,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(0);transition:transform .25s}
   .dock.hide{transform:translateY(110%)}
@@ -192,7 +199,7 @@
 </main>
 
 <div class="dock" id="dock"><div class="dock-in">
-  <div class="dock-stats"><div><b id="dSf">–</b>sq ft</div><div><b id="dRolls">–</b>rolls</div><div><b id="dBase">–</b>yd base</div></div>
+  <div class="dock-stats"><div><b id="dSf">–</b>sq ft</div><div><b id="dRolls">–</b>rolls</div><div><b id="dSeam">–</b>ft seams</div></div>
   <a class="dock-btn" href="#quoteSec">Get a quote →</a>
 </div></div>
 
@@ -205,7 +212,6 @@ const C = {
   HALF_COVER_FT: 7 + 5/12,       // usable width of a half roll (7'5")
   END_ALLOWANCE_FT: 1,           // extra length added to every piece for trimming (6" each end)
   MAX_ROLL_LENGTH_FT: 100,       // longest single piece we cut
-  BASE_DEPTH_IN: 4,              // 3/8" bluestone base depth
   INFILL_LB_PER_SF: 2,           // sand infill
   INFILL_BAG_LB: 50,
   SEAM_TAPE_ROLL_FT: 100,
@@ -218,11 +224,12 @@ const C = {
 
 const $ = s => document.querySelector(s);
 const uid = () => Math.random().toString(36).slice(2, 9);
-function newArea(n){ return {id:uid(), name:'Area '+n, shape:'rect', L:'', W:'', A:'', B:'', c:'', d:'', dir:'auto', halfRolls:true, maxPiece:'', border:'board', boardFt:''}; }
+function newArea(n){ return {id:uid(), name:'Area '+n, shape:'rect', L:'', W:'', r:'', A:'', B:'', c:'', d:'', W1:'', W2:'', pts:[], dir:'auto', halfRolls:true, maxPiece:'', border:'board', boardFt:''}; }
 
 let state;
 try { state = JSON.parse(localStorage.getItem('ttd-calc') || 'null'); } catch(e) { state = null; }
 if (!state || !Array.isArray(state.areas) || !state.areas.length) state = {areas:[newArea(1)], contact:{}};
+state.areas.forEach(a => { if (!Array.isArray(a.pts)) a.pts = []; });
 function save(){ try { localStorage.setItem('ttd-calc', JSON.stringify(state)); } catch(e) {} }
 
 /* ---------- length parsing / formatting ---------- */
@@ -238,24 +245,80 @@ function fmt(ft){
   const t = Math.round(ft * 12), f = Math.floor(t / 12), i = t % 12;
   return i ? `${f}'${i}"` : `${f}'`;
 }
+const fmtIn = ft => { const t = Math.round(ft * 12), f = Math.floor(t / 12), i = t % 12; return i ? `${f}' ${i}"` : `${f}`; };
 const n0 = x => Math.round(x).toLocaleString('en-US');
 const n1 = x => (Math.round(x * 10) / 10).toLocaleString('en-US');
 const widthLabel = half => half ? `7'6"` : `15'`;
 
-/* ---------- geometry ---------- */
+/* ---------- geometry ----------
+   Every shape becomes an outline polygon (feet, x across, y up the page).
+   The roll layout works on any outline, so new shapes only need a polygon here. */
+const nz = x => x >= 0;               // zero allowed
+const pos = x => x > 0;
+function polyArea(P){ let s = 0; P.forEach((p, i) => { const q = P[(i+1) % P.length]; s += p[0]*q[1] - q[0]*p[1]; }); return Math.abs(s) / 2; }
+function polyPerim(P){ let s = 0; P.forEach((p, i) => { const q = P[(i+1) % P.length]; s += Math.hypot(q[0]-p[0], q[1]-p[1]); }); return s; }
+function normalize(P){
+  const mx = Math.min(...P.map(p => p[0])), my = Math.min(...P.map(p => p[1]));
+  P = P.map(p => [p[0]-mx, p[1]-my]);
+  return P.filter((p, i) => { const q = P[(i+1) % P.length]; return Math.hypot(q[0]-p[0], q[1]-p[1]) > 1e-6; });
+}
+function finish(P, extra){
+  P = normalize(P);
+  const g = {poly:P, perim:polyPerim(P), sf:polyArea(P), X:Math.max(...P.map(p => p[0])), Y:Math.max(...P.map(p => p[1]))};
+  return Object.assign(g, extra);
+}
 function geometry(a){
+  const v = k => parseLen(a[k]);
   if (a.shape === 'rect'){
-    const L = parseLen(a.L), W = parseLen(a.W);
-    if (!(L > 0 && W > 0)) return null;
-    return {rects:[{x:0,y:0,w:L,h:W}], poly:[[0,0],[L,0],[L,W],[0,W]], perim:2*(L+W), sf:L*W,
-            desc:`Rectangle ${fmt(L)} × ${fmt(W)}`, L, W};
+    const L = v('L'), W = v('W'), r = String(a.r ?? '').trim() ? v('r') : 0;
+    if (!(pos(L) && pos(W))) return null;
+    if (!nz(r)) return null;
+    if (r * 2 > Math.min(L, W) + 1e-9) return {error:'The corner radius can be at most half the shorter side.'};
+    if (!r) return finish([[0,0],[L,0],[L,W],[0,W]], {desc:`Rectangle ${fmt(L)} × ${fmt(W)}`});
+    const P = [], corners = [[L-r,r,-90],[L-r,W-r,0],[r,W-r,90],[r,r,180]];
+    corners.forEach(([cx, cy, s]) => { for (let k = 0; k <= 12; k++){ const t = (s + 90*k/12) * Math.PI/180; P.push([cx + r*Math.cos(t), cy + r*Math.sin(t)]); } });
+    return finish(P, {sf:L*W - (4 - Math.PI)*r*r, perim:2*(L+W) - 8*r + 2*Math.PI*r, desc:`Rectangle ${fmt(L)} × ${fmt(W)}, ${fmt(r)} rounded corners`});
   }
-  const A = parseLen(a.A), B = parseLen(a.B), c = parseLen(a.c), d = parseLen(a.d);
-  if (!(A > 0 && B > 0 && c > 0 && d > 0)) return null;
-  if (c >= A || d >= B) return {error:'The cut-out has to be smaller than the overall length and width.'};
-  return {rects:[{x:0,y:0,w:A,h:B-d},{x:0,y:B-d,w:A-c,h:d}],
-          poly:[[0,0],[A,0],[A,B-d],[A-c,B-d],[A-c,B],[0,B]], perim:2*(A+B), sf:A*B-c*d,
-          desc:`L-shape ${fmt(A)} × ${fmt(B)} with ${fmt(c)} × ${fmt(d)} cut-out`, L:A, W:B};
+  if (a.shape === 'L'){
+    const A = v('A'), B = v('B'), c = v('c'), d = v('d');
+    if (!(pos(A) && pos(B) && pos(c) && pos(d))) return null;
+    if (c >= A || d >= B) return {error:'The cut-out has to be smaller than the overall length and width.'};
+    return finish([[0,0],[A,0],[A,B-d],[A-c,B-d],[A-c,B],[0,B]], {desc:`L-shape ${fmt(A)} × ${fmt(B)} with ${fmt(c)} × ${fmt(d)} cut-out`});
+  }
+  if (a.shape === 'angle'){
+    const L = v('L'), W1 = v('W1'), W2 = v('W2');
+    if (!(pos(L) && nz(W1) && nz(W2))) return null;
+    if (!(W1 > 0 || W2 > 0)) return {error:'At least one end needs a width.'};
+    return finish([[0,0],[L,0],[L,W2],[0,W1]], {desc:`Angled ${fmt(L)} long, ${fmt(W1)} wide at one end, ${fmt(W2)} at the other`});
+  }
+  if (a.shape === 'oval'){
+    const L = v('L'), W = v('W');
+    if (!(pos(L) && pos(W))) return null;
+    const P = [], N = 96;
+    for (let k = 0; k < N; k++){ const t = 2*Math.PI*k/N; P.push([L/2 + L/2*Math.cos(t), W/2 + W/2*Math.sin(t)]); }
+    const h = ((L-W)/(L+W))**2;
+    return finish(P, {sf:Math.PI*L*W/4, perim:Math.PI*(L+W)/2*(1 + 3*h/(10 + Math.sqrt(4 - 3*h))),
+      desc:Math.abs(L-W) < 1e-6 ? `Circle ${fmt(L)} across` : `Oval ${fmt(L)} × ${fmt(W)}`});
+  }
+  if (a.shape === 'custom'){
+    const pts = (a.pts || []).filter(p => String(p.x ?? '').trim() !== '' || String(p.y ?? '').trim() !== '');
+    const P = pts.map(p => [parseLen(p.x), parseLen(p.y)]);
+    if (P.length < 3 || P.some(p => !(nz(p[0]) && nz(p[1])))) return null;
+    if (polyArea(P) < 1) return {error:'Those corners don\'t make an area yet. Go around the outline in order.'};
+    if (selfCrosses(P)) return {error:'The outline crosses itself. Check that the corners are listed in order around the area.'};
+    return finish(P.map(p => [p[0], -p[1]]), {desc:`Custom outline, ${P.length} corners (${P.map(p => fmt(p[0]) + ' across/' + fmt(p[1]) + ' up').join('; ')})`, custom:true});
+  }
+  return null;
+}
+function selfCrosses(P){
+  const n = P.length, cr = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++){
+    if (Math.abs(i - j) <= 1 || (i === 0 && j === n - 1)) continue;
+    const a = P[i], b = P[(i+1)%n], c = P[j], d = P[(j+1)%n];
+    const d1 = cr(c,d,a), d2 = cr(c,d,b), d3 = cr(a,b,c), d4 = cr(a,b,d);
+    if (((d1 > 1e-9 && d2 < -1e-9) || (d1 < -1e-9 && d2 > 1e-9)) && ((d3 > 1e-9 && d4 < -1e-9) || (d3 < -1e-9 && d4 > 1e-9))) return true;
+  }
+  return false;
 }
 
 function merge(ints){
@@ -267,11 +330,35 @@ function merge(ints){
   }
   return out;
 }
+/* inside spans of the outline along a horizontal line y (axis 1) or vertical line x (axis 0) */
+function scan(P, at, axis){
+  const o = 1 - axis, xs = [];
+  P.forEach((p, i) => {
+    const q = P[(i+1) % P.length];
+    if ((p[axis] <= at && q[axis] > at) || (q[axis] <= at && p[axis] > at)) xs.push(p[o] + (at - p[axis]) * (q[o] - p[o]) / (q[axis] - p[axis]));
+  });
+  xs.sort((m, n) => m - n);
+  const out = [];
+  for (let k = 0; k + 1 < xs.length; k += 2) if (xs[k+1] - xs[k] > 1e-6) out.push([xs[k], xs[k+1]]);
+  return out;
+}
+function intersect(A, B){
+  const out = [];
+  A.forEach(a => B.forEach(b => { const lo = Math.max(a[0], b[0]), hi = Math.min(a[1], b[1]); if (hi - lo > 1e-6) out.push([lo, hi]); }));
+  return out;
+}
+/* turf needed across a strip from y0 to y1: union of the outline's cross-sections inside it */
+function bandSpans(P, y0, y1){
+  const e = 1e-4, ys = [], n = Math.max(2, Math.ceil((y1 - y0) / 0.25));
+  for (let k = 0; k <= n; k++) ys.push(y0 + e + (y1 - y0 - 2*e) * k / n);
+  P.forEach(p => { if (p[1] > y0 + e && p[1] < y1 - e) ys.push(p[1] - e, p[1] + e); });
+  return merge(ys.flatMap(y => scan(P, y, 1)));
+}
 
-/* Rolls always run along x in layout space; swap=true runs them along the width. */
-function layout(rects, swap, opts){
-  const R = swap ? rects.map(r => ({x:r.y, y:r.x, w:r.h, h:r.w})) : rects;
-  const H = Math.max(...R.map(r => r.y + r.h));
+/* Rolls always run along x in layout space; swap=true runs them along y. */
+function layout(poly, swap, opts){
+  const P = swap ? poly.map(p => [p[1], p[0]]) : poly;
+  const H = Math.max(...P.map(p => p[1]));
   const maxLen = Math.min(opts.maxPiece > 0 ? opts.maxPiece : Infinity, C.MAX_ROLL_LENGTH_FT);
   const usable = Math.max(1, maxLen - C.END_ALLOWANCE_FT);
   const lanes = [];
@@ -280,8 +367,7 @@ function layout(rects, swap, opts){
     const half = opts.halfRolls && (H - y) <= C.HALF_COVER_FT + 0.001;
     const cover = half ? C.HALF_COVER_FT : C.FULL_COVER_FT;
     const y1 = Math.min(y + cover, H);
-    const ints = merge(R.filter(r => r.y < y1 - 1e-6 && r.y + r.h > y + 1e-6).map(r => [r.x, r.x + r.w]));
-    const segs = ints.map(([a,b]) => {
+    const segs = bandSpans(P, y, y1).map(([a,b]) => {
       const run = b - a, n = Math.max(1, Math.ceil(run / usable - 1e-9));
       return {a, b, run, n, len: Math.ceil(run / n + C.END_ALLOWANCE_FT - 1e-9)};
     });
@@ -298,15 +384,11 @@ function layout(rects, swap, opts){
       }
       for (let k = 1; k < s.n; k++){
         const x = s.a + k*s.run/s.n;
-        seamH += ln.y1 - ln.y0;
-        hLines.push([x, ln.y0, x, ln.y1]);
+        intersect(scan(P, x, 0), [[ln.y0, ln.y1]]).forEach(([u, w]) => { seamH += w - u; hLines.push([x, u, x, w]); });
       }
     });
     if (i < lanes.length - 1){
-      lanes[i+1].segs.forEach(t => ln.segs.forEach(s => {
-        const a = Math.max(s.a, t.a), b = Math.min(s.b, t.b);
-        if (b - a > 0.01){ seamV += b - a; vLines.push([a, ln.y1, b, ln.y1]); }
-      }));
+      intersect(scan(P, ln.y1 - 1e-4, 1), scan(P, ln.y1 + 1e-4, 1)).forEach(([a, b]) => { seamV += b - a; vLines.push([a, ln.y1, b, ln.y1]); });
     }
   });
   if (swap){
@@ -320,7 +402,7 @@ function solve(a){
   const g = geometry(a);
   if (!g || g.error) return {g};
   const opts = {halfRolls:a.halfRolls, maxPiece:parseLen(a.maxPiece)};
-  const alongL = layout(g.rects, false, opts), alongW = layout(g.rects, true, opts);
+  const alongL = layout(g.poly, false, opts), alongW = layout(g.poly, true, opts);
   let lay;
   if (a.dir === 'length') lay = alongL;
   else if (a.dir === 'width') lay = alongW;
@@ -330,7 +412,7 @@ function solve(a){
       lay = (alongL.seamV + alongL.seamH) <= (alongW.seamV + alongW.seamH) ? alongL : alongW;
     else lay = d < 0 ? alongL : alongW;
   }
-  const runAlong = lay.swap ? g.W : g.L;
+  const runAlong = lay.swap ? g.Y : g.X;
   let board = 0;
   if (a.border === 'board') board = g.perim;
   else if (a.border === 'split') board = Math.min(g.perim, Math.max(0, parseLen(a.boardFt) || 0));
@@ -359,6 +441,9 @@ function drawSVG(g, lay){
     if (t < fs * 0.35) return;
     s += `<text x="${r.x + r.w/2}" y="${r.y + r.h/2}" font-size="${t}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
   });
+  if (g.custom) g.poly.forEach((p, i) => {
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="${fs*0.55}" fill="#1b4d1f"/><text x="${p[0]}" y="${p[1]}" font-size="${fs*0.6}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+  });
   s += `<text x="${W/2}" y="${-pad*0.38}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle">${fmt(W)}</text>`;
   s += `<text x="${-pad*0.38}" y="${H/2}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle" transform="rotate(-90 ${-pad*0.38} ${H/2})">${fmt(H)}</text>`;
   const ay = H + pad*0.55, ax = W/2;
@@ -376,26 +461,53 @@ function field(a, key, label, ph){
 }
 function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
-const ICO_RECT = `<svg viewBox="0 0 20 16"><rect x="1.5" y="1.5" width="17" height="13" rx="1.5" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.6"/></svg>`;
-const ICO_L = `<svg viewBox="0 0 20 16"><path d="M1.5 1.5h17v7.5h-7v5.5h-10z" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const SV = d => `<svg viewBox="0 0 20 16"><path d="${d}" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const SHAPES = [
+  {k:'rect',   name:'Rectangle',     ico:SV('M2 1.5h16a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5z')},
+  {k:'L',      name:'L-shape',       ico:SV('M1.5 1.5h17v7.5h-7v5.5h-10z')},
+  {k:'angle',  name:'Angled',        ico:SV('M1.5 1.5h17v6l-17 7z')},
+  {k:'oval',   name:'Circle / oval', ico:SV('M10 1.5c4.7 0 8.5 2.9 8.5 6.5s-3.8 6.5-8.5 6.5S1.5 11.6 1.5 8 5.3 1.5 10 1.5z')},
+  {k:'custom', name:'Custom',        ico:SV('M2 14.5 1.5 5 8 1.5l10.5 3-2 6-6 .5-2.5 3.5z')}
+];
+const shapeOf = k => SHAPES.find(x => x.k === k) || SHAPES[0];
 let justAdded = null;
+
+function hintBox(svg, text){ return `<div class="shape-hint"><svg viewBox="0 0 70 46">${svg}</svg><span>${text}</span></div>`; }
+function dimsHTML(a){
+  if (a.shape === 'rect') return `<div class="grid">${field(a,'L','Length','e.g. 40')}${field(a,'W','Width','e.g. 25\' 6"')}</div>
+    <div style="margin-top:12px">${field(a,'r','Rounded corners (radius)','Optional — leave blank for square')}</div>`;
+  if (a.shape === 'L') return hintBox(`<path d="M2 2h66v26H44v16H2z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/>`,
+      `Enter the full outside size, then the size of the corner piece that's cut out (red).`)
+    + `<div class="grid">${field(a,'A','Overall length')}${field(a,'B','Overall width')}${field(a,'c','Cut-out length')}${field(a,'d','Cut-out width')}</div>`;
+  if (a.shape === 'angle') return hintBox(`<path d="M2 4h66v14L2 42z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M5 6v34M65 6v10" stroke="#c0392b" stroke-width="1.5" marker-end="none"/>`,
+      `One long straight side, with a different width at each end (red). Use 0 for a point to make a triangle.`)
+    + `<div class="grid">${field(a,'L','Length (straight side)')}<div></div>${field(a,'W1','Width at one end')}${field(a,'W2','Width at other end','0 for a point')}</div>`;
+  if (a.shape === 'oval') return `<div class="grid">${field(a,'L','Length','e.g. 30')}${field(a,'W','Width','Same as length for a circle')}</div>`;
+  /* custom */
+  const pts = a.pts && a.pts.length ? a.pts : [];
+  const rows = pts.map((p, i) => `<div class="pt"><span class="pn">${i+1}</span>
+      <input inputmode="decimal" data-id="${a.id}" data-pt="${i}" data-ax="x" value="${esc(p.x)}" placeholder="Across" aria-label="Corner ${i+1} across">
+      <input inputmode="decimal" data-id="${a.id}" data-pt="${i}" data-ax="y" value="${esc(p.y)}" placeholder="Up" aria-label="Corner ${i+1} up">
+      <button class="x" data-ptdel="${i}" data-id="${a.id}" aria-label="Remove corner"${pts.length <= 3 ? ' disabled' : ''}>×</button></div>`).join('');
+  return hintBox(`<path d="M6 40 4 14 26 4l38 10-6 18-22 2-8 6z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><circle cx="6" cy="40" r="3.5" fill="#c0392b"/><path d="M6 40h22M6 40V20" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="2 2"/>`,
+      `Pick one corner as your start (0, 0). For every corner, going around the area in order, measure how far <b>across</b> and how far <b>up</b> it is from the start.`)
+    + `<div class="pts"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div>
+       <button class="add sm" type="button" data-ptadd="${a.id}"><span>+</span>Add corner</button>`;
+}
+
 function cardHTML(a){
-  const dims = a.shape === 'rect'
-    ? `<div class="grid">${field(a,'L','Length','e.g. 40')}${field(a,'W','Width','e.g. 25\' 6"')}</div>`
-    : `<div class="shape-hint"><svg viewBox="0 0 70 46"><path d="M2 2h66v26H44v16H2z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
-         Enter the full outside size, then the size of the corner piece that's cut out (red).</div>
-       <div class="grid">${field(a,'A','Overall length')}${field(a,'B','Overall width')}${field(a,'c','Cut-out length')}${field(a,'d','Cut-out width')}</div>`;
+  const sh = shapeOf(a.shape);
   return `<div class="card${a.id===justAdded?' new':''}" data-card="${a.id}">
-    <div class="area-head"><div class="area-ico" style="color:#3f8f2f">${a.shape==='rect'?ICO_RECT:ICO_L}</div><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
+    <div class="area-head"><div class="area-ico" style="color:#3f8f2f">${sh.ico}</div><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
       ${state.areas.length > 1 ? `<button class="x" data-del="${a.id}" aria-label="Remove area" title="Remove area">×</button>` : ''}</div>
-    <div class="seg"><button class="${a.shape==='rect'?'on':''}" data-shape="rect" data-id="${a.id}">${ICO_RECT}Rectangle</button><button class="${a.shape==='L'?'on':''}" data-shape="L" data-id="${a.id}">${ICO_L}L-shape</button></div>
-    ${dims}
+    <div class="seg">${SHAPES.map(x => `<button class="${a.shape===x.k?'on':''}" data-shape="${x.k}" data-id="${a.id}">${x.ico}${x.name}</button>`).join('')}</div>
+    ${dimsHTML(a)}
     <div class="opts">
       <div class="grid">
         <div><label>Roll direction</label><select data-id="${a.id}" data-f="dir">
           <option value="auto"${a.dir==='auto'?' selected':''}>Best fit</option>
-          <option value="length"${a.dir==='length'?' selected':''}>Along the length</option>
-          <option value="width"${a.dir==='width'?' selected':''}>Along the width</option></select></div>
+          <option value="length"${a.dir==='length'?' selected':''}>Left to right</option>
+          <option value="width"${a.dir==='width'?' selected':''}>Top to bottom</option></select></div>
         <div><label>Longest piece (head seams)</label><input inputmode="decimal" data-id="${a.id}" data-f="maxPiece" value="${esc(a.maxPiece)}" placeholder="No head seams">
           <div class="hint">Enter a length to cut rolls shorter and add head seams. Max ${C.MAX_ROLL_LENGTH_FT}'.</div></div>
       </div>
@@ -405,7 +517,7 @@ function cardHTML(a){
           <option value="board"${a.border==='board'?' selected':''}>2x4 (stapled)</option>
           <option value="edge"${a.border==='edge'?' selected':''}>Buried edge (nailed)</option>
           <option value="split"${a.border==='split'?' selected':''}>Some of each</option></select></div>
-        <div style="${a.border==='split'?'':'display:none'}" data-splitwrap="${a.id}">${field(a,'boardFt','Feet on 2x4','Rest is buried edge').replace('<div>','<div>')}</div>
+        <div style="${a.border==='split'?'':'display:none'}" data-splitwrap="${a.id}">${field(a,'boardFt','Feet on 2x4','Rest is buried edge')}</div>
       </div>
     </div>
     <div data-out="${a.id}"></div>
@@ -421,10 +533,13 @@ function renderAreas(){
 function areaOut(a, r){
   const el = document.querySelector(`[data-out="${a.id}"]`);
   if (!el) return;
-  ['L','W','A','B','c','d','maxPiece','boardFt'].forEach(k => {
+  ['L','W','A','B','c','d','maxPiece','boardFt','r','W1','W2'].forEach(k => {
     const inp = document.querySelector(`input[data-id="${a.id}"][data-f="${k}"]`);
-    if (inp) inp.classList.toggle('bad', inp.value.trim() !== '' && !(parseLen(inp.value) > 0));
+    const zeroOk = k === 'W1' || k === 'W2' || k === 'r';
+    if (inp) inp.classList.toggle('bad', inp.value.trim() !== '' && !(zeroOk ? parseLen(inp.value) >= 0 : parseLen(inp.value) > 0));
   });
+  document.querySelectorAll(`input[data-id="${a.id}"][data-pt]`).forEach(inp => inp.classList.toggle('bad', inp.value.trim() !== '' && !(parseLen(inp.value) >= 0)));
+  if (!r.g && a.shape === 'custom'){ el.innerHTML = `<div class="empty">Enter at least 3 corners to see your roll layout.</div>`; return; }
   if (!r.g){ el.innerHTML = `<div class="empty"><svg width="40" height="30" viewBox="0 0 40 30"><rect x="2" y="2" width="36" height="26" rx="3" fill="none" stroke="#86c440" stroke-width="2" stroke-dasharray="4 3"/></svg>Enter the size to see your roll layout.</div>`; return; }
   if (r.g.error){ el.innerHTML = `<p class="err">${r.g.error}</p>`; return; }
   const {g, lay} = r;
@@ -433,7 +548,7 @@ function areaOut(a, r){
       <div class="legend"><span><i style="border-color:#5fae4f"></i>side seam</span>${lay.hLines.length ? '<span><i style="border-color:#e07b16"></i>head seam</span>' : ''}${lay.pieces.some(p=>p.half) ? '<span><b style="display:inline-block;width:12px;height:12px;background:#a5d38a;border-radius:2px;vertical-align:middle"></b> half roll</span>' : ''}</div></div>
     <div class="tiles"><div><b>${n0(g.sf)}</b><span>sq ft</span></div><div><b>${lay.pieces.length}</b><span>pieces</span></div><div><b>${n0(lay.seamV + lay.seamH)}'</b><span>of seams</span></div></div>
     <details class="cuts"><summary>Cut list for this area</summary><ul class="cutlist">${list}</ul></details>
-    <p class="hint">Rolls run along the ${fmt(r.runAlong)} side. Each piece includes ${fmt(C.END_ALLOWANCE_FT)} extra for trimming.</p>`;
+    <p class="hint">Rolls run ${lay.swap ? 'top to bottom' : 'left to right'} (${fmt(r.runAlong)}). Each piece includes ${fmt(C.END_ALLOWANCE_FT)} extra for trimming.</p>`;
 }
 
 /* ---------- totals ---------- */
@@ -452,7 +567,6 @@ function totals(){
   T.pieces.forEach(p => { const k = (p.half ? 'h' : 'f') + '|' + p.len; (groups[k] = groups[k] || {half:p.half, len:p.len, n:0}).n++; });
   T.groups = Object.values(groups).sort((x, y) => (x.half - y.half) || (y.len - x.len));
   T.seam = T.seamV + T.seamH;
-  T.baseCY = T.sf * (C.BASE_DEPTH_IN / 12) / 27;
   T.infillLb = T.sf * C.INFILL_LB_PER_SF;
   T.bags = Math.ceil(T.infillLb / C.INFILL_BAG_LB);
   T.tapeRolls = T.seam > 0 ? Math.ceil(T.seam / C.SEAM_TAPE_ROLL_FT) : 0;
@@ -473,7 +587,6 @@ function update(){
   }
   const waste = T.ordered > 0 ? (T.ordered - T.sf) / T.ordered * 100 : 0;
   const I = {
-    stone:'<svg width="22" height="22" viewBox="0 0 24 24"><g fill="#8a958c"><circle cx="7" cy="15" r="4"/><circle cx="15" cy="16" r="3.4"/><circle cx="11.5" cy="9" r="3.6"/><circle cx="18.5" cy="10" r="2.6"/></g></svg>',
     sand:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 19c3-8 6-11 9-11s6 3 9 11z" fill="#d9b86c"/></svg>',
     tape:'<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#3f8f2f" stroke-width="4"/></svg>',
     glue:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 8h10v12H7z" fill="#3f8f2f"/><path d="M10 3h4v5h-4z" fill="#86c440"/></svg>',
@@ -485,7 +598,6 @@ function update(){
     half:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="15" height="7" rx="1.5" fill="#a5d38a"/><ellipse cx="18" cy="12.5" rx="2" ry="3.5" fill="#86c440"/></svg>'
   };
   const rows = [];
-  rows.push([I.stone, '3/8" bluestone base', `${C.BASE_DEPTH_IN}" deep · ${n1(T.baseCY)} cu yd exact`, `${Math.ceil(T.baseCY)} cu yd`]);
   rows.push([I.sand, 'Sand infill', `${C.INFILL_LB_PER_SF} lb/sq ft · ${n0(T.infillLb)} lb (${n1(T.infillLb/2000)} tons)`, `${n0(T.bags)} bags`]);
   if (T.seam > 0){
     rows.push([I.tape, 'Seam tape', `${n0(T.seam)} linear ft of seams · ${C.SEAM_TAPE_ROLL_FT}' rolls`, `${T.tapeRolls} roll${T.tapeRolls>1?'s':''}`]);
@@ -505,7 +617,8 @@ function update(){
     <ul class="rlist">${T.groups.map(g => li([g.half ? I.half : I.roll, `${widthLabel(g.half)} wide × ${g.len}' long`, `${g.half ? 'Half roll · ' : ''}${n0(g.n * g.len * (g.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT))} sq ft`, `${g.n} ×`, 1])).join('')}</ul>
     <div class="note">${n0(T.ordered)} sq ft of turf to order · Side seams ${n0(T.seamV)}' · Head seams ${n0(T.seamH)}'. Seams are glued and taped, never stapled or nailed.</div>
     <h3>Materials</h3>
-    <ul class="rlist">${rows.map(li).join('')}</ul>`;
+    <ul class="rlist">${rows.map(li).join('')}</ul>
+    <div class="note">Stone base is not included — supply and prep it on your end.</div>`;
   dock(T);
   $('#summary').textContent = buildSummary(T);
   save();
@@ -534,11 +647,11 @@ function buildSummary(T){
   L.push(`Turf area: ${n0(T.sf)} sq ft | Turf ordered: ${n0(T.ordered)} sq ft`);
   L.push(`Seams: ${n0(T.seamV)}' side + ${n0(T.seamH)}' head = ${n0(T.seam)}'`);
   L.push('', 'MATERIALS');
-  L.push(`- 3/8" bluestone base @ ${C.BASE_DEPTH_IN}": ${Math.ceil(T.baseCY)} cu yd (${n1(T.baseCY)} exact)`);
   L.push(`- Sand infill @ ${C.INFILL_LB_PER_SF} lb/sf: ${n0(T.infillLb)} lb = ${T.bags} x ${C.INFILL_BAG_LB} lb bags`);
   if (T.seam > 0) L.push(`- Seam tape: ${n0(T.seam)} lf = ${T.tapeRolls} roll(s)`, `- Seam glue: ${T.glue} gal`);
   if (T.board > 0) L.push(`- 2x4 nailer: ${n0(T.board)} lf (${T.boards} x ${C.BOARD_LENGTH_FT}'), staples: ${n0(T.staples)}`);
   if (T.edge > 0) L.push(`- Buried edge: ${n0(T.edge)} lf, nails: ${n0(T.nails)}`);
+  L.push('(Stone base by contractor — not included)');
   if (c.notes) L.push('', 'NOTES', c.notes);
   return L.join('\n');
 }
@@ -547,7 +660,7 @@ function showMsg(t, warn){ const m = $('#qmsg'); m.textContent = t; m.classList.
 function dock(T){
   $('#dSf').textContent = T ? n0(T.sf) : '–';
   $('#dRolls').textContent = T ? T.pieces.length : '–';
-  $('#dBase').textContent = T ? Math.ceil(T.baseCY) : '–';
+  $('#dSeam').textContent = T ? n0(T.seam) : '–';
 }
 
 $('#quote').addEventListener('submit', e => {
@@ -586,7 +699,9 @@ $('#copyBtn').addEventListener('click', async () => {
 /* ---------- events ---------- */
 const areaById = id => state.areas.find(a => a.id === id);
 $('#areas').addEventListener('input', e => {
-  const t = e.target, a = areaById(t.dataset.id); if (!a || !t.dataset.f) return;
+  const t = e.target, a = areaById(t.dataset.id); if (!a) return;
+  if (t.dataset.pt != null){ a.pts[+t.dataset.pt][t.dataset.ax] = t.value; update(); return; }
+  if (!t.dataset.f) return;
   a[t.dataset.f] = t.type === 'checkbox' ? t.checked : t.value;
   if (t.dataset.f === 'border'){
     const w = document.querySelector(`[data-splitwrap="${a.id}"]`); if (w) w.style.display = a.border === 'split' ? '' : 'none';
@@ -596,7 +711,17 @@ $('#areas').addEventListener('input', e => {
 $('#areas').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') e.target.dispatchEvent(new Event('input', {bubbles:true})); });
 $('#areas').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.shape){ const a = areaById(b.dataset.id); a.shape = b.dataset.shape; renderAreas(); }
+  if (b.dataset.shape){
+    const a = areaById(b.dataset.id);
+    if (b.dataset.shape === 'custom' && !(a.pts && a.pts.some(p => String(p.x ?? '').trim() || String(p.y ?? '').trim()))){
+      const g = geometry(a);   // start the custom outline from the shape already entered
+      a.pts = g && g.poly && g.poly.length <= 12 ? g.poly.map(p => ({x:fmtIn(p[0]), y:fmtIn(g.Y - p[1])})) : [{x:'0',y:'0'},{x:'',y:''},{x:'',y:''},{x:'',y:''}];
+    }
+    a.shape = b.dataset.shape; renderAreas();
+  }
+  if (b.dataset.ptadd){ const a = areaById(b.dataset.ptadd); a.pts.push({x:'',y:''}); renderAreas();
+    const ins = document.querySelectorAll(`input[data-id="${a.id}"][data-pt="${a.pts.length-1}"]`); if (ins[0]) ins[0].focus(); }
+  if (b.dataset.ptdel != null && !b.disabled){ const a = areaById(b.dataset.id); a.pts.splice(+b.dataset.ptdel, 1); renderAreas(); }
   if (b.dataset.del){ state.areas = state.areas.filter(a => a.id !== b.dataset.del); renderAreas(); }
 });
 $('#addArea').addEventListener('click', () => {
