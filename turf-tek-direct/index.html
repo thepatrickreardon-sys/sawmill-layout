@@ -159,6 +159,41 @@
   .dock-stats b{display:block;color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:22px}
   .dock-stats div:first-child b{color:var(--sun)}
   .dock-btn{flex:none;background:var(--brand);color:var(--forest);text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px;font-size:15.5px}
+  /* thank-you screen */
+  .ty{position:fixed;inset:0;z-index:50;display:none;overflow:auto;color:#fff;text-align:center;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
+               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%)}
+  .ty.show{display:block;animation:tyIn .45s ease-out}
+  @keyframes tyIn{from{opacity:0}to{opacity:1}}
+  .ty-in{min-height:100%;max-width:520px;margin:0 auto;padding:48px 22px calc(36px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ty svg.mark{width:min(230px,62vw);height:auto;overflow:visible;margin-bottom:8px}
+  .ty .sun{transform-origin:100px 110px;transform:scale(0);opacity:0}
+  .ty .blade{transform:scale(1,0);opacity:0}
+  .ty .ground{stroke-dasharray:160;stroke-dashoffset:160}
+  .ty.play .sun{animation:sunUp .7s cubic-bezier(.2,.9,.3,1.25) .15s forwards}
+  .ty.play .ground{animation:draw .6s ease-out .55s forwards}
+  .ty.play .b1{animation:grow 1s cubic-bezier(.25,.8,.3,1) .95s forwards}
+  .ty.play .b2{animation:grow 1.15s cubic-bezier(.25,.8,.3,1) 1.15s forwards}
+  .ty.play .b3{animation:grow .9s cubic-bezier(.25,.8,.3,1) 1.35s forwards}
+  .ty.play .sway{animation:sway 4s ease-in-out 2.6s infinite}
+  @keyframes sunUp{to{transform:scale(1);opacity:1}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes grow{0%{transform:scale(.6,0);opacity:1}70%{transform:scale(1.02,1.04);opacity:1}100%{transform:scale(1,1);opacity:1}}
+  @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.6deg)}}
+  .ty h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 0}
+  .ty p{color:rgba(255,255,255,.8);font-size:16px;margin:12px 0 0}
+  .ty .fade{opacity:0;transform:translateY(8px)}
+  .ty.play .fade{animation:up .5s ease-out forwards}
+  .ty.play .f1{animation-delay:1.9s}.ty.play .f2{animation-delay:2.05s}.ty.play .f3{animation-delay:2.2s}.ty.play .f4{animation-delay:2.35s}
+  @keyframes up{to{opacity:1;transform:none}}
+  .ty-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:22px}
+  .ty-sum div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px}
+  .ty-sum b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:26px;line-height:1.05;color:var(--sun)}
+  .ty-sum span{font-size:12px;color:rgba(255,255,255,.7)}
+  .ty-note{font-size:13.5px!important;background:rgba(226,231,115,.12);border-radius:10px;padding:9px 12px;color:#f0f3c0!important}
+  .ty-btns{display:grid;gap:10px;width:100%;margin-top:24px}
+  .ty-btns .btn.alt{margin:0;background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+  @media (prefers-reduced-motion:reduce){.ty *{animation-duration:.01s!important;animation-delay:0s!important}}
   @media (min-width:700px){.hero{padding:40px 18px 44px}.hero h1{font-size:50px}}
   @media (max-width:400px){.tiles b{font-size:20px}.tiles.dark b{font-size:23px}.hero h1{font-size:34px}}
 </style>
@@ -210,6 +245,27 @@
   <footer>Quantities are estimates for quoting only. Turf Tek Direct will confirm the final material list with you.</footer>
 </main>
 
+<div class="ty" id="thanks" role="dialog" aria-modal="true" aria-labelledby="tyTitle"><div class="ty-in">
+  <svg class="mark" viewBox="40 -12 160 170" aria-hidden="true">
+    <defs><clipPath id="tyClip"><rect x="0" y="-40" width="240" height="179"/></clipPath></defs>
+    <circle class="sun" cx="100" cy="110" r="52" fill="#e2e773" clip-path="url(#tyClip)"/>
+    <g class="sway" style="transform-origin:95px 139px">
+      <path class="blade b1" style="transform-origin:77px 139px" d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
+      <path class="blade b2" style="transform-origin:91px 139px" d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
+      <path class="blade b3" style="transform-origin:108px 139px" d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
+    </g>
+    <line class="ground" x1="20" y1="146" x2="180" y2="146" stroke="#86c440" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <h2 id="tyTitle" class="fade f1">Thank you<span id="tyName"></span></h2>
+  <p class="fade f2">Your quote request has been sent to the Turf Tek Direct sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.</p>
+  <div class="ty-sum fade f3"><div><b id="tySf">–</b><span>sq ft</span></div><div><b id="tyRolls">–</b><span>rolls</span></div><div><b id="tyAreas">–</b><span>areas</span></div></div>
+  <p class="ty-note fade f3" id="tyMail" style="display:none">Your email app opened with the request filled in. Make sure you tap <b>Send</b> there so it reaches us.</p>
+  <div class="ty-btns fade f4">
+    <button class="btn" type="button" id="tyBack">Back to my layout</button>
+    <button class="btn alt" type="button" id="tyNew">Start a new job</button>
+  </div>
+</div></div>
+
 <div class="dock" id="dock"><div class="dock-in">
   <div class="dock-stats"><div><b id="dSf">–</b>sq ft</div><div><b id="dRolls">–</b>rolls</div><div><b id="dSeam">–</b>ft seams</div></div>
   <a class="dock-btn" href="#quoteSec">Get a quote →</a>
@@ -219,6 +275,7 @@
 /* ================= SETTINGS (Turf Tek can adjust these) ================= */
 const C = {
   SALES_EMAIL: "",               // where quote requests go, e.g. "sales@yourdomain.com"
+  QUOTE_ENDPOINT: "",            // optional: website form URL that accepts a JSON POST. If set, requests send directly (no email app).
   ROLL_WIDTH_FT: 15,             // roll width as ordered
   FULL_COVER_FT: 14 + 10/12,     // usable width after trimming (14'10")
   HALF_COVER_FT: 7 + 5/12,       // usable width of a half roll (7'5")
@@ -842,11 +899,32 @@ $('#quote').addEventListener('submit', e => {
   }
   const body = buildSummary(T);
   const subj = `Turf quote request — ${c.company || c.name}${c.job ? ' — ' + c.job : ''}`;
-  const a = document.createElement('a');
-  a.href = `mailto:${C.SALES_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-  document.body.appendChild(a); a.click(); a.remove();
-  showMsg(`Your email app should open with the request filled in. Just hit send.${C.SALES_EMAIL ? ' If it doesn\'t open, copy the summary and email it to ' + C.SALES_EMAIL + '.' : ' If it doesn\'t open, use Copy summary and email it to us.'}`);
+  const mail = () => {
+    const a = document.createElement('a');
+    a.href = `mailto:${C.SALES_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    showThanks(T, c, true);
+  };
+  if (!C.QUOTE_ENDPOINT) return mail();
+  const btn = e.submitter || $('#quote button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending…';
+  fetch(C.QUOTE_ENDPOINT, {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({subject:subj, summary:body, contact:c, sqft:Math.round(T.sf), rolls:T.pieces.length, areas:state.areas})})
+    .then(r => { if (!r.ok) throw 0; showThanks(T, c, false); })
+    .catch(() => mail())
+    .finally(() => { btn.disabled = false; btn.innerHTML = 'Send my quote request <span aria-hidden="true">→</span>'; });
 });
+
+function showThanks(T, c, viaMail){
+  const ty = $('#thanks');
+  $('#tyName').textContent = c.name ? ', ' + c.name.split(/\s+/)[0] : '';
+  $('#tySf').textContent = n0(T.sf); $('#tyRolls').textContent = T.pieces.length; $('#tyAreas').textContent = T.areas.length;
+  $('#tyMail').style.display = viaMail ? '' : 'none';
+  ty.classList.remove('play'); ty.classList.add('show'); void ty.offsetWidth; ty.classList.add('play');
+  ty.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function hideThanks(){ $('#thanks').classList.remove('show', 'play'); document.body.style.overflow = ''; }
+$('#tyBack').addEventListener('click', hideThanks);
+$('#tyNew').addEventListener('click', () => { hideThanks(); state.areas = [newArea(1)]; ['product','notes','job'].forEach(k => $('#q_' + k).value = ''); state.contact = contact(); renderAreas(); window.scrollTo({top:0}); });
 
 $('#copyBtn').addEventListener('click', async () => {
   const txt = $('#summary').textContent;
