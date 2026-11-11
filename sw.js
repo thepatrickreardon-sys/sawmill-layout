@@ -1,4 +1,4 @@
-const V='sawmill-v13';
+const V='sawmill-v14';
 const CORE=['./','index.html','docs-text.json','hardware.json','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png','icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
@@ -13,7 +13,7 @@ self.addEventListener('fetch',e=>{
   const u=new URL(r.url);
   if(u.origin===location.origin && (u.pathname.endsWith('/')||u.pathname.endsWith('.html')||u.pathname.endsWith('.json'))){
     // network first for app + data so updates show up, cache when offline
-    e.respondWith(fetch(r).then(res=>{ if(res.ok){const cp=res.clone(); caches.open(V).then(c=>c.put(r,cp));} return res; }).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match('index.html'))));
+    e.respondWith(fetch(r,{cache:'no-cache'}).then(res=>{ if(res.ok){const cp=res.clone(); caches.open(V).then(c=>c.put(r,cp));} return res; }).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match('index.html'))));
     return;
   }
   // cache first for sheets, icons, fonts
