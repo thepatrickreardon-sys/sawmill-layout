@@ -159,6 +159,23 @@
   .dock-stats b{display:block;color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:22px}
   .dock-stats div:first-child b{color:var(--sun)}
   .dock-btn{flex:none;background:var(--brand);color:var(--forest);text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px;font-size:15.5px}
+  /* intro splash */
+  .intro{position:fixed;inset:0;z-index:60;display:grid;place-items:center;cursor:pointer;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
+               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%);
+    transition:transform .85s cubic-bezier(.65,0,.25,1)}
+  .intro.out{transform:translateY(-100%)}
+  .intro:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+  .intro svg{width:min(460px,92vw);height:auto;overflow:visible}
+  .intro .i-sun{transform-origin:480px 216px;transform:scale(0);opacity:0;animation:sunUp .75s cubic-bezier(.2,.9,.3,1.25) .2s forwards}
+  .intro .i-g{stroke-dasharray:1 1;stroke-dashoffset:1}
+  .intro .i-g1{animation:grow 1.4s cubic-bezier(.3,0,.15,1) .75s forwards}
+  .intro .i-g2{animation:grow 1.7s cubic-bezier(.3,0,.15,1) .95s forwards}
+  .intro .i-g3{animation:grow 1.3s cubic-bezier(.3,0,.15,1) 1.2s forwards}
+  .intro .i-logo{opacity:0;animation:fadeIn .8s ease-out 2.6s forwards}
+  @keyframes fadeIn{to{opacity:1}}
+  .intro .skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:12.5px;color:rgba(255,255,255,.45)}
+  @media (prefers-reduced-motion:reduce){.intro{display:none}}
   /* thank-you screen */
   .ty{position:fixed;inset:0;z-index:50;display:none;overflow:auto;color:#fff;text-align:center;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
@@ -200,6 +217,24 @@
 </style>
 </head>
 <body>
+<div class="intro" id="intro" aria-hidden="true">
+  <svg viewBox="0 0 900 320">
+    <defs>
+      <clipPath id="inClip"><rect x="0" y="0" width="900" height="272.5"/></clipPath>
+      <mask id="inMask" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="320">
+        <g fill="none" stroke="#fff" stroke-linecap="round">
+          <path class="i-g i-g1" pathLength="1" stroke-width="26" d="M437.6,276 L437.6,270.7 C436.7,187.7 449.8,116.1 500,61.1 L512,48"/>
+          <path class="i-g i-g2" pathLength="1" stroke-width="30" d="M463.4,276 L463.4,270.7 C470.6,159.5 532.8,61.5 631.9,1.2 L648,-9"/>
+          <path class="i-g i-g3" pathLength="1" stroke-width="26" d="M495.5,276 L495.5,270.7 C498.8,206.6 525.2,155.7 572,119.1 L584,109"/>
+        </g>
+      </mask>
+    </defs>
+    <circle class="i-sun" cx="480" cy="216" r="98" fill="#e2e773" clip-path="url(#inClip)"/>
+    <g mask="url(#inMask)"><image href="logo.png" width="900" height="320" clip-path="url(#inClip)"/></g>
+    <image class="i-logo" href="logo.png" width="900" height="320"/>
+  </svg>
+  <div class="skip">Tap to skip</div>
+</div>
 <header class="hero">
   <div class="hero-in">
     <img class="logo" src="logo.png" alt="Turf Tek Direct">
@@ -1005,6 +1040,19 @@ if ('IntersectionObserver' in window){
 }
 
 renderAreas();
+
+/* intro: plays once per visit */
+(function(){
+  const el = $('#intro');
+  let seen = false; try { seen = sessionStorage.getItem('ttd-intro') === '1'; sessionStorage.setItem('ttd-intro', '1'); } catch(e) {}
+  if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches){ el.remove(); return; }
+  document.body.style.overflow = 'hidden';
+  let done = false;
+  const leave = () => { if (done) return; done = true; el.classList.add('out'); document.body.style.overflow = '';
+    setTimeout(() => el.remove(), 900); };
+  setTimeout(leave, 4300);
+  el.addEventListener('click', leave);
+})();
 </script>
 </body>
 </html>
