@@ -137,6 +137,18 @@
   .pt .pn{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#1b4d1f;color:#fff;font-size:12.5px;font-weight:700}
   .pt-h span{font-size:12.5px;font-weight:600;color:var(--mute)}
   .x:disabled{opacity:.35;cursor:default}
+  .imp{border:1.5px solid #cfe5b8;background:#f7fbf2;border-radius:14px;padding:12px;margin-bottom:12px}
+  .imp-h b{display:block;color:var(--forest2);font-size:15px}
+  .imp-h span{font-size:13px;color:var(--mute)}
+  .imp-b{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .btn.sm{padding:10px;font-size:14.5px;border-radius:11px}
+  .paste{margin-top:10px;display:grid;gap:8px}
+  .imp-ok{margin-top:10px;font-size:13.5px;color:var(--forest2);font-weight:600;display:grid;gap:6px}
+  .imp-ok span{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--mute)}
+  .imp-ok select{width:auto;padding:6px 30px 6px 10px;font-size:14px}
+  .imp-ok small{font-weight:400;color:#8a4b06}
+  .imp-err:empty{display:none}
+  .imp-err{margin-top:10px;color:var(--red);font-size:13.5px}
   .add.sm{margin-top:10px;padding:10px;font-size:14.5px;border-width:1.5px}
   .add.sm span{width:20px;height:20px;font-size:15px}
   /* dock */
@@ -306,7 +318,7 @@ function geometry(a){
     if (P.length < 3 || P.some(p => !(nz(p[0]) && nz(p[1])))) return null;
     if (polyArea(P) < 1) return {error:'Those corners don\'t make an area yet. Go around the outline in order.'};
     if (selfCrosses(P)) return {error:'The outline crosses itself. Check that the corners are listed in order around the area.'};
-    return finish(P.map(p => [p[0], -p[1]]), {desc:`Custom outline, ${P.length} corners (${P.map(p => fmt(p[0]) + ' across/' + fmt(p[1]) + ' up').join('; ')})`, custom:true});
+    return finish(P.map(p => [p[0], -p[1]]), {desc:P.length > 12 ? `Plotted outline, ${P.length} points${a.imp ? ' (from ' + a.imp.name + ')' : ''}` : `Plotted outline, ${P.length} corners (${P.map(p => fmt(p[0]) + ' across/' + fmt(p[1]) + ' up').join('; ')})`, custom:true});
   }
   return null;
 }
@@ -441,7 +453,7 @@ function drawSVG(g, lay){
     if (t < fs * 0.35) return;
     s += `<text x="${r.x + r.w/2}" y="${r.y + r.h/2}" font-size="${t}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
   });
-  if (g.custom) g.poly.forEach((p, i) => {
+  if (g.custom && g.poly.length <= 12) g.poly.forEach((p, i) => {
     s += `<circle cx="${p[0]}" cy="${p[1]}" r="${fs*0.55}" fill="#1b4d1f"/><text x="${p[0]}" y="${p[1]}" font-size="${fs*0.6}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
   });
   s += `<text x="${W/2}" y="${-pad*0.38}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle">${fmt(W)}</text>`;
@@ -453,6 +465,143 @@ function drawSVG(g, lay){
     s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run top to bottom ↕</text>`;
   }
   return s + '</svg>';
+}
+
+/* ---------- point import (Moasure CSV / DXF, or any X,Y list) ---------- */
+const UNIT_FT = {ft:1, in:1/12, m:3.28084, cm:0.0328084, mm:0.00328084};
+function num(v){
+  v = String(v ?? '').trim().replace(/^"|"$/g, '');
+  if (/^-?\d+,\d+$/.test(v)) v = v.replace(',', '.');           // 12,5 (European decimals)
+  return /^-?\d*\.?\d+(e-?\d+)?$/i.test(v) ? parseFloat(v) : NaN;
+}
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return {error:'That file is empty.'};
+  const delim = [',', ';', '\t'].map(d => [d, lines[0].split(d).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const split = l => l.split(delim === ',' ? /,(?=(?:[^"]*"[^"]*")*[^"]*$)/ : delim).map(c => c.trim().replace(/^"|"$/g, ''));
+  let rows = lines.map(split), head = null, unit = null;
+  if (rows[0].some(c => c && isNaN(num(c)))){ head = rows[0].map(c => c.toLowerCase()); rows = rows.slice(1); }
+  let xi = -1, yi = -1, ti = -1, li = -1;
+  if (head){
+    xi = head.findIndex(h => /^(x|east|easting)\b|\bx\b|x\s*\(/.test(h));
+    yi = head.findIndex(h => /^(y|north|northing)\b|\by\b|y\s*\(/.test(h));
+    ti = head.findIndex(h => /point\s*type/.test(h));
+    li = head.findIndex(h => /layer\s*(number|no|#)/.test(h));
+    const hx = (xi >= 0 ? head[xi] : head.join(' '));
+    if (/\(m\)|metre|meter|\bm\b/.test(hx)) unit = 'm';
+    else if (/\(mm\)/.test(hx)) unit = 'mm';
+    else if (/\(cm\)/.test(hx)) unit = 'cm';
+    else if (/\(in\)|inch/.test(hx)) unit = 'in';
+    else if (/\(ft\)|feet|foot/.test(hx)) unit = 'ft';
+  }
+  if (xi < 0 || yi < 0){
+    const numCols = rows[0] ? rows[0].map((c, i) => isNaN(num(c)) ? -1 : i).filter(i => i >= 0) : [];
+    let cols = numCols;
+    // skip a leading 1,2,3… point-number column
+    if (cols.length >= 3 && rows.slice(0, 5).every((r, k) => k === 0 || num(r[cols[0]]) === num(rows[k-1][cols[0]]) + 1)) cols = cols.slice(1);
+    if (cols.length < 2) return {error:'Couldn\'t find X and Y columns in that file.'};
+    xi = cols[0]; yi = cols[1];
+  }
+  const firstLayer = li >= 0 ? Math.min(...rows.map(r => num(r[li])).filter(n => !isNaN(n))) : null;
+  const P = [];
+  rows.forEach(r => {
+    if (ti >= 0 && /ignore|flight|center|centre/i.test(r[ti] || '')) return;
+    if (li >= 0 && num(r[li]) !== firstLayer) return;
+    const x = num(r[xi]), y = num(r[yi]);
+    if (!isNaN(x) && !isNaN(y)) P.push([x, y]);
+  });
+  return {pts:P, unit};
+}
+function parseDXF(text){
+  const L = text.split(/\r?\n/), pairs = [];
+  for (let i = 0; i + 1 < L.length; i += 2) pairs.push([parseInt(L[i].trim(), 10), L[i+1].trim()]);
+  let unit = null;
+  const iu = pairs.findIndex(p => p[0] === 9 && p[1] === '$INSUNITS');
+  if (iu >= 0 && pairs[iu+1]) unit = {1:'in', 2:'ft', 4:'mm', 5:'cm', 6:'m'}[parseInt(pairs[iu+1][1], 10)] || null;
+  const es = pairs.findIndex(p => p[0] === 2 && p[1] === 'ENTITIES');
+  const ents = []; let cur = null;
+  for (let i = es >= 0 ? es + 1 : 0; i < pairs.length; i++){
+    const [c, v] = pairs[i];
+    if (c === 0){ if (v === 'ENDSEC') break; cur = {type:v, d:[]}; ents.push(cur); }
+    else if (cur) cur.d.push([c, v]);
+  }
+  const f = (e, c) => { const p = e.d.find(q => q[0] === c); return p ? parseFloat(p[1]) : 0; };
+  const arcPts = (cx, cy, r, a0, a1) => { if (a1 < a0) a1 += 360; const n = Math.max(2, Math.ceil((a1 - a0) / 10)), o = [];
+    for (let k = 0; k <= n; k++){ const t = (a0 + (a1 - a0) * k / n) * Math.PI / 180; o.push([cx + r*Math.cos(t), cy + r*Math.sin(t)]); } return o; };
+  const bulge = (p, q, b) => {               // arc between two polyline vertices
+    if (!b) return [];
+    const th = 4 * Math.atan(b), dx = q[0]-p[0], dy = q[1]-p[1], ch = Math.hypot(dx, dy), r = ch / (2*Math.sin(th/2));
+    const mx = (p[0]+q[0])/2, my = (p[1]+q[1])/2, h = r*Math.cos(th/2), cx = mx - h*dy/ch, cy = my + h*dx/ch;
+    const a0 = Math.atan2(p[1]-cy, p[0]-cx), n = Math.max(2, Math.ceil(Math.abs(th) / (Math.PI/18))), o = [];
+    for (let k = 1; k < n; k++){ const t = a0 + th*k/n; o.push([cx + Math.abs(r)*Math.cos(t), cy + Math.abs(r)*Math.sin(t)]); }
+    return o;
+  };
+  const polys = [], segs = [], points = [];
+  for (let i = 0; i < ents.length; i++){
+    const e = ents[i];
+    if (e.type === 'LWPOLYLINE'){
+      const V = []; let v = null;
+      e.d.forEach(([c, val]) => { if (c === 10){ v = [parseFloat(val), 0, 0]; V.push(v); } else if (c === 20 && v) v[1] = parseFloat(val); else if (c === 42 && v) v[2] = parseFloat(val); });
+      const closed = (f(e, 70) & 1) === 1, P = [];
+      V.forEach((p, k) => { const q = V[k+1] || (closed ? V[0] : null); P.push([p[0], p[1]]); if (q) P.push(...bulge(p, q, p[2])); });
+      if (closed) polys.push(P); else segs.push(P);
+    } else if (e.type === 'POLYLINE'){
+      const closed = (f(e, 70) & 1) === 1, V = [];
+      while (ents[i+1] && ents[i+1].type === 'VERTEX'){ i++; V.push([f(ents[i], 10), f(ents[i], 20), f(ents[i], 42)]); }
+      const P = [];
+      V.forEach((p, k) => { const q = V[k+1] || (closed ? V[0] : null); P.push([p[0], p[1]]); if (q) P.push(...bulge(p, q, p[2])); });
+      if (closed) polys.push(P); else segs.push(P);
+    } else if (e.type === 'LINE') segs.push([[f(e, 10), f(e, 20)], [f(e, 11), f(e, 21)]]);
+    else if (e.type === 'ARC') segs.push(arcPts(f(e, 10), f(e, 20), f(e, 40), f(e, 50), f(e, 51)));
+    else if (e.type === 'CIRCLE'){ const P = arcPts(f(e, 10), f(e, 20), f(e, 40), 0, 360); P.pop(); polys.push(P); }
+    else if (e.type === 'POINT') points.push([f(e, 10), f(e, 20)]);
+  }
+  // join loose lines/arcs end to end into outlines
+  const tol = 0.05, same = (a, b) => Math.hypot(a[0]-b[0], a[1]-b[1]) < tol;
+  const left = segs.slice();
+  while (left.length){
+    let ch = left.shift().slice(), grown = true;
+    while (grown){
+      grown = false;
+      for (let k = 0; k < left.length; k++){
+        const s2 = left[k], end = ch[ch.length-1];
+        if (same(end, s2[0])){ ch.push(...s2.slice(1)); }
+        else if (same(end, s2[s2.length-1])){ ch.push(...s2.slice(0, -1).reverse()); }
+        else if (same(ch[0], s2[s2.length-1])){ ch.unshift(...s2.slice(0, -1)); }
+        else if (same(ch[0], s2[0])){ ch.unshift(...s2.slice(1).reverse()); }
+        else continue;
+        left.splice(k, 1); grown = true; break;
+      }
+    }
+    if (ch.length >= 3) polys.push(ch);
+  }
+  if (polys.length){
+    const best = polys.sort((a, b) => polyArea(b) - polyArea(a))[0];
+    return {pts:best, unit, note: polys.length > 1 ? `Used the largest outline in the drawing (${polys.length} found).` : ''};
+  }
+  if (points.length >= 3) return {pts:points, unit};
+  return {error:'Couldn\'t find an outline in that DXF. Try exporting a 2D plan, or use CSV.'};
+}
+function cleanPts(P){
+  P = P.filter((p, i) => i === 0 || Math.hypot(p[0]-P[i-1][0], p[1]-P[i-1][1]) > 1e-6);
+  if (P.length > 2 && Math.hypot(P[0][0]-P[P.length-1][0], P[0][1]-P[P.length-1][1]) < 1e-6) P.pop();
+  return P;
+}
+function applyImport(a){
+  const im = a.imp; if (!im) return;
+  const k = UNIT_FT[im.unit] || 1;
+  let P = cleanPts(im.raw.map(p => [p[0]*k, p[1]*k]));
+  const mx = Math.min(...P.map(p => p[0])), my = Math.min(...P.map(p => p[1]));
+  a.pts = P.map(p => ({x:fmtIn(p[0]-mx), y:fmtIn(p[1]-my)}));
+}
+function importText(a, text, name){
+  const r = /^\s*0\s*\r?\n\s*SECTION/i.test(text) || /\.dxf$/i.test(name || '') ? parseDXF(text) : parseCSV(text);
+  if (r.error) return {error:r.error};
+  const P = cleanPts(r.pts);
+  if (P.length < 3) return {error:'Need at least 3 points to make an outline.'};
+  a.imp = {raw:P, unit:r.unit || 'ft', guessed:!!r.unit, name:name || 'Pasted points', note:r.note || ''};
+  applyImport(a);
+  return {ok:true};
 }
 
 /* ---------- area cards ---------- */
@@ -467,7 +616,7 @@ const SHAPES = [
   {k:'L',      name:'L-shape',       ico:SV('M1.5 1.5h17v7.5h-7v5.5h-10z')},
   {k:'angle',  name:'Angled',        ico:SV('M1.5 1.5h17v6l-17 7z')},
   {k:'oval',   name:'Circle / oval', ico:SV('M10 1.5c4.7 0 8.5 2.9 8.5 6.5s-3.8 6.5-8.5 6.5S1.5 11.6 1.5 8 5.3 1.5 10 1.5z')},
-  {k:'custom', name:'Custom',        ico:SV('M2 14.5 1.5 5 8 1.5l10.5 3-2 6-6 .5-2.5 3.5z')}
+  {k:'custom', name:'Plot points',        ico:SV('M2 14.5 1.5 5 8 1.5l10.5 3-2 6-6 .5-2.5 3.5z')}
 ];
 const shapeOf = k => SHAPES.find(x => x.k === k) || SHAPES[0];
 let justAdded = null;
@@ -489,9 +638,28 @@ function dimsHTML(a){
       <input inputmode="decimal" data-id="${a.id}" data-pt="${i}" data-ax="x" value="${esc(p.x)}" placeholder="Across" aria-label="Corner ${i+1} across">
       <input inputmode="decimal" data-id="${a.id}" data-pt="${i}" data-ax="y" value="${esc(p.y)}" placeholder="Up" aria-label="Corner ${i+1} up">
       <button class="x" data-ptdel="${i}" data-id="${a.id}" aria-label="Remove corner"${pts.length <= 3 ? ' disabled' : ''}>×</button></div>`).join('');
-  return hintBox(`<path d="M6 40 4 14 26 4l38 10-6 18-22 2-8 6z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><circle cx="6" cy="40" r="3.5" fill="#c0392b"/><path d="M6 40h22M6 40V20" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="2 2"/>`,
-      `Pick one corner as your start (0, 0). For every corner, going around the area in order, measure how far <b>across</b> and how far <b>up</b> it is from the start.`)
-    + `<div class="pts"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div>
+  const im = a.imp;
+  const imp = `<div class="imp">
+      <div class="imp-h"><b>Have a Moasure or other measuring tool?</b><span>Import its CSV or DXF export, or paste X, Y points.</span></div>
+      <div class="imp-b">
+        <label class="btn alt sm" style="margin:0">Import file<input type="file" accept=".csv,.txt,.dxf" data-impfile="${a.id}" hidden></label>
+        <button class="btn alt sm" type="button" data-pastetog="${a.id}" style="margin:0">Paste points</button>
+      </div>
+      <div class="paste" data-pastebox="${a.id}" style="display:none">
+        <textarea rows="5" data-pastetxt="${a.id}" placeholder="One point per line, X then Y:&#10;0, 0&#10;40, 0&#10;40, 22.5&#10;0, 22.5"></textarea>
+        <button class="btn sm" type="button" data-pastego="${a.id}">Use these points</button>
+      </div>
+      ${im ? `<div class="imp-ok">✓ ${esc(im.name)}: ${a.pts.length} points.${im.note ? ' ' + esc(im.note) : ''}
+        <span>Units in file: <select data-impunit="${a.id}">${[['ft','Feet'],['in','Inches'],['m','Meters'],['cm','Centimeters'],['mm','Millimeters']].map(([k, t]) => `<option value="${k}"${im.unit===k?' selected':''}>${t}</option>`).join('')}</select></span>
+        ${im.guessed ? '' : '<small>Check the size below. If it looks way off, change the units.</small>'}</div>` : ''}
+      <div class="imp-err" data-imperr="${a.id}"></div>
+    </div>`;
+  const listed = pts.length > 12
+    ? `<details class="cuts"><summary>Show all ${pts.length} points</summary><div class="pts" style="padding-bottom:10px"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div></details>`
+    : `<div class="pts"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div>`;
+  return imp + hintBox(`<path d="M6 40 4 14 26 4l38 10-6 18-22 2-8 6z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><circle cx="6" cy="40" r="3.5" fill="#c0392b"/><path d="M6 40h22M6 40V20" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="2 2"/>`,
+      `Or type them in: pick one corner as your start (0, 0). For every corner, going around the area in order, measure how far <b>across</b> and how far <b>up</b> it is from the start.`)
+    + listed + `
        <button class="add sm" type="button" data-ptadd="${a.id}"><span>+</span>Add corner</button>`;
 }
 
@@ -697,10 +865,12 @@ $('#copyBtn').addEventListener('click', async () => {
 });
 
 /* ---------- events ---------- */
+function showImpErr(a, msg){ const el = document.querySelector(`[data-imperr="${a.id}"]`); if (el) el.textContent = msg; }
 const areaById = id => state.areas.find(a => a.id === id);
 $('#areas').addEventListener('input', e => {
   const t = e.target, a = areaById(t.dataset.id); if (!a) return;
   if (t.dataset.pt != null){ a.pts[+t.dataset.pt][t.dataset.ax] = t.value; update(); return; }
+  if (t.dataset.pastetxt) return;
   if (!t.dataset.f) return;
   a[t.dataset.f] = t.type === 'checkbox' ? t.checked : t.value;
   if (t.dataset.f === 'border'){
@@ -708,7 +878,16 @@ $('#areas').addEventListener('input', e => {
   }
   update();
 });
-$('#areas').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') e.target.dispatchEvent(new Event('input', {bubbles:true})); });
+$('#areas').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.impfile){
+    const a = areaById(t.dataset.impfile), file = t.files && t.files[0]; if (!a || !file) return;
+    if (/\.dwg$/i.test(file.name)){ showImpErr(a, 'DWG files can\'t be read here. Export as DXF or CSV instead.'); return; }
+    const rd = new FileReader();
+    rd.onload = () => { const r = importText(a, String(rd.result), file.name); r.error ? showImpErr(a, r.error) : renderAreas(); };
+    rd.readAsText(file); return;
+  }
+  if (t.dataset.impunit){ const a = areaById(t.dataset.impunit); a.imp.unit = t.value; a.imp.guessed = true; applyImport(a); renderAreas(); return; } if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') e.target.dispatchEvent(new Event('input', {bubbles:true})); });
 $('#areas').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.shape){
@@ -719,6 +898,9 @@ $('#areas').addEventListener('click', e => {
     }
     a.shape = b.dataset.shape; renderAreas();
   }
+  if (b.dataset.pastetog){ const box = document.querySelector(`[data-pastebox="${b.dataset.pastetog}"]`); box.style.display = box.style.display === 'none' ? '' : 'none'; if (box.style.display === '') box.querySelector('textarea').focus(); }
+  if (b.dataset.pastego){ const a = areaById(b.dataset.pastego), txt = document.querySelector(`[data-pastetxt="${a.id}"]`).value;
+    const r = importText(a, txt, 'Pasted points'); r.error ? showImpErr(a, r.error) : renderAreas(); }
   if (b.dataset.ptadd){ const a = areaById(b.dataset.ptadd); a.pts.push({x:'',y:''}); renderAreas();
     const ins = document.querySelectorAll(`input[data-id="${a.id}"][data-pt="${a.pts.length-1}"]`); if (ins[0]) ins[0].focus(); }
   if (b.dataset.ptdel != null && !b.disabled){ const a = areaById(b.dataset.id); a.pts.splice(+b.dataset.ptdel, 1); renderAreas(); }
