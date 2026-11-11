@@ -2313,6 +2313,14 @@ elevRefresh();
   let P=store.get('build',null); if(!P||!Array.isArray(P.days)||!P.days.length) P={days:[{items:[],done:[]}],cur:0,view:'day'};
   const clean=()=>{ P.days.forEach(d=>{ d.items=(d.items||[]).filter(k=>BYK[k]); d.done=(d.done||[]).filter(k=>d.items.includes(k)); }); if(P.cur>=P.days.length) P.cur=P.days.length-1; };
   clean();
+  P.off=Array.isArray(P.off)?P.off:[];
+  // ---- dates: Day 1 = P.start, skipping weekends and days off (shared with the Turf Tek Jobs hub) ----
+  const isoD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  function dayDate(i){ if(!P.start) return null; const [y,m,dd]=P.start.split('-').map(Number); const d=new Date(y,m-1,dd); let n=-1;
+    for(let g=0;g<1500;g++){ const s=isoD(d), wd=d.getDay(); if(wd!==0&&wd!==6&&!P.off.includes(s)){ n++; if(n===i) return s; } d.setDate(d.getDate()+1); } return null; }
+  const DOWS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const dLabel=i=>{ const s=dayDate(i); if(!s) return ''; const [y,m,dd]=s.split('-').map(Number); return `${T(DOWS[new Date(y,m-1,dd).getDay()])} ${m}/${dd}`; };
+  try{ const nm=store.get('build_names',{})||{}; ITEMS.forEach(i=>{ nm[i.k]={n:i.name,t:i.kind,s:i.sub||'',h:i.h!=null?String(i.h):'',hs:(i.holes||[]).map(String)}; }); store.set('build_names',nm); }catch(e){}
   let LAY=Object.assign({foot:true,pole:true,deck:true,comp:true,part:true},store.get('buildLayers',{}));
   const save=()=>store.set('build',P);
   const dayOf=k=>P.days.findIndex(d=>d.items.includes(k));
@@ -2324,6 +2332,7 @@ elevRefresh();
   <div class="card">
     <div class="bdtop"><h2>${T('Build days')}</h2><span class="muted small">${T('Tap what you will build, in order')}</span></div>
     <div class="bddays" id="bdDays" role="group" aria-label="Day"></div>
+    <div class="bdstart" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px"><label style="font-weight:700">${T('Day 1 is')} <input type="date" id="bdStart" style="min-height:38px;padding:4px 8px;border:1.5px solid var(--line);border-radius:8px;font:inherit"></label><span class="muted small">${T('Weekends and days off are skipped')}</span></div>
     <div class="bdlayers" id="bdLayers"></div>
     <div class="mapbox" id="bdBox">
       <svg id="bdMap" role="img" aria-label="Overview: tap poles, decks and parts to add them to the day"></svg>
@@ -2425,7 +2434,8 @@ elevRefresh();
   // ---- day chips, layers, lists ----
   function renderDays(){
     const el=document.getElementById('bdDays');
-    el.innerHTML=`<button data-dall aria-pressed="${P.view==='all'}">${T('Overview')}</button>`+P.days.map((d,i)=>`<button data-day="${i}" style="--dc:${dcol(i)}" aria-pressed="${P.view!=='all'&&i===P.cur}">${T('Day')} ${i+1}<small>${d.items.length}</small></button>`).join('')+`<button data-dadd aria-label="Add a day">＋ ${T('Day')}</button>`;
+    el.innerHTML=`<button data-dall aria-pressed="${P.view==='all'}">${T('Overview')}</button>`+P.days.map((d,i)=>`<button data-day="${i}" style="--dc:${dcol(i)}" aria-pressed="${P.view!=='all'&&i===P.cur}">${T('Day')} ${i+1}<small>${dLabel(i)?dLabel(i)+' · ':''}${d.items.length}</small></button>`).join('')+`<button data-dadd aria-label="Add a day">＋ ${T('Day')}</button>`;
+    { const sv=document.getElementById('bdStart'); if(sv&&document.activeElement!==sv) sv.value=P.start||''; }
     document.getElementById('bdLayers').innerHTML=Object.keys(KIND).filter(k=>ITEMS.some(i=>i.kind===k)).map(k=>`<button data-lay="${k}" aria-pressed="${!!LAY[k]}">${T(KIND[k])}</button>`).join('');
     const left=ITEMS.filter(it=>dayOf(it.k)<0).length;
     document.getElementById('bdHint').textContent=P.view==='all'?T(`Overview: every part shows its day number. ${left} not planned yet.`):T(`Day ${P.cur+1}: tap poles, decks and parts in the order you will build them. Tap again to take one off. ${left} not planned yet.`);
@@ -2437,19 +2447,19 @@ elevRefresh();
     const c=document.getElementById('bdDayCard'); if(P.view==='all'){ c.hidden=true; return; } c.hidden=false;
     const d=P.cur, day=P.days[d], its=day.items.map(k=>BYK[k]);
     const by={}; its.forEach(it=>by[it.kind]=(by[it.kind]||0)+1);
-    c.innerHTML=`<h2 style="margin:0;display:flex;gap:8px;align-items:center"><span class="bdn" style="--dc:${dcol(d)}">${d+1}</span>${T('Day')} ${d+1}</h2>
+    c.innerHTML=`<h2 style="margin:0;display:flex;gap:8px;align-items:center"><span class="bdn" style="--dc:${dcol(d)}">${d+1}</span>${T('Day')} ${d+1}${dLabel(d)?` <small class="muted" style="font-size:16px">${dLabel(d)}</small>`:''}</h2>
       <p class="muted small" style="margin:4px 0 0">${its.length?Object.keys(KIND).filter(k=>by[k]).map(k=>`${by[k]} ${T(by[k]===1?KIND1[k]:KIND[k].replace(' first','')).toLowerCase()}`).join(' · ')+` · ${day.done.length}/${its.length} ${T('done')}`:T('Nothing picked yet. Tap things on the plan above.')}</p>
       ${its.length?`<ol class="bdlist">${its.map((it,i)=>itemRow(it,i,d,day)).join('')}</ol>`:''}
       <div class="bdact">${its.length?`<button data-clr>${T('Clear this day')}</button>`:''}${P.days.length>1?`<button data-ddel>${T('Delete this day')}</button>`:''}</div>`;
   }
   function planText(){ const job=JOB.name||JOB.short||'';
     let t=`${job} — ${T('Build plan')}\n`;
-    P.days.forEach((d,i)=>{ if(!d.items.length) return; t+=`\n${T('Day')} ${i+1}:\n`+d.items.map((k,j)=>{ const it=BYK[k]; return `${j+1}. ${it.name}${it.sub?' ('+it.sub+')':''}${d.done.includes(k)?' ✓':''}`; }).join('\n')+'\n'; });
+    P.days.forEach((d,i)=>{ if(!d.items.length) return; t+=`\n${T('Day')} ${i+1}${dLabel(i)?' ('+dLabel(i)+')':''}:\n`+d.items.map((k,j)=>{ const it=BYK[k]; return `${j+1}. ${it.name}${it.sub?' ('+it.sub+')':''}${d.done.includes(k)?' ✓':''}`; }).join('\n')+'\n'; });
     const left=ITEMS.filter(it=>dayOf(it.k)<0); if(left.length) t+=`\n${T('Not planned yet')}: ${left.length}\n`;
     return t; }
   function renderSum(){
     const el=document.getElementById('bdSum'); const left=ITEMS.filter(it=>dayOf(it.k)<0);
-    el.innerHTML=P.days.map((d,i)=>`<div class="bdday" style="--dc:${dcol(i)}"><h3><span style="color:${dcol(i)}">${T('Day')} ${i+1}</span><small>${d.items.length} ${T(d.items.length===1?'item':'items')}${d.items.length?` · ${d.done.length} ${T('done')}`:''}</small><button data-goday="${i}" style="margin-left:auto;min-height:34px;padding:2px 10px">${T('Edit')}</button></h3>
+    el.innerHTML=P.days.map((d,i)=>`<div class="bdday" style="--dc:${dcol(i)}"><h3><span style="color:${dcol(i)}">${T('Day')} ${i+1}</span>${dLabel(i)?`<small>${dLabel(i)}</small>`:''}<small>${d.items.length} ${T(d.items.length===1?'item':'items')}${d.items.length?` · ${d.done.length} ${T('done')}`:''}</small><button data-goday="${i}" style="margin-left:auto;min-height:34px;padding:2px 10px">${T('Edit')}</button></h3>
       ${d.items.length?`<ol>${d.items.map(k=>`<li class="${d.done.includes(k)?'done':''}">${esc(BYK[k].name)}</li>`).join('')}</ol>`:`<div class="muted small">${T('Nothing yet')}</div>`}</div>`).join('')
       +`<details${left.length?'':' hidden'}><summary><b>${T('Not planned yet')}</b> <span class="muted small">${left.length}</span></summary><div class="small" style="margin-top:6px;line-height:1.5">${Object.keys(KIND).map(k=>{ const l=left.filter(i=>i.kind===k); return l.length?`<div><b>${T(KIND[k])}:</b> ${l.map(i=>esc(i.name.replace(/^Pole /,''))).join(', ')}</div>`:''; }).join('')}</div></details>`;
   }
@@ -2461,6 +2471,13 @@ elevRefresh();
     else if(b.hasAttribute('data-dadd')){ P.days.push({items:[],done:[]}); P.cur=P.days.length-1; P.view='day'; }
     else { P.cur=+b.dataset.day; P.view='day'; }
     save(); renderAllB(); });
+  document.getElementById('bdStart').addEventListener('change',e=>{ P.start=e.target.value||null; save(); renderAllB(); });
+  const reloadP=()=>{ const np=store.get('build',null); if(!np||!Array.isArray(np.days)||!np.days.length||JSON.stringify(np)===JSON.stringify(P)) return;
+    const cur=P.cur, view=P.view; P=np; P.off=Array.isArray(P.off)?P.off:[]; P.cur=cur; P.view=view; clean();
+    if(!document.querySelector('[data-view=build]').hidden) renderAllB(); };
+  addEventListener('storage',e=>{ if(e.key&&/build$/.test(e.key)) reloadP(); });
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) reloadP(); });
+  addEventListener('pageshow',reloadP);
   document.getElementById('bdLayers').addEventListener('click',e=>{ const b=e.target.closest('[data-lay]'); if(!b) return; LAY[b.dataset.lay]=!LAY[b.dataset.lay]; store.set('buildLayers',LAY); renderAllB(); });
   document.getElementById('bdDayCard').addEventListener('click',e=>{
     const day=P.days[P.cur]; let b;
@@ -2480,7 +2497,7 @@ elevRefresh();
       if(it.docs&&it.docs.length&&typeof openDoc==='function'){ try{ VSTACK=[]; }catch(e){} openDoc(it.docs[0]); return; }
       if(it.kind==='comp'&&typeof selectHole==='function'){ selectHole(it.holes[0]); location.hash='map'; route(); }
     }catch(e){} }
-  async function share(){ const url=location.origin+location.pathname+'?plan='+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(P.days.map(d=>[d.items,d.done]))))));
+  async function share(){ const url=location.origin+location.pathname+'?plan='+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(P.days.map(d=>[d.items,d.done]))))))+(P.start?'&start='+P.start:'');
     const text=planText();
     try{ if(navigator.share){ await navigator.share({title:`${JOB.short||''} ${T('build plan')}`,text:text+'\n'+T('Open to load this plan:'),url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; }
     try{ await navigator.clipboard.writeText(text+'\n'+url); toast(T('Copied. Paste it in a text.')); }catch(e){ prompt(T('Copy this link'),url); } }
@@ -2490,10 +2507,11 @@ elevRefresh();
   // ---- load a plan someone sent ----
   try{ const q=new URLSearchParams(location.search).get('plan'); if(q){
     const arr=JSON.parse(decodeURIComponent(escape(atob(q)))); const days=arr.map(([i,d])=>({items:(i||[]).filter(k=>BYK[k]),done:(d||[]).filter(k=>BYK[k])}));
+    const st=new URLSearchParams(location.search).get('start');
     history.replaceState(null,'',location.pathname+'#build');
     const ban=document.getElementById('bdBan'); const n=days.reduce((s,d)=>s+d.items.length,0);
     ban.innerHTML=`<div class="bdban"><b>${T(`A build plan was sent to you: ${days.length} day${days.length===1?'':'s'}, ${n} item${n===1?'':'s'}.`)}</b><button class="primary" data-bload>${T('Load it')}</button><button data-bno>${T('Keep mine')}</button></div>`;
-    ban.onclick=e=>{ if(e.target.closest('[data-bload]')){ P={days:days.length?days:[{items:[],done:[]}],cur:0,view:'all'}; save(); ban.innerHTML=''; renderAllB(); toast(T('Plan loaded')); } else if(e.target.closest('[data-bno]')) ban.innerHTML=''; };
+    ban.onclick=e=>{ if(e.target.closest('[data-bload]')){ P={...P,start:/^\d{4}-\d\d-\d\d$/.test(st||'')?st:P.start,days:days.length?days:[{items:[],done:[]}],cur:0,view:'all'}; save(); ban.innerHTML=''; renderAllB(); toast(T('Plan loaded')); } else if(e.target.closest('[data-bno]')) ban.innerHTML=''; };
   } }catch(e){}
 
   window.addEventListener('hashchange',()=>{ if(location.hash==='#build') requestAnimationFrame(()=>{ if(!vb||!lastW){ lastW=W(); fitV(); } renderAllB(); }); });

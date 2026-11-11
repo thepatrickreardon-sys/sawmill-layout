@@ -94,6 +94,11 @@ label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:1
 @keyframes pulse{50%{opacity:.5}}
 .hit{font-size:14px}
 .hit mark{background:#ffe08a;border-radius:3px}
+.plan .item{align-items:center}
+.plan .k{font-size:12px;color:var(--muted)}
+.dayoff{background:var(--warnbg);color:var(--warn);border-radius:10px;padding:10px 12px;font-weight:700}
+.wsum{background:var(--steelsoft);color:var(--steel);border-radius:10px;padding:10px 12px;font-weight:700;margin-top:12px}
+.btag{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 </style>
@@ -155,7 +160,138 @@ function layoutRems(j){
   try{return (JSON.parse(localStorage.getItem(j.remKey))||[]).filter(r=>r&&!r.done&&r.text)}catch(e){return[]}
 }
 function dayPlan(d){return DB.sched[d]||{}}
-function todayJob(){const p=dayPlan(TODAY());return job(p.job)||null}
+/* ---------- build plan shared with the layout apps (same site, same phone) ---------- */
+const PFX={sawmill:'swl_',hagedorn:'hgl_',neary:'nry_','bear-mountain':'bm_'};
+const pfx=j=>j&&(j.pfx??PFX[j.id]??null);
+function getPlan(j){const p=pfx(j);if(!p)return null;try{const P=JSON.parse(localStorage.getItem(p+'build'));if(P&&Array.isArray(P.days)&&P.days.length){P.off=Array.isArray(P.off)?P.off:[];P.days.forEach(d=>{d.items=d.items||[];d.done=d.done||[]});return P}}catch(e){}return null}
+function setPlan(j,P){try{localStorage.setItem(pfx(j)+'build',JSON.stringify(P))}catch(e){toast('Could not save the plan')}}
+function names(j){try{return JSON.parse(localStorage.getItem(pfx(j)+'build_names'))||{}}catch(e){return{}}}
+const iname=(N,k)=>(N[k]&&N[k].n)||k;
+const hasItems=P=>P&&P.days.some(d=>d.items.length);
+function pDate(P,i){if(!P||!P.start)return null;const d=parseISO(P.start);let n=-1;for(let g=0;g<1500;g++){const s=iso(d),wd=d.getDay();if(wd&&wd!==6&&!P.off.includes(s)){n++;if(n===i)return s}d.setDate(d.getDate()+1)}return null}
+function pIndex(P,dt){if(!P||!P.start||dt<P.start)return -1;for(let i=0;i<P.days.length;i++){const s=pDate(P,i);if(!s||s>dt)return -1;if(s===dt)return i}return -1}
+function buildJobsOn(dt){return DB.jobs.filter(j=>j.status!=='done').map(j=>{const P=getPlan(j);const i=pIndex(P,dt);return i<0?null:{j,P,i}}).filter(Boolean)}
+function isOff(dt){return DB.jobs.some(j=>{const P=getPlan(j);return P&&P.off.includes(dt)})}
+function setOff(dt,on){DB.jobs.filter(j=>j.status!=='done').forEach(j=>{const P=getPlan(j);if(!P||!P.start||dt<P.start)return;const has=P.off.includes(dt);if(on&&!has)P.off.push(dt);if(!on&&has)P.off=P.off.filter(x=>x!==dt);setPlan(j,P)})}
+function todayJob(){const p=dayPlan(TODAY());return job(p.job)||(buildJobsOn(TODAY())[0]||{}).j||null}
+
+/* ---------- understand what was said ---------- */
+const NUMW={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60};
+function normT(s){return ' '+String(s).toLowerCase().replace(/[-–_\/]/g,' ').replace(/[^a-z0-9'\s]/g,' ').replace(/\b(twenty|thirty|forty|fifty|sixty)\s+(one|two|three|four|five|six|seven|eight|nine)\b/g,(m,a,b)=>NUMW[a]+NUMW[b]).replace(/\b[a-z]+\b/g,w=>NUMW[w]!=null?NUMW[w]:w).replace(/\s+/g,' ').replace(/\b(?!(?:to|at|on|of|in|is|it|no|so|up|we|or|by|an|as|be|do|go|he|if|me|my|us|and)\b)([a-z]{1,2}) (\d+)\b/g,'$1$2')+' '}
+const NEG=/\b(didn'?t|did not|not|no|never|couldn'?t|could not|still|need|needs|tomorrow|wasn'?t|haven'?t|hasn'?t|left|missing|waiting)\b/;
+function sameHole(a,b){a=String(a).toLowerCase();b=String(b).toLowerCase();if(a===b)return true;const ra=a.match(/^([a-z]*)0*(\d+)$/),rb=b.match(/^([a-z]*)0*(\d+)$/);return !!(ra&&rb&&ra[2]===rb[2]&&(ra[1]===rb[1]||!rb[1]))}
+function matchSpoken(text,N){
+  const hits=new Set(),E=Object.entries(N);
+  for(const raw of String(text).split(/[.;!?\n]+|,?\s+but\s+|\s+except\s+|\s+however\s+/i)){
+    const c=normT(raw);if(!c.trim()||NEG.test(c))continue;
+    const foot=/footing|pour|concrete|slab|pad/.test(c);
+    const re=/\b(poles?|holes?|posts?|footings?)\s+((?:[a-z]{0,2}\d+)(?:\s+(?:and|through|thru|to|n)?\s*[a-z]{0,2}\d+)*)/g;let m;
+    while((m=re.exec(c))){const toks=m[2].split(/\s+/).filter(Boolean),nums=[];
+      for(let i=0;i<toks.length;i++){const t=toks[i];
+        if(/^(through|thru|to)$/.test(t)&&nums.length&&toks[i+1]){const last=nums[nums.length-1],pre=(last.match(/^[a-z]*/)||[''])[0],a=parseInt(last.replace(/\D/g,'')),b=parseInt(toks[i+1].replace(/\D/g,''));if(b>a&&b-a<60)for(let x=a+1;x<=b;x++)nums.push(pre+x);i++}
+        else if(/\d/.test(t))nums.push(t)}
+      const wantFoot=foot&&!/^pole|^post/.test(m[1]);
+      for(const [k,v] of E){
+        if(!wantFoot&&v.t==='pole'&&nums.some(n=>sameHole(v.h,n)))hits.add(k);
+        if(wantFoot&&v.t==='foot'&&(v.hs||[]).some(h=>nums.some(n=>sameHole(h,n))))hits.add(k)}}
+    for(const [k,v] of E){if(v.t==='pole')continue;const core=normT(String(v.n).replace(/\(.*?\)/g,'')).trim();if(!core)continue;
+      if(c.includes(' '+core+' ')){hits.add(k);continue}
+      const w=core.split(' ');if(w.length>2){const sh=w.slice(0,2).join(' ');if((/\d/.test(w[1])||sh.length>=7)&&c.includes(' '+sh+' '))hits.add(k)}}
+  }
+  return hits;
+}
+
+/* ---------- end of day: what we planned vs what we did ---------- */
+function wrapUp(j,dt){
+  dt=dt||TODAY();let P=getPlan(j);const i=pIndex(P,dt);if(i<0)return toast('No build day on '+fmt(dt));
+  const N=names(j),D=P.days[i];
+  const prev=j.logs.find(l=>l.date===dt&&l.build);
+  const planned=[...new Set([...(prev?prev.build.planned:[]),...D.items])];
+  const extra=new Set((prev?prev.build.extra:[]).filter(k=>!planned.includes(k)));
+  const done=new Set(D.done.filter(k=>planned.includes(k)));
+  const base=prev||{crew:[...(dayPlan(dt).crew||[])],hours:8,note:''};
+  const nextD=pDate(P,i+1);
+  const others=()=>{const inPlan=new Set(P.days.flatMap(d=>d.items));const later=P.days.flatMap((d,di)=>di>i?d.items.filter(k=>!d.done.includes(k)):[]);const un=Object.keys(N).filter(k=>!inPlan.has(k));return [...later,...un].filter(k=>!planned.includes(k)&&!extra.has(k))};
+  sheet(`<h3>Wrap up · ${fmt(dt)}</h3><div class="muted small">${esc(j.name)} · Build day ${i+1}</div>
+    <label class="f">What did you get done? Just talk.</label>
+    <div class="row" style="align-items:stretch"><textarea id="wt" placeholder="Set poles 12 through 15, deck 3 is on, didn't get to the slide">${esc(base.note)}</textarea><button class="mic" id="wm">🎤</button></div>
+    <div class="small muted" id="wmsg" style="margin-top:5px">I check off what you name. Anything you say you didn't get to stays unchecked.</div>
+    <label class="f">Planned for today</label><div class="list plan" id="wp"></div>
+    <label class="f">Also got done</label><div class="list plan" id="wx"></div>
+    <select id="wadd"></select>
+    <label class="f">Crew on site</label><div class="row wrap" id="wc">${DB.crew.length?DB.crew.map(c=>`<button class="chip${base.crew.includes(c)?' on':''}">${esc(c)}</button>`).join(''):'<span class="muted small">Add your crew in ⚙︎ Settings</span>'}</div>
+    <label class="f">Hours on site (each)</label><input type="number" id="wh" inputmode="decimal" step="0.5" value="${base.hours}">
+    <div class="wsum" id="wsum"></div>
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn paint" id="wsv">Save the day</button></div>`,
+  (el,close)=>{
+    const crew=new Set(base.crew);
+    el.querySelectorAll('#wc .chip').forEach(b=>b.onclick=()=>{const n=b.textContent;crew.has(n)?crew.delete(n):crew.add(n);b.classList.toggle('on')});
+    const row=(k,on,attr)=>`<div class="item"><button class="check ${on?'on':''}" ${attr}="${esc(k)}">${on?'✓':''}</button><div class="grow"><div class="txt">${esc(iname(N,k))}</div>${N[k]&&N[k].s?`<div class="k">${esc(N[k].s)}</div>`:''}</div></div>`;
+    const draw=()=>{
+      el.querySelector('#wp').innerHTML=planned.map(k=>row(k,done.has(k),'data-wp')).join('')||'<div class="empty">Nothing was planned for today.</div>';
+      el.querySelector('#wx').innerHTML=[...extra].map(k=>row(k,true,'data-wx')).join('')||'<div class="empty">Name anything from a later day and it shows up here.</div>';
+      el.querySelector('#wadd').innerHTML='<option value="">＋ Add something else we did…</option>'+others().map(k=>`<option value="${esc(k)}">${esc(iname(N,k))}</option>`).join('');
+      const left=planned.filter(k=>!done.has(k)).length;
+      el.querySelector('#wsum').textContent=`${done.size+extra.size} done${extra.size?` (${extra.size} ahead of plan)`:''} · ${left?`${left} move${left===1?'s':''} to ${nextD?fmt(nextD):'the next day'}`:'nothing carries over'}`;
+      el.querySelectorAll('[data-wp]').forEach(b=>b.onclick=()=>{const k=b.dataset.wp;done.has(k)?done.delete(k):done.add(k);draw()});
+      el.querySelectorAll('[data-wx]').forEach(b=>b.onclick=()=>{extra.delete(b.dataset.wx);draw()});
+    };
+    el.querySelector('#wadd').onchange=e=>{if(e.target.value){extra.add(e.target.value);draw()}};
+    const t=el.querySelector('#wt');
+    const listen=()=>{const h=matchSpoken(t.value,N);let n=0;h.forEach(k=>{if(planned.includes(k)){if(!done.has(k)){done.add(k);n++}}else if(!extra.has(k)&&!P.days.some((d,di)=>di<i&&d.done.includes(k))){extra.add(k);n++}});
+      el.querySelector('#wmsg').textContent=n?`Checked off ${n} from what you said. Fix anything that's wrong below.`:'I check off what you name. Anything you say you didn\'t get to stays unchecked.';draw()};
+    let tm;t.oninput=()=>{clearTimeout(tm);tm=setTimeout(listen,500)};
+    micFor(el.querySelector('#wm'),t);
+    draw();
+    el.querySelector('#wsv').onclick=()=>{
+      P=getPlan(j);const D=P.days[i];
+      const move=[...planned,...extra];
+      P.days.forEach((d,di)=>{if(di!==i){d.items=d.items.filter(k=>!move.includes(k));d.done=d.done.filter(k=>!move.includes(k))}});
+      const didK=[...planned.filter(k=>done.has(k)),...extra];
+      const rolled=planned.filter(k=>!done.has(k));
+      D.items=[...didK,...D.items.filter(k=>!move.includes(k))];D.done=[...new Set([...didK,...D.done.filter(k=>D.items.includes(k)&&!move.includes(k))])];
+      const stillOpen=D.items.filter(k=>!D.done.includes(k));
+      const carry=[...rolled,...stillOpen];
+      if(carry.length){D.items=D.items.filter(k=>!carry.includes(k));if(!P.days[i+1])P.days.push({items:[],done:[]});const nx=P.days[i+1];nx.items=[...carry,...nx.items.filter(k=>!carry.includes(k))]}
+      setPlan(j,P);
+      const nm={};[...planned,...extra].forEach(k=>nm[k]=iname(N,k));
+      j.logs=j.logs.filter(l=>!(l.date===dt&&l.build));
+      j.logs.push({id:uid(),date:dt,crew:[...crew],hours:Number(el.querySelector('#wh').value)||0,section:'',note:t.value.trim(),made:Date.now(),
+        build:{day:i+1,planned,done:planned.filter(k=>done.has(k)),rolled:carry,extra:[...extra],names:nm}});
+      save();close();render();toast(carry.length?`Saved. ${carry.length} moved to ${nextD?fmt(nextD):'next day'}`:'Saved. Everything got done');
+    };
+  });
+}
+function planCard(j,dt){
+  const P=getPlan(j);if(!P||!hasItems(P))return'';
+  const lu=layoutURL(j);
+  if(!P.start)return `<div class="card"><div class="t" style="font-weight:700">Build plan for ${esc(j.name)}</div><div class="small muted" style="margin:4px 0 8px">Set the date for Day 1 and every build day gets a real date. Weekends are skipped.</div><input type="date" data-pstart="${j.id}"></div>`;
+  if(P.off.includes(dt))return `<div class="card"><div class="dayoff">Not working today. Build days slid back one workday.</div><button class="btn ghost" data-unoff="${dt}">Undo, we're working</button></div>`;
+  const i=pIndex(P,dt);
+  if(i<0){let n=null;for(let k=0;k<P.days.length;k++){const s=pDate(P,k);if(s&&s>dt){n={k,s};break}}
+    return `<div class="card"><div class="muted">No build day today for ${esc(j.name)}.${n?` Next up: <b>Build day ${n.k+1}</b>, ${fmt(n.s)}.`:''}</div></div>`}
+  const N=names(j),D=P.days[i],wrapped=j.logs.some(l=>l.date===dt&&l.build);
+  return `<h2>Today's plan · Build day ${i+1}</h2>
+  <div class="list plan">${D.items.map((k,n)=>{const on=D.done.includes(k);return `<div class="item ${on?'done':''}"><button class="check ${on?'on':''}" data-bitem="${j.id}|${i}|${esc(k)}">${on?'✓':''}</button><div class="grow"><div class="txt"><b>${n+1}.</b> ${esc(iname(N,k))}</div>${N[k]&&N[k].s?`<div class="k">${esc(N[k].s)}</div>`:''}</div></div>`}).join('')||'<div class="empty">Nothing picked for today. Plan it in the layout app.</div>'}
+    <div class="addrow small muted" style="justify-content:space-between"><span>${D.done.length}/${D.items.length} done</span>${lu?`<a href="${esc(lu)}#build" style="color:var(--steel);font-weight:700">Edit in layout ›</a>`:''}</div></div>
+  <button class="btn paint big" data-wrap="${j.id}">🎤 ${wrapped?'Redo wrap-up':'Wrap up the day'}</button>
+  <button class="btn ghost" style="width:100%;margin-top:4px" data-off="${dt}">Not working today (rain / off)</button>`;
+}
+function planSummary(j){
+  const P=getPlan(j);const pf=pfx(j);if(!pf)return'';
+  const lu=layoutURL(j);
+  if(!hasItems(P))return `<h2>Build plan</h2><div class="card small muted">No build days picked yet. Open the layout app, go to Build days, and tap poles, decks and parts for each day.${lu?` <a href="${esc(lu)}#build" style="color:var(--steel);font-weight:700">Open Build days ›</a>`:''}</div>`;
+  const N=names(j),t=TODAY();
+  const wl=j.logs.filter(l=>l.build),pl=wl.reduce((a,l)=>a+l.build.planned.length,0),dn=wl.reduce((a,l)=>a+l.build.done.length+l.build.extra.length,0);
+  const total=P.days.reduce((a,d)=>a+d.items.length,0),doneAll=P.days.reduce((a,d)=>a+d.done.length,0);
+  const last=pDate(P,P.days.length-1);
+  return `<h2>Build plan</h2>
+  <div class="card"><div class="row"><label class="grow small" style="font-weight:700;color:var(--muted)">Day 1 is<input type="date" data-pstart="${j.id}" value="${P.start||''}" style="margin-top:5px"></label></div>
+    <div class="stats" style="margin-top:10px"><span><b>${doneAll}/${total}</b> items done</span><span><b>${P.days.length}</b> build days</span>${last?`<span>Finish <b>${fmt(last)}</b></span>`:''}</div>
+    ${wl.length?`<div class="small" style="margin-top:8px">Wrapped ${wl.length} day${wl.length===1?'':'s'}: planned <b>${pl}</b>, got done <b>${dn}</b> → <b style="color:${dn>=pl?'var(--good)':'var(--bad)'}">${dn===pl?'right on plan':dn>pl?`${dn-pl} ahead`:`${pl-dn} behind`}</b></div>`:''}
+    ${lu?`<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="${esc(lu)}#build">Edit build days in layout ›</a>`:''}</div>
+  <div class="list">${P.days.map((d,i)=>{const s=pDate(P,i);const l=j.logs.find(x=>x.build&&x.date===s);return `<div class="item ${s===t?'istoday':''}"><div class="daynum" style="width:52px"><span>Day</span><b>${i+1}</b></div><div class="grow"><div class="t">${s?fmt(s):'No date yet'}</div><div class="small muted">${d.items.slice(0,4).map(k=>esc(iname(N,k))).join(', ')}${d.items.length>4?` +${d.items.length-4} more`:''}</div>${l?`<div class="btag"><span class="tag good">Did ${l.build.done.length+l.build.extra.length}</span>${l.build.rolled.length?`<span class="tag warn">${l.build.rolled.length} moved on</span>`:''}</div>`:''}</div><span class="tag ${d.done.length===d.items.length&&d.items.length?'good':''}">${d.done.length}/${d.items.length}</span></div>`}).join('')}</div>`;
+}
 
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800)}
 
@@ -178,7 +314,7 @@ function micFor(btn,input){
     if(!SR){input.focus();toast('Tap the mic on your keyboard to talk');return}
     const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;
     btn.classList.add('live');
-    r.onresult=e=>{input.value=Array.from(e.results).map(x=>x[0].transcript).join(' ')};
+    r.onresult=e=>{input.value=Array.from(e.results).map(x=>x[0].transcript).join(' ');input.dispatchEvent(new Event('input'))};
     r.onend=()=>btn.classList.remove('live');
     r.onerror=()=>{btn.classList.remove('live');input.focus()};
     r.start();
@@ -273,12 +409,14 @@ function editDay(d){
   sheet(`<h3>${fmt(d)}</h3>
     <label class="f">Job</label><select id="dj">${jobOptions(p.job,'Off / no job')}</select>
     <label class="f">Crew</label><div class="row wrap" id="dc">${DB.crew.length?DB.crew.map(c=>`<button class="chip${(p.crew||[]).includes(c)?' on':''}">${esc(c)}</button>`).join(''):'<span class="muted small">Add your crew in ⚙︎ Settings</span>'}</div>
+    ${parseISO(d).getDay()%6?`<button class="btn ${isOff(d)?'danger':''}" id="doff" style="width:100%;margin-top:12px">${isOff(d)?'Marked as a day off. Tap to undo':'Not working this day (rain / off)'}</button><div class="small muted" style="margin-top:5px">A day off slides every build day after it back one workday.</div>`:''}
     <label class="f">Plan for the day</label><div class="row" style="align-items:stretch"><textarea id="dn" placeholder="Dig footings area 2–5, concrete truck 9am">${esc(p.note||'')}</textarea><button class="mic" id="dm">🎤</button></div>
     <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn paint" id="ds">Save</button></div>`,
   (el,close)=>{
     const crew=new Set(p.crew||[]);
     el.querySelectorAll('#dc .chip').forEach(b=>b.onclick=()=>{const n=b.textContent;crew.has(n)?crew.delete(n):crew.add(n);b.classList.toggle('on')});
     micFor(el.querySelector('#dm'),el.querySelector('#dn'));
+    const ob=el.querySelector('#doff');if(ob)ob.onclick=()=>{setOff(d,!isOff(d));close();render();toast(isOff(d)?'Day off. Build days slid back':'Back to a work day')};
     el.querySelector('#ds').onclick=()=>{
       const v={job:el.querySelector('#dj').value||null,crew:[...crew],note:el.querySelector('#dn').value.trim()};
       if(!v.job&&!v.crew.length&&!v.note)delete DB.sched[d];else DB.sched[d]=v;
@@ -316,7 +454,7 @@ function vToday(){
   const layRems=DB.jobs.filter(x=>x.status!=='done').flatMap(x=>layoutRems(x).map(r=>({...r,_job:x})));
   const remItem=r=>{const jj=job(r.job);const due=r.when?(r.when<t?`<span class="tag bad">Overdue · ${fmt(r.when)}</span>`:r.when===t?'<span class="tag warn">Today</span>':`<span class="tag">${fmt(r.when)}</span>`):'';
     return `<div class="item"><button class="check" data-rem="${r.id}"></button><div class="grow"><div class="txt">${esc(r.text)}</div><div class="row wrap small" style="margin-top:4px">${jj?`<span class="tag">${esc(jj.name)}</span>`:''}${due}</div></div></div>`};
-  const next=[1,2,3,4,5,6].map(n=>addDays(t,n)).filter(d=>DB.sched[d]&&(DB.sched[d].job||DB.sched[d].note));
+  const next=[1,2,3,4,5,6,7].map(n=>addDays(t,n)).filter(d=>(DB.sched[d]&&(DB.sched[d].job||DB.sched[d].note))||buildJobsOn(d).length);
   return `
   <div class="card">
     <div class="muted small" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}</div>
@@ -335,11 +473,12 @@ function vToday(){
       <button class="btn" id="qsched">📅 Plan the week</button>
     </div>
   </div>
+  ${j?planCard(j,t):''}
   <h2>Reminders</h2>
   <div class="list">${hubRems.length?hubRems.map(remItem).join(''):'<div class="empty">Nothing on the list. Tap 🎤 Reminder to add one.</div>'}</div>
   ${layRems.length?`<h2>From the layout apps</h2><div class="list">${layRems.map(r=>`<a class="item tap" style="color:inherit;text-decoration:none" href="${esc(layoutURL(r._job))}"><span style="color:var(--warn);font-size:18px">⚠</span><div class="grow"><div class="txt">${esc(r.text)}</div><div class="row wrap small" style="margin-top:4px"><span class="tag">${esc(r._job.name)}</span>${r.hole?`<span class="tag warn">${esc(r.hole)}</span>`:''}</div></div><span class="muted">›</span></a>`).join('')}</div>`:''}
   <h2>Coming up</h2>
-  <div class="list">${next.length?next.map(d=>{const q=DB.sched[d];const jj=job(q.job);return `<div class="item tap" data-day="${d}"><div class="grow"><div class="t">${fmt(d)}</div><div class="small muted">${jj?esc(jj.name):'—'}${q.note?' · '+esc(q.note):''}</div></div><span class="muted">›</span></div>`}).join(''):'<div class="empty">Nothing scheduled this week. Plan it in Schedule.</div>'}</div>`;
+  <div class="list">${next.length?next.map(d=>{const q=DB.sched[d]||{};const bj=buildJobsOn(d);const jj=job(q.job)||(bj[0]||{}).j;return `<div class="item tap" data-day="${d}"><div class="grow"><div class="t">${fmt(d)}</div><div class="small muted">${jj?esc(jj.name):'—'}${q.note?' · '+esc(q.note):''}</div>${bj.map(x=>`<div class="small"><span class="tag">Build day ${x.i+1}</span> ${x.P.days[x.i].items.length} items</div>`).join('')}</div><span class="muted">›</span></div>`}).join(''):'<div class="empty">Nothing scheduled this week. Plan it in Schedule.</div>'}</div>`;
 }
 function vJobs(){
   if(S.job&&job(S.job))return vJob(job(S.job));
@@ -365,6 +504,7 @@ function vJob(j){
       <div>Contact</div><div>${esc(j.contact)||'—'}</div>
     </div>${j.notes?`<div style="margin-top:10px;white-space:pre-wrap">${esc(j.notes)}</div>`:''}
     <button class="btn ghost" id="editjob" style="margin-top:6px">Edit job details</button></div>
+    ${planSummary(j)}
     <h2>Sections / billing</h2>
     <div class="list">${j.sections.map(s=>{const h=j.logs.filter(l=>l.section===s.name).reduce((a,l)=>a+manHours(l),0);return `<div class="item ${s.done?'done':''}"><button class="check ${s.done?'on':''}" data-sec="${s.id}">${s.done?'✓':''}</button><div class="grow"><div class="t">${esc(s.name)}</div><div class="small muted">${num(h)} man-hrs${s.done?' · done, ready to bill':''}</div></div><button class="btn ghost" data-delsec="${s.id}">✕</button></div>`}).join('')}
       <div class="addrow"><input type="text" id="secn" placeholder="Add a section (e.g. Snag tower)"><button class="btn paint" id="seca">Add</button></div></div>
@@ -380,6 +520,7 @@ function vJob(j){
     body=`<button class="btn paint big" id="addlog" style="margin-bottom:10px">＋ Log a day</button>
     <div class="list">${ls.map(l=>`<div class="item tap" data-log="${l.id}"><div class="grow"><div class="row"><div class="t grow">${fmt(l.date)}</div><span class="tag">${num(manHours(l))} man-hrs</span></div>
       ${l.section?`<div class="small" style="margin-top:3px"><span class="tag good">${esc(l.section)}</span></div>`:''}
+      ${l.build?`<div class="btag small"><span class="tag">Build day ${l.build.day}</span><span class="tag good">Planned ${l.build.planned.length} · did ${l.build.done.length+l.build.extra.length}</span>${l.build.extra.length?`<span class="tag good">${l.build.extra.length} ahead</span>`:''}${l.build.rolled.length?`<span class="tag warn">${l.build.rolled.length} moved on</span>`:''}</div>`:''}
       ${l.note?`<div style="margin-top:5px">${esc(l.note)}</div>`:''}
       ${l.crew.length?`<div class="small muted" style="margin-top:4px">${l.crew.map(esc).join(', ')} · ${l.hours} hrs</div>`:''}</div></div>`).join('')||'<div class="empty">No days logged yet.</div>'}</div>`;
   }else{
@@ -400,8 +541,9 @@ function vSched(){
   let out='',wk=-1;
   days.forEach((d,i)=>{
     if(Math.floor(i/7)!==wk){wk=Math.floor(i/7);out+=(out?'</div>':'')+`<h2>${['This week','Next week','In 2 weeks'][wk]}</h2><div class="list">`}
-    const p=DB.sched[d]||{},jj=job(p.job),dd=parseISO(d);
-    out+=`<div class="item tap day ${d===t?'istoday':''}" data-day="${d}"><div class="daynum"><span>${DOW[dd.getDay()]}</span><b>${dd.getDate()}</b></div><div class="grow">${jj?`<div class="t">${esc(jj.name)}</div>`:`<div class="muted">${dd.getDay()%6===0?'Weekend':'—'}</div>`}${p.note?`<div class="small">${esc(p.note)}</div>`:''}${p.crew&&p.crew.length?`<div class="small muted">${p.crew.map(esc).join(', ')}</div>`:''}</div><span class="muted">›</span></div>`;
+    const p=DB.sched[d]||{},bj=buildJobsOn(d),jj=job(p.job)||(bj[0]||{}).j,dd=parseISO(d),off=isOff(d);
+    const bl=bj.map(b=>{const D=b.P.days[b.i];return `<div class="small"><span class="tag">Build day ${b.i+1}</span> ${D.items.length} item${D.items.length===1?'':'s'}${D.done.length?` · ${D.done.length} done`:''}</div>`}).join('');
+    out+=`<div class="item tap day ${d===t?'istoday':''}" data-day="${d}"><div class="daynum"><span>${DOW[dd.getDay()]}</span><b>${dd.getDate()}</b></div><div class="grow">${off?'<div class="t" style="color:var(--warn)">Day off</div>':jj?`<div class="t">${esc(jj.name)}</div>${bl}`:`<div class="muted">${dd.getDay()%6===0?'Weekend':'—'}</div>`}${p.note?`<div class="small">${esc(p.note)}</div>`:''}${p.crew&&p.crew.length?`<div class="small muted">${p.crew.map(esc).join(', ')}</div>`:''}</div><span class="muted">›</span></div>`;
   });
   return out+'</div>';
 }
@@ -414,6 +556,7 @@ function vBrain(){
       if(m(j.name)||m(j.site)||m(j.notes)||m(j.contact)||m(j.mfr))hits.push({j,type:'Job',text:[j.site,j.notes,j.contact].filter(Boolean).join(' · ')||j.mfr});
       j.sections.forEach(s=>m(s.name)&&hits.push({j,type:'Section',text:`${s.name} — ${num(j.logs.filter(l=>l.section===s.name).reduce((a,l)=>a+manHours(l),0))} man-hrs${s.done?' (done)':''}`}));
       j.logs.forEach(l=>(m(l.note)||m(l.section)||l.crew.some(m))&&hits.push({j,type:'Log',date:l.date,text:`${l.section?l.section+': ':''}${l.note} (${num(manHours(l))} man-hrs)`}));
+      j.logs.forEach(l=>l.build&&Object.entries(l.build.names||{}).forEach(([k,n])=>m(n)&&hits.push({j,type:l.build.done.includes(k)||l.build.extra.includes(k)?'Built':'Moved on',date:l.date,text:n})));
       j.punch.forEach(p=>m(p.text)&&hits.push({j,type:p.done?'Punch (done)':'Punch',text:p.text}));
       layoutRems(j).forEach(r=>m(r.text)&&hits.push({j,type:'Layout reminder',text:r.text}));
     });
@@ -426,6 +569,8 @@ function vBrain(){
     res=`<h2>Every job</h2><div class="card" style="padding:6px 10px"><table><tr><th>Job</th><th class="n">Days</th><th class="n">Man-hrs</th><th class="n">Punch</th></tr>
       ${DB.jobs.map(j=>`<tr data-openjob="${j.id}" style="cursor:pointer"><td><b>${esc(j.name)}</b><div class="small muted">${{active:'Active',upcoming:'Upcoming',done:'Completed'}[j.status]}</div></td><td class="n">${new Set(j.logs.map(l=>l.date)).size}</td><td class="n">${num(jobHours(j))}</td><td class="n">${j.punch.filter(p=>!p.done).length}</td></tr>`).join('')}
       <tr><td><b>All jobs</b></td><td></td><td class="n"><b>${num(totalH)}</b></td><td></td></tr></table></div>
+    ${(()=>{const rows=DB.jobs.map(j=>{const wl=j.logs.filter(l=>l.build);if(!wl.length)return'';const pl=wl.reduce((a,l)=>a+l.build.planned.length,0),dn=wl.reduce((a,l)=>a+l.build.done.length+l.build.extra.length,0),rl=wl.reduce((a,l)=>a+l.build.rolled.length,0);return `<tr data-openjob="${j.id}" style="cursor:pointer"><td><b>${esc(j.name)}</b><div class="small muted">${wl.length} days wrapped</div></td><td class="n">${pl}</td><td class="n">${dn}</td><td class="n" style="color:${dn>=pl?'var(--good)':'var(--bad)'}">${dn>=pl?'+':''}${dn-pl}</td></tr>`}).join('');
+      return `<h2>Planned vs. did</h2><div class="card" style="padding:6px 10px">${rows?`<table><tr><th>Job</th><th class="n">Planned</th><th class="n">Did</th><th class="n">±</th></tr>${rows}</table>`:'<div class="empty">Wrap up a build day and this shows what you planned against what got done.</div>'}</div>`})()}
     <h2>What things really take</h2>
     <div class="card" style="padding:6px 10px">${Object.keys(secs).length?`<table><tr><th>Section</th><th class="n">Man-hrs</th></tr>${Object.values(secs).sort((a,b)=>b.h-a.h).map(s=>`<tr><td>${esc(s.name)}<div class="small muted">${[...s.jobs].map(esc).join(', ')}</div></td><td class="n">${num(s.h)}</td></tr>`).join('')}</table>`:'<div class="empty">Log days with a section picked and this fills in with real hours for towers, slides, shades… the numbers you bid from.</div>'}</div>`;
   }
@@ -454,7 +599,12 @@ function bind(v){
   on('[data-punch]',el=>{const p=j.punch.find(x=>x.id===el.dataset.punch);p.done=!p.done;save();render()});
   on('[data-delpunch]',el=>{j.punch=j.punch.filter(x=>x.id!==el.dataset.delpunch);save();render()});
   on('[data-deldoc]',el=>{j.docs.splice(+el.dataset.deldoc,1);save();render()});
-  on('[data-log]',el=>addLog(j.id,j.logs.find(x=>x.id===el.dataset.log)));
+  on('[data-log]',el=>{const l=j.logs.find(x=>x.id===el.dataset.log);if(l.build&&getPlan(j)&&pIndex(getPlan(j),l.date)>=0)wrapUp(j,l.date);else addLog(j.id,l)});
+  on('[data-bitem]',el=>{const [jid,i,k]=el.dataset.bitem.split('|');const jj=job(jid),P=getPlan(jj),D=P.days[+i];D.done.includes(k)?D.done=D.done.filter(x=>x!==k):D.done.push(k);setPlan(jj,P);render()});
+  on('[data-wrap]',el=>wrapUp(job(el.dataset.wrap)));
+  on('[data-off]',el=>{if(confirm('Mark this as a day off? Every build day from here on slides back one workday.')){setOff(el.dataset.off,true);render();toast('Build days slid back a day')}});
+  on('[data-unoff]',el=>{setOff(el.dataset.unoff,false);render()});
+  v.querySelectorAll('[data-pstart]').forEach(el=>el.onchange=()=>{const jj=job(el.dataset.pstart),P=getPlan(jj);P.start=el.value||null;setPlan(jj,P);render();toast(el.value?'Build days now have dates':'Dates cleared')});
   const id=(x,fn)=>{const el=v.querySelector('#'+x);if(el)el.onclick=fn};
   id('setday',()=>editDay(TODAY()));
   id('qrem',()=>addReminder(undefined,true));id('qsched',()=>{S.tab='sched';render();scrollTo(0,0)});
