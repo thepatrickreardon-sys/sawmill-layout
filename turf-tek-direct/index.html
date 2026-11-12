@@ -7,10 +7,10 @@
 <meta name="theme-color" content="#10261a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Turf Tek Direct">
+<meta name="apple-mobile-web-app-title" content="Turf Tek">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>Turf Tek Direct</title>
+<title>Turf Tek</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -227,10 +227,10 @@
 </head>
 <body>
 <div class="intro" id="intro" aria-hidden="true">
-  <svg viewBox="0 0 900 320">
+  <svg viewBox="0 0 900 345">
     <defs>
-      <clipPath id="inClip"><rect x="0" y="0" width="900" height="272.5"/></clipPath>
-      <mask id="inMask" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="320">
+      <clipPath id="inClip"><rect x="0" y="0" width="900" height="274.5"/></clipPath>
+      <mask id="inMask" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="345">
         <g fill="none" stroke="#fff" stroke-linecap="round">
           <path class="i-g i-g1" pathLength="1" stroke-width="26" d="M437.6,276 L437.6,270.7 C436.7,187.7 449.8,116.1 500,61.1 L512,48"/>
           <path class="i-g i-g2" pathLength="1" stroke-width="30" d="M463.4,276 L463.4,270.7 C470.6,159.5 532.8,61.5 631.9,1.2 L648,-9"/>
@@ -239,14 +239,14 @@
       </mask>
     </defs>
     <circle class="i-sun" cx="480" cy="216" r="98" fill="#e2e773" clip-path="url(#inClip)"/>
-    <g mask="url(#inMask)"><image href="logo.png" width="900" height="320" clip-path="url(#inClip)"/></g>
-    <image class="i-logo" href="logo.png" width="900" height="320"/>
+    <g mask="url(#inMask)"><image href="logo.png" x="-3.5" y="-3" width="900" height="345" clip-path="url(#inClip)"/></g>
+    <image class="i-logo" href="logo.png" x="-3.5" y="-3" width="900" height="345"/>
   </svg>
   <div class="skip">Tap to skip</div>
 </div>
 <header class="hero">
   <div class="hero-in">
-    <img class="logo" src="logo.png" alt="Turf Tek Direct">
+    <img class="logo" src="logo.png" alt="Turf Tek">
     <p>Lay out your job, get a roll cut list and full material takeoff, then send it to our sales team for pricing.</p>
     <ol class="stepper"><li><a href="#layoutSec"><span>1</span>Layout</a></li><li><a href="#resultsSec"><span>2</span>Rolls &amp; materials</a></li><li><a href="#quoteSec"><span>3</span>Quote</a></li></ol>
   </div>
@@ -287,7 +287,7 @@
     <div class="trust"><span>No prices or sign-up</span><span>Your layout saves on this device</span><span>Quote from a real person</span></div>
   </section>
 
-  <footer>Quantities are estimates for quoting only. Turf Tek Direct will confirm the final material list with you.</footer>
+  <footer>Quantities are estimates for quoting only. Turf Tek will confirm the final material list with you.</footer>
 </main>
 
 <div class="ty" id="thanks" role="dialog" aria-modal="true" aria-labelledby="tyTitle"><div class="ty-in">
@@ -305,7 +305,7 @@
     <line class="ground" x1="20" y1="146" x2="180" y2="146" stroke="#86c440" stroke-width="4" stroke-linecap="round"/>
   </svg>
   <h2 id="tyTitle" class="fade f1"><span id="tyHead">Thank you</span><span id="tyName"></span></h2>
-  <p class="fade f2" id="tyText">Your quote request has been sent to the Turf Tek Direct sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.</p>
+  <p class="fade f2" id="tyText">Your quote request has been sent to the Turf Tek sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.</p>
   <div class="ty-fail" id="tyMail" style="display:none" role="alert">
     <div class="ty-fail-h"><span class="ty-fail-i">!</span>Your request didn't go through</div>
     <p>One more tap and it's on its way. Everything's already filled in.</p>
@@ -326,7 +326,7 @@
 <script>
 /* ================= SETTINGS (Turf Tek can adjust these) ================= */
 const C = {
-  SALES_EMAIL: "",               // where quote requests go, e.g. "sales@yourdomain.com"
+  SALES_EMAIL: "quote@turftekusa.com",               // where quote requests go, e.g. "sales@yourdomain.com"
   FORMSUBMIT_ID: "",             // optional: the random ID FormSubmit gives after activation, hides the email address in the page
   QUOTE_ENDPOINT: "",            // optional: website form URL that accepts a JSON POST. If set, requests send directly (no email app).
   ROLL_WIDTH_FT: 15,             // roll width as ordered
@@ -909,7 +909,7 @@ function contact(){
 }
 function buildSummary(T){
   const c = contact(), L = [];
-  L.push('TURF TEK DIRECT — QUOTE REQUEST', '');
+  L.push('TURF TEK — QUOTE REQUEST', '');
   L.push(`Name: ${c.name || '-'}`);
   if (c.company) L.push(`Company: ${c.company}`);
   L.push(`Phone: ${c.phone || '-'}`, `Email: ${c.email || '-'}`);
@@ -974,7 +974,7 @@ $('#quote').addEventListener('submit', e => {
     .catch(fail);
 });
 
-const TY_TEXT = "Your quote request has been sent to the Turf Tek Direct sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.";
+const TY_TEXT = "Your quote request has been sent to the Turf Tek sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.";
 function showThanks(T, c, mailHref){
   const ty = $('#thanks');
   $('#tyName').textContent = c.name ? ', ' + c.name.split(/\s+/)[0] : '';
