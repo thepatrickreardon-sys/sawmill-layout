@@ -102,7 +102,7 @@ label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:1
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 
-/* ===== Turf Tek look: same field, sun and grass as the Turf Tek Direct calculator ===== */
+/* ===== Turf Tek look: same field, sun and grass as the Turf Tek calculator ===== */
 :root{--brand:#86c440;--brand-d:#5f9b25;--sun:#e2e773;--forest:#10261a;--forest2:#1d4424;--green-l:#eef6e6;
   --bg:#f1f4ee;--panel:#fff;--ink:#16221a;--muted:#5f6d62;--line:#e3e9df;--paint:#73b02f;--paintsoft:#eef6e6;--steel:#2f6d2a;--steelsoft:#eef6e6;--good:#3f8f2f;--goodbg:#e6f3dc;
   --shadow:0 1px 2px rgba(16,38,26,.06),0 6px 20px rgba(16,38,26,.06);--body:Barlow,system-ui,sans-serif;
@@ -260,7 +260,7 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast(
 save();
 
 const S={tab:'today',job:null,jtab:'overview',filter:'active',q:'',anim:true};
-/* ---------- sun + grass mark (same shape as the Turf Tek Direct logo) ---------- */
+/* ---------- sun + grass mark (same shape as the Turf Tek logo) ---------- */
 const MARK=`<defs><clipPath id="mkc"><rect x="0" y="0" width="200" height="138"/></clipPath></defs>
   <circle class="sun" cx="104" cy="112" r="46" fill="#e2e773" clip-path="url(#mkc)"/>
   <g class="blades" fill="none" stroke="#86c440" stroke-linecap="round" clip-path="url(#mkc)">

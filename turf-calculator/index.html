@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#10261a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Turf Tek">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Turf Tek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#86c440; --brand-d:#5f9b25; --sun:#e2e773; --forest:#10261a; --forest2:#1d4424;
+    --green:#3f8f2f; --green-d:#1d4424; --green-l:#eef6e6; --ink:#16221a; --mute:#5f6d62;
+    --line:#e3e9df; --bg:#f1f4ee; --card:#fff; --orange:#e8891c; --red:#c63b2d;
+    --shadow:0 1px 2px rgba(16,38,26,.06),0 6px 20px rgba(16,38,26,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;padding-bottom:90px}
+  /* hero */
+  .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:28px 18px 34px;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
+               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%)}
+  .hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+  .hero-in{max-width:760px;margin:0 auto;position:relative}
+  .logo{display:block;width:min(420px,92%);height:auto;margin:0 auto 16px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.25))}
+  .hero h1{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.5px;text-transform:uppercase}
+  .hero p{margin:10px auto 0;max-width:520px;color:rgba(255,255,255,.78);font-size:15.5px}
+  .stepper{display:flex;justify-content:center;gap:6px;list-style:none;padding:0;margin:20px 0 0;flex-wrap:wrap}
+  .stepper a{display:flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);padding:6px 12px 6px 6px;border-radius:999px}
+  .stepper span{width:22px;height:22px;border-radius:50%;background:var(--brand);color:var(--forest);display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  main{max-width:860px;margin:0 auto;padding:6px 14px 30px}
+  /* sections */
+  .sec{margin-top:26px;scroll-margin-top:12px}
+  .sec-h{display:flex;gap:12px;align-items:flex-start;margin:0 2px 12px}
+  .num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--forest2);color:var(--brand);display:grid;place-items:center;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:20px}
+  .sec-h h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:25px;line-height:1.1;margin:0;text-transform:uppercase;letter-spacing:.3px;color:var(--forest2)}
+  .sec-h p{margin:2px 0 0;font-size:14px;color:var(--mute)}
+  .sec-h p b{color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .card.new{animation:pop .35s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h3{font-size:12.5px;font-weight:700;margin:20px 0 8px;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
+  /* area card */
+  .area-head{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+  .area-ico{flex:none;width:36px;height:36px;border-radius:10px;background:var(--green-l);display:grid;place-items:center}
+  .area-head input{font-weight:700;font-size:19px;border:none;border-bottom:2px solid transparent;border-radius:0;padding:4px 2px;flex:1;min-width:0;background:none}
+  .area-head input:hover{border-bottom-color:var(--line)}
+  .area-head input:focus{border-bottom-color:var(--brand);outline:none}
+  .x{flex:none;width:36px;height:36px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--mute);border-radius:10px;cursor:pointer;font-size:20px;line-height:1}
+  .x:hover{color:var(--red);border-color:#f0c9c4;background:#fff7f6}
+  .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));background:#f0f3ee;border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
+  .seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:none;padding:9px 4px;border-radius:9px;font:inherit;font-weight:600;font-size:14.5px;color:var(--mute);cursor:pointer;transition:all .15s}
+  .seg button svg{width:20px;height:16px}
+  .seg button.on{background:#fff;color:var(--forest2);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin-bottom:5px}
+  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid #dbe3d7;border-radius:11px;background:#fbfcfa;color:var(--ink);transition:border-color .15s,box-shadow .15s,background .15s}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235f6d62' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px rgba(134,196,64,.2)}
+  input::placeholder,textarea::placeholder{color:#a3ada5}
+  .bad{border-color:var(--red)!important;background:#fff6f5!important;box-shadow:0 0 0 4px rgba(198,59,45,.1)!important}
+  .hint{font-size:12.5px;color:var(--mute);margin-top:4px}
+  .opts{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:14px}
+  /* switch */
+  .check{display:flex;gap:12px;align-items:center;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;margin:0}
+  .check input{appearance:none;-webkit-appearance:none;flex:none;width:46px;height:28px;padding:0;margin:0;border-radius:999px;background:#d5ddd1;border:none;position:relative;cursor:pointer;transition:background .2s}
+  .check input:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+  .check input:checked{background:var(--brand)}
+  .check input:checked:before{transform:translateX(18px)}
+  .check input:focus{box-shadow:0 0 0 4px rgba(134,196,64,.25)}
+  /* drawing */
+  .draw{margin-top:16px;background:linear-gradient(#fafcf8,#f3f7f0);border:1px solid var(--line);border-radius:14px;padding:10px 8px 6px}
+  .draw svg{width:100%;height:auto;display:block;max-height:440px}
+  .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;font-size:12px;color:var(--mute);padding:6px 4px 2px}
+  .legend i{display:inline-block;width:18px;height:0;border-top:2.5px dashed;vertical-align:middle;margin-right:5px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .tiles div{background:var(--green-l);border-radius:12px;padding:10px 6px;text-align:center}
+  .tiles b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:24px;line-height:1.05;color:var(--forest2)}
+  .tiles span{font-size:12px;color:var(--mute);font-weight:500}
+  .tiles.dark div{background:var(--forest2)}
+  .tiles.dark b{color:#fff;font-size:28px}
+  .tiles.dark span{color:rgba(255,255,255,.7)}
+  .tiles.dark div:first-child b{color:var(--sun)}
+  details.cuts{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+  details.cuts summary{cursor:pointer;padding:11px 0;font-weight:600;font-size:14.5px;color:var(--forest2);list-style:none;display:flex;justify-content:space-between}
+  details.cuts summary::-webkit-details-marker{display:none}
+  details.cuts summary:after{content:"+";font-size:18px;line-height:1;color:var(--mute)}
+  details.cuts[open] summary:after{content:"–"}
+  .cutlist{margin:0 0 10px;padding:0;list-style:none;font-size:14.5px}
+  .cutlist li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .cutlist .pn{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#479a3c;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
+  .cutlist .pn.h{background:#a5d38a;color:var(--forest2)}
+  .cutlist b{font-weight:700}
+  .err{color:var(--red);font-size:14px;margin-top:12px;background:#fff6f5;border-radius:10px;padding:10px 12px}
+  .empty{margin-top:14px;border:1.5px dashed #d3dccf;border-radius:14px;padding:22px 14px;text-align:center;color:var(--mute);font-size:14px}
+  .empty svg{display:block;margin:0 auto 6px;opacity:.6}
+  .add{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:2px dashed #b9d99a;background:rgba(255,255,255,.6);color:var(--brand-d);border-radius:16px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s}
+  .add:hover{background:#fff;border-color:var(--brand)}
+  .add span{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:18px;line-height:1}
+  .reset{display:block;margin:12px auto 0;background:none;border:none;color:var(--mute);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+  .reset.arm{color:var(--red);font-weight:600}
+  /* results */
+  .rlist{list-style:none;margin:0;padding:0}
+  .rlist li{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .rlist li:first-child{border-top:none}
+  .rlist .ico{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--green-l)}
+  .rlist .what{flex:1;min-width:0;font-weight:600}
+  .rlist .what small{display:block;color:var(--mute);font-weight:400;font-size:12.5px}
+  .rlist .qty{font-weight:700;white-space:nowrap;background:#f3f6f1;border-radius:9px;padding:5px 10px;font-size:15px}
+  .rlist .qty.roll{background:var(--forest2);color:#fff}
+  .note{font-size:13px;color:var(--mute);background:#f6f8f4;border-radius:10px;padding:9px 12px;margin-top:10px}
+  /* quote */
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(180deg,#8fcd48,#73b02f);color:#10261a;font:inherit;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none;box-shadow:0 6px 16px rgba(115,176,47,.35);transition:transform .1s,box-shadow .15s}
+  .btn:active{transform:translateY(1px);box-shadow:0 3px 8px rgba(115,176,47,.3)}
+  .btn.alt{background:#fff;color:var(--forest2);border:1.5px solid var(--line);box-shadow:none;margin-top:10px;font-size:15.5px;padding:13px}
+  .msg{margin-top:12px;font-size:14px;padding:11px 12px;border-radius:11px;background:var(--green-l);color:var(--forest2);display:none}
+  .msg.show{display:block;animation:pop .25s ease-out}
+  .msg.warn{background:#fff4e5;color:#8a4b06}
+  details.prev{margin-top:16px}
+  details.prev summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--mute)}
+  pre{white-space:pre-wrap;font-size:12px;background:#f7f9f6;border:1px solid var(--line);border-radius:12px;padding:12px;max-height:280px;overflow:auto;margin:10px 0 0}
+  .trust{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--mute);margin:-2px 0 16px}
+  .trust span:before{content:"✓ ";color:var(--brand-d);font-weight:700}
+  footer{font-size:12px;color:var(--mute);text-align:center;padding:4px 16px 10px}
+  footer img{width:90px;opacity:.75;display:block;margin:0 auto 6px}
+  .shape-hint{display:flex;gap:12px;align-items:center;font-size:13px;color:var(--mute);margin:-2px 0 12px;background:#f6f8f4;border-radius:12px;padding:8px 10px}
+  .shape-hint svg{width:64px;flex:none}
+  .pts{display:grid;gap:8px}
+  .pt{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:8px;align-items:center}
+  .pt .pn{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#1b4d1f;color:#fff;font-size:12.5px;font-weight:700}
+  .pt-h span{font-size:12.5px;font-weight:600;color:var(--mute)}
+  .x:disabled{opacity:.35;cursor:default}
+  .imp{border:1.5px solid #cfe5b8;background:#f7fbf2;border-radius:14px;padding:12px;margin-bottom:12px}
+  .imp-h b{display:block;color:var(--forest2);font-size:15px}
+  .imp-h span{font-size:13px;color:var(--mute)}
+  .imp-b{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .btn.sm{padding:10px;font-size:14.5px;border-radius:11px}
+  .paste{margin-top:10px;display:grid;gap:8px}
+  .imp-ok{margin-top:10px;font-size:13.5px;color:var(--forest2);font-weight:600;display:grid;gap:6px}
+  .imp-ok span{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--mute)}
+  .imp-ok select{width:auto;padding:6px 30px 6px 10px;font-size:14px}
+  .imp-ok small{font-weight:400;color:#8a4b06}
+  .imp-err:empty{display:none}
+  .imp-err{margin-top:10px;color:var(--red);font-size:13.5px}
+  .add.sm{margin-top:10px;padding:10px;font-size:14.5px;border-width:1.5px}
+  .add.sm span{width:20px;height:20px;font-size:15px}
+  /* dock */
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(16,38,26,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(0);transition:transform .25s}
+  .dock.hide{transform:translateY(110%)}
+  .dock-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .dock-stats{flex:1;display:flex;gap:16px;color:rgba(255,255,255,.7);font-size:12px;line-height:1.1}
+  .dock-stats b{display:block;color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:22px}
+  .dock-stats div:first-child b{color:var(--sun)}
+  .dock-btn{flex:none;background:var(--brand);color:var(--forest);text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px;font-size:15.5px}
+  /* intro splash */
+  .intro{position:fixed;inset:0;z-index:60;display:grid;place-items:center;cursor:pointer;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
+               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%);
+    transition:transform .7s cubic-bezier(.65,0,.25,1)}
+  .intro.out{transform:translateY(-100%)}
+  .intro:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+  .intro svg{width:min(460px,92vw);height:auto;overflow:visible}
+  .intro .i-sun{transform-origin:480px 216px;transform:scale(0);opacity:0;animation:sunUp .55s cubic-bezier(.2,.9,.3,1.25) .1s forwards}
+  .intro .i-g{stroke-dasharray:1 1;stroke-dashoffset:1}
+  .intro .i-g1{animation:grow 1s cubic-bezier(.3,0,.15,1) .45s forwards}
+  .intro .i-g2{animation:grow 1.2s cubic-bezier(.3,0,.15,1) .6s forwards}
+  .intro .i-g3{animation:grow .95s cubic-bezier(.3,0,.15,1) .8s forwards}
+  .intro .i-logo{opacity:0;animation:fadeIn .6s ease-out 1.75s forwards}
+  @keyframes fadeIn{to{opacity:1}}
+  .intro .skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:12.5px;color:rgba(255,255,255,.45)}
+  @media (prefers-reduced-motion:reduce){.intro{display:none}}
+  /* thank-you screen */
+  .ty{position:fixed;inset:0;z-index:50;display:none;overflow:auto;color:#fff;text-align:center;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
+               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%)}
+  .ty.show{display:block;animation:tyIn .45s ease-out}
+  @keyframes tyIn{from{opacity:0}to{opacity:1}}
+  .ty-in{min-height:100%;max-width:520px;margin:0 auto;padding:48px 22px calc(36px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ty svg.mark{width:min(230px,62vw);height:auto;overflow:visible;margin-bottom:8px}
+  .ty .sun{transform-origin:100px 110px;transform:scale(0);opacity:0}
+  .ty .grow{stroke-dasharray:1 1;stroke-dashoffset:1}
+  .ty .ground{stroke-dasharray:160;stroke-dashoffset:160}
+  .ty.play .sun{animation:sunUp .7s cubic-bezier(.2,.9,.3,1.25) .15s forwards}
+  .ty.play .ground{animation:draw .6s ease-out .55s forwards}
+  .ty.play .g1{animation:grow 1.4s cubic-bezier(.3,0,.15,1) .9s forwards}
+  .ty.play .g2{animation:grow 1.7s cubic-bezier(.3,0,.15,1) 1.1s forwards}
+  .ty.play .g3{animation:grow 1.3s cubic-bezier(.3,0,.15,1) 1.35s forwards}
+  .ty.play .sway{animation:sway 5s ease-in-out 2.8s infinite}
+  .ty .sway{will-change:transform}
+  @keyframes sunUp{to{transform:scale(1);opacity:1}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes grow{to{stroke-dashoffset:0}}
+  @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.4deg)}}
+  .ty h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 0}
+  .ty p{color:rgba(255,255,255,.8);font-size:16px;margin:12px 0 0}
+  .ty .fade{opacity:0;transform:translateY(8px)}
+  .ty.play .fade{animation:up .5s ease-out forwards}
+  .ty.play .f1{animation-delay:2.2s}.ty.play .f2{animation-delay:2.35s}.ty.play .f3{animation-delay:2.5s}.ty.play .f4{animation-delay:2.65s}
+  @keyframes up{to{opacity:1;transform:none}}
+  .ty-fail{width:100%;margin-top:20px;background:#e8891c;color:#1a1206;border-radius:16px;padding:16px;text-align:left;
+    box-shadow:0 0 0 0 rgba(232,137,28,.7);animation:failIn .5s cubic-bezier(.2,.9,.3,1.3) both, failPulse 1.4s ease-out .5s 4}
+  .ty-fail-h{display:flex;align-items:center;gap:10px;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:23px;line-height:1.1;text-transform:uppercase}
+  .ty-fail-i{flex:none;width:30px;height:30px;border-radius:50%;background:#1a1206;color:#ffb347;display:grid;place-items:center;font-size:20px;font-family:Barlow,sans-serif;animation:blink .7s ease-in-out .5s 6 alternate}
+  .ty-fail p{margin:8px 0 12px!important;color:#2a1a05!important;font-size:15px!important;font-weight:500}
+  .ty-fail .btn{background:#10261a;color:#fff;box-shadow:none}
+  @keyframes failIn{0%{opacity:0;transform:scale(.85)}60%{opacity:1;transform:scale(1.04)}80%{transform:scale(.98) rotate(-.6deg)}100%{transform:none}}
+  @keyframes failPulse{0%{box-shadow:0 0 0 0 rgba(232,137,28,.75)}100%{box-shadow:0 0 0 18px rgba(232,137,28,0)}}
+  @keyframes blink{to{background:#fff;color:#e8891c}}
+  .ty-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:22px}
+  .ty-sum div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px}
+  .ty-sum b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:26px;line-height:1.05;color:var(--sun)}
+  .ty-sum span{font-size:12px;color:rgba(255,255,255,.7)}
+  .ty-note{font-size:13.5px!important;background:rgba(226,231,115,.12);border-radius:10px;padding:9px 12px;color:#f0f3c0!important}
+  .ty-btns{display:grid;gap:10px;width:100%;margin-top:24px}
+  .ty-btns .btn.alt{margin:0;background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+  @media (prefers-reduced-motion:reduce){.ty *{animation-duration:.01s!important;animation-delay:0s!important}}
+  @media (min-width:700px){.hero{padding:40px 18px 44px}.hero h1{font-size:50px}}
+  @media (max-width:400px){.tiles b{font-size:20px}.tiles.dark b{font-size:23px}.hero h1{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="intro" id="intro" aria-hidden="true">
+  <svg viewBox="0 0 900 345">
+    <defs>
+      <clipPath id="inClip"><rect x="0" y="0" width="900" height="274.5"/></clipPath>
+      <mask id="inMask" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="345">
+        <g fill="none" stroke="#fff" stroke-linecap="round">
+          <path class="i-g i-g1" pathLength="1" stroke-width="26" d="M437.6,276 L437.6,270.7 C436.7,187.7 449.8,116.1 500,61.1 L512,48"/>
+          <path class="i-g i-g2" pathLength="1" stroke-width="30" d="M463.4,276 L463.4,270.7 C470.6,159.5 532.8,61.5 631.9,1.2 L648,-9"/>
+          <path class="i-g i-g3" pathLength="1" stroke-width="26" d="M495.5,276 L495.5,270.7 C498.8,206.6 525.2,155.7 572,119.1 L584,109"/>
+        </g>
+      </mask>
+    </defs>
+    <circle class="i-sun" cx="480" cy="216" r="98" fill="#e2e773" clip-path="url(#inClip)"/>
+    <g mask="url(#inMask)"><image href="logo.png" x="-3.5" y="-3" width="900" height="345" clip-path="url(#inClip)"/></g>
+    <image class="i-logo" href="logo.png" x="-3.5" y="-3" width="900" height="345"/>
+  </svg>
+  <div class="skip">Tap to skip</div>
+</div>
+<header class="hero">
+  <div class="hero-in">
+    <img class="logo" src="logo.png" alt="Turf Tek">
+    <p>Lay out your job, get a roll cut list and full material takeoff, then send it to our sales team for pricing.</p>
+    <ol class="stepper"><li><a href="#layoutSec"><span>1</span>Layout</a></li><li><a href="#resultsSec"><span>2</span>Rolls &amp; materials</a></li><li><a href="#quoteSec"><span>3</span>Quote</a></li></ol>
+  </div>
+</header>
+
+<main>
+  <section class="sec" id="layoutSec">
+    <div class="sec-h"><div class="num">1</div><div><h2>Your layout</h2><p>Add each turf area. Type sizes like <b>40</b>, <b>40.5</b>, <b>40' 6"</b> or <b>40-6</b>.</p></div></div>
+    <div id="areas"></div>
+    <button class="add" id="addArea"><span>+</span>Add another area</button>
+    <button class="reset" id="resetBtn" type="button">Start over</button>
+  </section>
+
+  <section class="sec" id="resultsSec">
+    <div class="sec-h"><div class="num">2</div><div><h2>Rolls &amp; materials</h2><p>Updates as you type. Quantities only — pricing comes from our sales team.</p></div></div>
+    <div class="card" id="results"></div>
+  </section>
+
+  <section class="sec" id="quoteSec">
+    <div class="sec-h"><div class="num">3</div><div><h2>Request a quote</h2><p>We'll price your material list and get back to you.</p></div></div>
+    <div class="card">
+      <form id="quote" novalidate>
+        <div class="grid">
+          <div><label for="q_name">Name *</label><input id="q_name" autocomplete="name"></div>
+          <div><label for="q_company">Company</label><input id="q_company" autocomplete="organization"></div>
+          <div><label for="q_phone">Phone *</label><input id="q_phone" type="tel" autocomplete="tel"></div>
+          <div><label for="q_email">Email *</label><input id="q_email" type="email" autocomplete="email"></div>
+        </div>
+        <div style="margin-top:12px"><label for="q_job">Job address or town</label><input id="q_job" autocomplete="address-level2"></div>
+        <div style="margin-top:12px"><label for="q_product">Turf product (if you know it)</label><input id="q_product" placeholder="Optional"></div>
+        <div style="margin-top:12px"><label for="q_notes">Notes</label><textarea id="q_notes" rows="3" placeholder="Delivery date, site access, anything else"></textarea></div>
+        <div style="margin-top:18px"><button class="btn" type="submit">Send my quote request <span aria-hidden="true">→</span></button></div>
+        <button class="btn alt" type="button" id="copyBtn">Copy summary</button>
+        <div class="msg" id="qmsg"></div>
+      </form>
+      <details class="prev"><summary>Preview what gets sent</summary><pre id="summary"></pre></details>
+    </div>
+    <div class="trust"><span>No prices or sign-up</span><span>Your layout saves on this device</span><span>Quote from a real person</span></div>
+  </section>
+
+  <footer>Quantities are estimates for quoting only. Turf Tek will confirm the final material list with you.</footer>
+</main>
+
+<div class="ty" id="thanks" role="dialog" aria-modal="true" aria-labelledby="tyTitle"><div class="ty-in">
+  <svg class="mark" viewBox="40 -12 160 170" aria-hidden="true">
+    <defs><clipPath id="tyClip"><rect x="0" y="-40" width="240" height="179"/></clipPath>
+      <mask id="tyM1" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g1" pathLength="1" d="M77.5,146 L77.5,139 C77,95 84,57 110.6,27.8 L116,22" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask>
+      <mask id="tyM2" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g2" pathLength="1" d="M91.2,146 L91.2,139 C95,80 128,28 180.6,-4 L188,-9" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/></mask>
+      <mask id="tyM3" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g3" pathLength="1" d="M108.2,146 L108.2,139 C110,105 124,78 148.8,58.6 L154,54" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask></defs>
+    <circle class="sun" cx="100" cy="110" r="52" fill="#e2e773" clip-path="url(#tyClip)"/>
+    <g class="sway" style="transform-origin:95px 139px">
+      <path class="blade" mask="url(#tyM1)" d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
+      <path class="blade" mask="url(#tyM2)" d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
+      <path class="blade" mask="url(#tyM3)" d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
+    </g>
+    <line class="ground" x1="20" y1="146" x2="180" y2="146" stroke="#86c440" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <h2 id="tyTitle" class="fade f1"><span id="tyHead">Thank you</span><span id="tyName"></span></h2>
+  <p class="fade f2" id="tyText">Your quote request has been sent to the Turf Tek sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.</p>
+  <div class="ty-fail" id="tyMail" style="display:none" role="alert">
+    <div class="ty-fail-h"><span class="ty-fail-i">!</span>Your request didn't go through</div>
+    <p>One more tap and it's on its way. Everything's already filled in.</p>
+    <a class="btn" id="tyMailBtn" href="#">Email it to us now <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="ty-sum fade f3"><div><b id="tySf">–</b><span>sq ft</span></div><div><b id="tyRolls">–</b><span>rolls</span></div><div><b id="tyAreas">–</b><span>areas</span></div></div>
+  <div class="ty-btns fade f4">
+    <button class="btn" type="button" id="tyBack">Back to my layout</button>
+    <button class="btn alt" type="button" id="tyNew">Start a new job</button>
+  </div>
+</div></div>
+
+<div class="dock" id="dock"><div class="dock-in">
+  <div class="dock-stats"><div><b id="dSf">–</b>sq ft</div><div><b id="dRolls">–</b>rolls</div><div><b id="dSeam">–</b>ft seams</div></div>
+  <a class="dock-btn" href="#quoteSec">Get a quote →</a>
+</div></div>
+
+<script>
+/* ================= SETTINGS (Turf Tek can adjust these) ================= */
+const C = {
+  SALES_EMAIL: "quote@turftekusa.com",               // where quote requests go, e.g. "sales@yourdomain.com"
+  FORMSUBMIT_ID: "",             // optional: the random ID FormSubmit gives after activation, hides the email address in the page
+  QUOTE_ENDPOINT: "",            // optional: website form URL that accepts a JSON POST. If set, requests send directly (no email app).
+  ROLL_WIDTH_FT: 15,             // roll width as ordered
+  FULL_COVER_FT: 14 + 10/12,     // usable width after trimming (14'10")
+  HALF_COVER_FT: 7 + 5/12,       // usable width of a half roll (7'5")
+  END_ALLOWANCE_FT: 1,           // extra length added to every piece for trimming (6" each end)
+  MAX_ROLL_LENGTH_FT: 100,       // longest single piece we cut
+  INFILL_LB_PER_SF: 2,           // sand infill
+  INFILL_BAG_LB: 50,
+  SEAM_TAPE_ROLL_FT: 100,
+  GLUE_LF_PER_GAL: 25,           // linear feet of seam per gallon of glue
+  STAPLE_SPACING_IN: 3,          // staples into 2x4 nailer board
+  NAIL_SPACING_IN: 6,            // nails into buried edge
+  BOARD_LENGTH_FT: 16            // 2x4 length for board count
+};
+/* ======================================================================== */
+
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 9);
+function newArea(n){ return {id:uid(), name:'Area '+n, shape:'rect', L:'', W:'', r:'', A:'', B:'', c:'', d:'', W1:'', W2:'', pts:[], dir:'auto', halfRolls:true, maxPiece:'', border:'board', boardFt:''}; }
+
+let state;
+try { state = JSON.parse(localStorage.getItem('ttd-calc') || 'null'); } catch(e) { state = null; }
+if (!state || !Array.isArray(state.areas) || !state.areas.length) state = {areas:[newArea(1)], contact:{}};
+state.areas.forEach(a => { if (!Array.isArray(a.pts)) a.pts = []; });
+function save(){ try { localStorage.setItem('ttd-calc', JSON.stringify(state)); } catch(e) {} }
+
+/* ---------- length parsing / formatting ---------- */
+function parseLen(s){
+  if (s == null) return NaN;
+  s = String(s).trim().toLowerCase().replace(/[’′]/g,"'").replace(/[”″]/g,'"');
+  if (!s) return NaN;
+  const m = s.match(/^(\d+(?:\.\d+)?)\s*(?:'|ft|feet)?\s*(?:-|\s)?\s*(?:(\d+(?:\.\d+)?)\s*(?:"|in|inches)?)?$/);
+  if (!m) return NaN;
+  return parseFloat(m[1]) + (m[2] ? parseFloat(m[2]) / 12 : 0);
+}
+function fmt(ft){
+  const t = Math.round(ft * 12), f = Math.floor(t / 12), i = t % 12;
+  return i ? `${f}'${i}"` : `${f}'`;
+}
+const fmtIn = ft => { const t = Math.round(ft * 12), f = Math.floor(t / 12), i = t % 12; return i ? `${f}' ${i}"` : `${f}`; };
+const n0 = x => Math.round(x).toLocaleString('en-US');
+const n1 = x => (Math.round(x * 10) / 10).toLocaleString('en-US');
+const widthLabel = half => half ? `7'6"` : `15'`;
+
+/* ---------- geometry ----------
+   Every shape becomes an outline polygon (feet, x across, y up the page).
+   The roll layout works on any outline, so new shapes only need a polygon here. */
+const nz = x => x >= 0;               // zero allowed
+const pos = x => x > 0;
+function polyArea(P){ let s = 0; P.forEach((p, i) => { const q = P[(i+1) % P.length]; s += p[0]*q[1] - q[0]*p[1]; }); return Math.abs(s) / 2; }
+function polyPerim(P){ let s = 0; P.forEach((p, i) => { const q = P[(i+1) % P.length]; s += Math.hypot(q[0]-p[0], q[1]-p[1]); }); return s; }
+function normalize(P){
+  const mx = Math.min(...P.map(p => p[0])), my = Math.min(...P.map(p => p[1]));
+  P = P.map(p => [p[0]-mx, p[1]-my]);
+  return P.filter((p, i) => { const q = P[(i+1) % P.length]; return Math.hypot(q[0]-p[0], q[1]-p[1]) > 1e-6; });
+}
+function finish(P, extra){
+  P = normalize(P);
+  const g = {poly:P, perim:polyPerim(P), sf:polyArea(P), X:Math.max(...P.map(p => p[0])), Y:Math.max(...P.map(p => p[1]))};
+  return Object.assign(g, extra);
+}
+function geometry(a){
+  const v = k => parseLen(a[k]);
+  if (a.shape === 'rect'){
+    const L = v('L'), W = v('W'), r = String(a.r ?? '').trim() ? v('r') : 0;
+    if (!(pos(L) && pos(W))) return null;
+    if (!nz(r)) return null;
+    if (r * 2 > Math.min(L, W) + 1e-9) return {error:'The corner radius can be at most half the shorter side.'};
+    if (!r) return finish([[0,0],[L,0],[L,W],[0,W]], {desc:`Rectangle ${fmt(L)} × ${fmt(W)}`});
+    const P = [], corners = [[L-r,r,-90],[L-r,W-r,0],[r,W-r,90],[r,r,180]];
+    corners.forEach(([cx, cy, s]) => { for (let k = 0; k <= 12; k++){ const t = (s + 90*k/12) * Math.PI/180; P.push([cx + r*Math.cos(t), cy + r*Math.sin(t)]); } });
+    return finish(P, {sf:L*W - (4 - Math.PI)*r*r, perim:2*(L+W) - 8*r + 2*Math.PI*r, desc:`Rectangle ${fmt(L)} × ${fmt(W)}, ${fmt(r)} rounded corners`});
+  }
+  if (a.shape === 'L'){
+    const A = v('A'), B = v('B'), c = v('c'), d = v('d');
+    if (!(pos(A) && pos(B) && pos(c) && pos(d))) return null;
+    if (c >= A || d >= B) return {error:'The cut-out has to be smaller than the overall length and width.'};
+    return finish([[0,0],[A,0],[A,B-d],[A-c,B-d],[A-c,B],[0,B]], {desc:`L-shape ${fmt(A)} × ${fmt(B)} with ${fmt(c)} × ${fmt(d)} cut-out`});
+  }
+  if (a.shape === 'angle'){
+    const L = v('L'), W1 = v('W1'), W2 = v('W2');
+    if (!(pos(L) && nz(W1) && nz(W2))) return null;
+    if (!(W1 > 0 || W2 > 0)) return {error:'At least one end needs a width.'};
+    return finish([[0,0],[L,0],[L,W2],[0,W1]], {desc:`Angled ${fmt(L)} long, ${fmt(W1)} wide at one end, ${fmt(W2)} at the other`});
+  }
+  if (a.shape === 'oval'){
+    const L = v('L'), W = v('W');
+    if (!(pos(L) && pos(W))) return null;
+    const P = [], N = 96;
+    for (let k = 0; k < N; k++){ const t = 2*Math.PI*k/N; P.push([L/2 + L/2*Math.cos(t), W/2 + W/2*Math.sin(t)]); }
+    const h = ((L-W)/(L+W))**2;
+    return finish(P, {sf:Math.PI*L*W/4, perim:Math.PI*(L+W)/2*(1 + 3*h/(10 + Math.sqrt(4 - 3*h))),
+      desc:Math.abs(L-W) < 1e-6 ? `Circle ${fmt(L)} across` : `Oval ${fmt(L)} × ${fmt(W)}`});
+  }
+  if (a.shape === 'custom'){
+    const pts = (a.pts || []).filter(p => String(p.x ?? '').trim() !== '' || String(p.y ?? '').trim() !== '');
+    const P = pts.map(p => [parseLen(p.x), parseLen(p.y)]);
+    if (P.length < 3 || P.some(p => !(nz(p[0]) && nz(p[1])))) return null;
+    if (polyArea(P) < 1) return {error:'Those corners don\'t make an area yet. Go around the outline in order.'};
+    if (selfCrosses(P)) return {error:'The outline crosses itself. Check that the corners are listed in order around the area.'};
+    return finish(P.map(p => [p[0], -p[1]]), {desc:P.length > 12 ? `Plotted outline, ${P.length} points${a.imp ? ' (from ' + a.imp.name + ')' : ''}` : `Plotted outline, ${P.length} corners (${P.map(p => fmt(p[0]) + ' across/' + fmt(p[1]) + ' up').join('; ')})`, custom:true});
+  }
+  return null;
+}
+function selfCrosses(P){
+  const n = P.length, cr = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++){
+    if (Math.abs(i - j) <= 1 || (i === 0 && j === n - 1)) continue;
+    const a = P[i], b = P[(i+1)%n], c = P[j], d = P[(j+1)%n];
+    const d1 = cr(c,d,a), d2 = cr(c,d,b), d3 = cr(a,b,c), d4 = cr(a,b,d);
+    if (((d1 > 1e-9 && d2 < -1e-9) || (d1 < -1e-9 && d2 > 1e-9)) && ((d3 > 1e-9 && d4 < -1e-9) || (d3 < -1e-9 && d4 > 1e-9))) return true;
+  }
+  return false;
+}
+
+function merge(ints){
+  ints.sort((p,q) => p[0] - q[0]);
+  const out = [];
+  for (const iv of ints){
+    if (out.length && iv[0] <= out[out.length-1][1] + 1e-6) out[out.length-1][1] = Math.max(out[out.length-1][1], iv[1]);
+    else out.push([iv[0], iv[1]]);
+  }
+  return out;
+}
+/* inside spans of the outline along a horizontal line y (axis 1) or vertical line x (axis 0) */
+function scan(P, at, axis){
+  const o = 1 - axis, xs = [];
+  P.forEach((p, i) => {
+    const q = P[(i+1) % P.length];
+    if ((p[axis] <= at && q[axis] > at) || (q[axis] <= at && p[axis] > at)) xs.push(p[o] + (at - p[axis]) * (q[o] - p[o]) / (q[axis] - p[axis]));
+  });
+  xs.sort((m, n) => m - n);
+  const out = [];
+  for (let k = 0; k + 1 < xs.length; k += 2) if (xs[k+1] - xs[k] > 1e-6) out.push([xs[k], xs[k+1]]);
+  return out;
+}
+function intersect(A, B){
+  const out = [];
+  A.forEach(a => B.forEach(b => { const lo = Math.max(a[0], b[0]), hi = Math.min(a[1], b[1]); if (hi - lo > 1e-6) out.push([lo, hi]); }));
+  return out;
+}
+/* turf needed across a strip from y0 to y1: union of the outline's cross-sections inside it */
+function bandSpans(P, y0, y1){
+  const e = 1e-4, ys = [], n = Math.max(2, Math.ceil((y1 - y0) / 0.25));
+  for (let k = 0; k <= n; k++) ys.push(y0 + e + (y1 - y0 - 2*e) * k / n);
+  P.forEach(p => { if (p[1] > y0 + e && p[1] < y1 - e) ys.push(p[1] - e, p[1] + e); });
+  return merge(ys.flatMap(y => scan(P, y, 1)));
+}
+
+/* Rolls always run along x in layout space; swap=true runs them along y. */
+function layout(poly, swap, opts){
+  const P = swap ? poly.map(p => [p[1], p[0]]) : poly;
+  const H = Math.max(...P.map(p => p[1]));
+  const maxLen = Math.min(opts.maxPiece > 0 ? opts.maxPiece : Infinity, C.MAX_ROLL_LENGTH_FT);
+  const usable = Math.max(1, maxLen - C.END_ALLOWANCE_FT);
+  const lanes = [];
+  let y = 0, guard = 0;
+  while (H - y > 0.01 && guard++ < 400){
+    const half = opts.halfRolls && (H - y) <= C.HALF_COVER_FT + 0.001;
+    const cover = half ? C.HALF_COVER_FT : C.FULL_COVER_FT;
+    const y1 = Math.min(y + cover, H);
+    const segs = bandSpans(P, y, y1).map(([a,b]) => {
+      const run = b - a, n = Math.max(1, Math.ceil(run / usable - 1e-9));
+      return {a, b, run, n, len: Math.ceil(run / n + C.END_ALLOWANCE_FT - 1e-9)};
+    });
+    lanes.push({y0:y, y1, half, segs});
+    y += cover;
+  }
+  const pieces = [], vLines = [], hLines = [];
+  let seamV = 0, seamH = 0, orderedSf = 0;
+  lanes.forEach((ln, i) => {
+    ln.segs.forEach(s => {
+      for (let k = 0; k < s.n; k++){
+        pieces.push({half:ln.half, len:s.len, rect:{x:s.a + k*s.run/s.n, y:ln.y0, w:s.run/s.n, h:ln.y1 - ln.y0}, lane:i});
+        orderedSf += (ln.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT) * s.len;
+      }
+      for (let k = 1; k < s.n; k++){
+        const x = s.a + k*s.run/s.n;
+        intersect(scan(P, x, 0), [[ln.y0, ln.y1]]).forEach(([u, w]) => { seamH += w - u; hLines.push([x, u, x, w]); });
+      }
+    });
+    if (i < lanes.length - 1){
+      intersect(scan(P, ln.y1 - 1e-4, 1), scan(P, ln.y1 + 1e-4, 1)).forEach(([a, b]) => { seamV += b - a; vLines.push([a, ln.y1, b, ln.y1]); });
+    }
+  });
+  if (swap){
+    pieces.forEach(p => { const r = p.rect; p.rect = {x:r.y, y:r.x, w:r.h, h:r.w}; });
+    [vLines, hLines].forEach(arr => arr.forEach((l, j) => arr[j] = [l[1], l[0], l[3], l[2]]));
+  }
+  return {swap, pieces, orderedSf, seamV, seamH, vLines, hLines, nLanes:lanes.length};
+}
+
+function solve(a){
+  const g = geometry(a);
+  if (!g || g.error) return {g};
+  const opts = {halfRolls:a.halfRolls, maxPiece:parseLen(a.maxPiece)};
+  const alongL = layout(g.poly, false, opts), alongW = layout(g.poly, true, opts);
+  let lay;
+  if (a.dir === 'length') lay = alongL;
+  else if (a.dir === 'width') lay = alongW;
+  else {
+    const d = alongL.orderedSf - alongW.orderedSf;
+    if (Math.abs(d) <= 0.01 * Math.min(alongL.orderedSf, alongW.orderedSf))
+      lay = (alongL.seamV + alongL.seamH) <= (alongW.seamV + alongW.seamH) ? alongL : alongW;
+    else lay = d < 0 ? alongL : alongW;
+  }
+  const runAlong = lay.swap ? g.Y : g.X;
+  let board = 0;
+  if (a.border === 'board') board = g.perim;
+  else if (a.border === 'split') board = Math.min(g.perim, Math.max(0, parseLen(a.boardFt) || 0));
+  return {g, lay, runAlong, board, edge:g.perim - board};
+}
+
+/* ---------- drawing ---------- */
+function drawSVG(g, lay){
+  const W = Math.max(...g.poly.map(p => p[0])), H = Math.max(...g.poly.map(p => p[1]));
+  const m = Math.max(W, H), pad = m * 0.13, fs = m * 0.045, sw = m * 0.006;
+  const cid = 'c' + uid();
+  const pts = g.poly.map(p => p.join(',')).join(' ');
+  let s = `<svg viewBox="${-pad} ${-pad} ${W + pad*2} ${H + pad*2}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roll layout">`;
+  const st = sw * 2.2;
+  s += `<defs><clipPath id="${cid}"><polygon points="${pts}"/></clipPath><pattern id="${cid}t" width="${st*2}" height="${st*2}" patternUnits="userSpaceOnUse"${lay.swap ? ' patternTransform="rotate(90)"' : ''}><rect width="${st*2}" height="${st}" fill="#fff" opacity=".06"/></pattern></defs><g clip-path="url(#${cid})">`;
+  lay.pieces.forEach(p => {
+    const r = p.rect, col = p.half ? '#a5d38a' : (p.lane % 2 ? '#5fae4f' : '#479a3c');
+    s += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${col}"/>`;
+  });
+  s += `<rect x="0" y="0" width="${W}" height="${H}" fill="url(#${cid}t)"/>`;
+  lay.vLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#fff" stroke-width="${sw*1.3}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
+  lay.hLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#e07b16" stroke-width="${sw*1.6}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
+  s += `</g><polygon points="${pts}" fill="none" stroke="#1b4d1f" stroke-width="${sw*1.4}" stroke-linejoin="round"/>`;
+  lay.pieces.forEach((p, i) => {
+    const r = p.rect, t = Math.min(fs * 0.9, Math.min(r.w, r.h) * 0.45);
+    if (t < fs * 0.35) return;
+    s += `<text x="${r.x + r.w/2}" y="${r.y + r.h/2}" font-size="${t}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+  });
+  if (g.custom && g.poly.length <= 12) g.poly.forEach((p, i) => {
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="${fs*0.55}" fill="#1b4d1f"/><text x="${p[0]}" y="${p[1]}" font-size="${fs*0.6}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+  });
+  s += `<text x="${W/2}" y="${-pad*0.38}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle">${fmt(W)}</text>`;
+  s += `<text x="${-pad*0.38}" y="${H/2}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle" transform="rotate(-90 ${-pad*0.38} ${H/2})">${fmt(H)}</text>`;
+  const ay = H + pad*0.55, ax = W/2;
+  if (!lay.swap){
+    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run this way ⟷</text>`;
+  } else {
+    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run top to bottom ↕</text>`;
+  }
+  return s + '</svg>';
+}
+
+/* ---------- point import (Moasure CSV / DXF, or any X,Y list) ---------- */
+const UNIT_FT = {ft:1, in:1/12, m:3.28084, cm:0.0328084, mm:0.00328084};
+function num(v){
+  v = String(v ?? '').trim().replace(/^"|"$/g, '');
+  if (/^-?\d+,\d+$/.test(v)) v = v.replace(',', '.');           // 12,5 (European decimals)
+  return /^-?\d*\.?\d+(e-?\d+)?$/i.test(v) ? parseFloat(v) : NaN;
+}
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return {error:'That file is empty.'};
+  const delim = [',', ';', '\t'].map(d => [d, lines[0].split(d).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const split = l => l.split(delim === ',' ? /,(?=(?:[^"]*"[^"]*")*[^"]*$)/ : delim).map(c => c.trim().replace(/^"|"$/g, ''));
+  let rows = lines.map(split), head = null, unit = null;
+  if (rows[0].some(c => c && isNaN(num(c)))){ head = rows[0].map(c => c.toLowerCase()); rows = rows.slice(1); }
+  let xi = -1, yi = -1, ti = -1, li = -1;
+  if (head){
+    xi = head.findIndex(h => /^(x|east|easting)\b|\bx\b|x\s*\(/.test(h));
+    yi = head.findIndex(h => /^(y|north|northing)\b|\by\b|y\s*\(/.test(h));
+    ti = head.findIndex(h => /point\s*type/.test(h));
+    li = head.findIndex(h => /layer\s*(number|no|#)/.test(h));
+    const hx = (xi >= 0 ? head[xi] : head.join(' '));
+    if (/\(m\)|metre|meter|\bm\b/.test(hx)) unit = 'm';
+    else if (/\(mm\)/.test(hx)) unit = 'mm';
+    else if (/\(cm\)/.test(hx)) unit = 'cm';
+    else if (/\(in\)|inch/.test(hx)) unit = 'in';
+    else if (/\(ft\)|feet|foot/.test(hx)) unit = 'ft';
+  }
+  if (xi < 0 || yi < 0){
+    const numCols = rows[0] ? rows[0].map((c, i) => isNaN(num(c)) ? -1 : i).filter(i => i >= 0) : [];
+    let cols = numCols;
+    // skip a leading 1,2,3… point-number column
+    if (cols.length >= 3 && rows.slice(0, 5).every((r, k) => k === 0 || num(r[cols[0]]) === num(rows[k-1][cols[0]]) + 1)) cols = cols.slice(1);
+    if (cols.length < 2) return {error:'Couldn\'t find X and Y columns in that file.'};
+    xi = cols[0]; yi = cols[1];
+  }
+  const firstLayer = li >= 0 ? Math.min(...rows.map(r => num(r[li])).filter(n => !isNaN(n))) : null;
+  const P = [];
+  rows.forEach(r => {
+    if (ti >= 0 && /ignore|flight|center|centre/i.test(r[ti] || '')) return;
+    if (li >= 0 && num(r[li]) !== firstLayer) return;
+    const x = num(r[xi]), y = num(r[yi]);
+    if (!isNaN(x) && !isNaN(y)) P.push([x, y]);
+  });
+  return {pts:P, unit};
+}
+function parseDXF(text){
+  const L = text.split(/\r?\n/), pairs = [];
+  for (let i = 0; i + 1 < L.length; i += 2) pairs.push([parseInt(L[i].trim(), 10), L[i+1].trim()]);
+  let unit = null;
+  const iu = pairs.findIndex(p => p[0] === 9 && p[1] === '$INSUNITS');
+  if (iu >= 0 && pairs[iu+1]) unit = {1:'in', 2:'ft', 4:'mm', 5:'cm', 6:'m'}[parseInt(pairs[iu+1][1], 10)] || null;
+  const es = pairs.findIndex(p => p[0] === 2 && p[1] === 'ENTITIES');
+  const ents = []; let cur = null;
+  for (let i = es >= 0 ? es + 1 : 0; i < pairs.length; i++){
+    const [c, v] = pairs[i];
+    if (c === 0){ if (v === 'ENDSEC') break; cur = {type:v, d:[]}; ents.push(cur); }
+    else if (cur) cur.d.push([c, v]);
+  }
+  const f = (e, c) => { const p = e.d.find(q => q[0] === c); return p ? parseFloat(p[1]) : 0; };
+  const arcPts = (cx, cy, r, a0, a1) => { if (a1 < a0) a1 += 360; const n = Math.max(2, Math.ceil((a1 - a0) / 10)), o = [];
+    for (let k = 0; k <= n; k++){ const t = (a0 + (a1 - a0) * k / n) * Math.PI / 180; o.push([cx + r*Math.cos(t), cy + r*Math.sin(t)]); } return o; };
+  const bulge = (p, q, b) => {               // arc between two polyline vertices
+    if (!b) return [];
+    const th = 4 * Math.atan(b), dx = q[0]-p[0], dy = q[1]-p[1], ch = Math.hypot(dx, dy), r = ch / (2*Math.sin(th/2));
+    const mx = (p[0]+q[0])/2, my = (p[1]+q[1])/2, h = r*Math.cos(th/2), cx = mx - h*dy/ch, cy = my + h*dx/ch;
+    const a0 = Math.atan2(p[1]-cy, p[0]-cx), n = Math.max(2, Math.ceil(Math.abs(th) / (Math.PI/18))), o = [];
+    for (let k = 1; k < n; k++){ const t = a0 + th*k/n; o.push([cx + Math.abs(r)*Math.cos(t), cy + Math.abs(r)*Math.sin(t)]); }
+    return o;
+  };
+  const polys = [], segs = [], points = [];
+  for (let i = 0; i < ents.length; i++){
+    const e = ents[i];
+    if (e.type === 'LWPOLYLINE'){
+      const V = []; let v = null;
+      e.d.forEach(([c, val]) => { if (c === 10){ v = [parseFloat(val), 0, 0]; V.push(v); } else if (c === 20 && v) v[1] = parseFloat(val); else if (c === 42 && v) v[2] = parseFloat(val); });
+      const closed = (f(e, 70) & 1) === 1, P = [];
+      V.forEach((p, k) => { const q = V[k+1] || (closed ? V[0] : null); P.push([p[0], p[1]]); if (q) P.push(...bulge(p, q, p[2])); });
+      if (closed) polys.push(P); else segs.push(P);
+    } else if (e.type === 'POLYLINE'){
+      const closed = (f(e, 70) & 1) === 1, V = [];
+      while (ents[i+1] && ents[i+1].type === 'VERTEX'){ i++; V.push([f(ents[i], 10), f(ents[i], 20), f(ents[i], 42)]); }
+      const P = [];
+      V.forEach((p, k) => { const q = V[k+1] || (closed ? V[0] : null); P.push([p[0], p[1]]); if (q) P.push(...bulge(p, q, p[2])); });
+      if (closed) polys.push(P); else segs.push(P);
+    } else if (e.type === 'LINE') segs.push([[f(e, 10), f(e, 20)], [f(e, 11), f(e, 21)]]);
+    else if (e.type === 'ARC') segs.push(arcPts(f(e, 10), f(e, 20), f(e, 40), f(e, 50), f(e, 51)));
+    else if (e.type === 'CIRCLE'){ const P = arcPts(f(e, 10), f(e, 20), f(e, 40), 0, 360); P.pop(); polys.push(P); }
+    else if (e.type === 'POINT') points.push([f(e, 10), f(e, 20)]);
+  }
+  // join loose lines/arcs end to end into outlines
+  const tol = 0.05, same = (a, b) => Math.hypot(a[0]-b[0], a[1]-b[1]) < tol;
+  const left = segs.slice();
+  while (left.length){
+    let ch = left.shift().slice(), grown = true;
+    while (grown){
+      grown = false;
+      for (let k = 0; k < left.length; k++){
+        const s2 = left[k], end = ch[ch.length-1];
+        if (same(end, s2[0])){ ch.push(...s2.slice(1)); }
+        else if (same(end, s2[s2.length-1])){ ch.push(...s2.slice(0, -1).reverse()); }
+        else if (same(ch[0], s2[s2.length-1])){ ch.unshift(...s2.slice(0, -1)); }
+        else if (same(ch[0], s2[0])){ ch.unshift(...s2.slice(1).reverse()); }
+        else continue;
+        left.splice(k, 1); grown = true; break;
+      }
+    }
+    if (ch.length >= 3) polys.push(ch);
+  }
+  if (polys.length){
+    const best = polys.sort((a, b) => polyArea(b) - polyArea(a))[0];
+    return {pts:best, unit, note: polys.length > 1 ? `Used the largest outline in the drawing (${polys.length} found).` : ''};
+  }
+  if (points.length >= 3) return {pts:points, unit};
+  return {error:'Couldn\'t find an outline in that DXF. Try exporting a 2D plan, or use CSV.'};
+}
+function cleanPts(P){
+  P = P.filter((p, i) => i === 0 || Math.hypot(p[0]-P[i-1][0], p[1]-P[i-1][1]) > 1e-6);
+  if (P.length > 2 && Math.hypot(P[0][0]-P[P.length-1][0], P[0][1]-P[P.length-1][1]) < 1e-6) P.pop();
+  return P;
+}
+function applyImport(a){
+  const im = a.imp; if (!im) return;
+  const k = UNIT_FT[im.unit] || 1;
+  let P = cleanPts(im.raw.map(p => [p[0]*k, p[1]*k]));
+  const mx = Math.min(...P.map(p => p[0])), my = Math.min(...P.map(p => p[1]));
+  a.pts = P.map(p => ({x:fmtIn(p[0]-mx), y:fmtIn(p[1]-my)}));
+}
+function importText(a, text, name){
+  const r = /^\s*0\s*\r?\n\s*SECTION/i.test(text) || /\.dxf$/i.test(name || '') ? parseDXF(text) : parseCSV(text);
+  if (r.error) return {error:r.error};
+  const P = cleanPts(r.pts);
+  if (P.length < 3) return {error:'Need at least 3 points to make an outline.'};
+  a.imp = {raw:P, unit:r.unit || 'ft', guessed:!!r.unit, name:name || 'Pasted points', note:r.note || ''};
+  applyImport(a);
+  return {ok:true};
+}
+
+/* ---------- area cards ---------- */
+function field(a, key, label, ph){
+  return `<div><label>${label}</label><input inputmode="decimal" data-id="${a.id}" data-f="${key}" value="${esc(a[key])}" placeholder="${ph||''}"></div>`;
+}
+function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+const SV = d => `<svg viewBox="0 0 20 16"><path d="${d}" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const SHAPES = [
+  {k:'rect',   name:'Rectangle',     ico:SV('M2 1.5h16a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5z')},
+  {k:'L',      name:'L-shape',       ico:SV('M1.5 1.5h17v7.5h-7v5.5h-10z')},
+  {k:'angle',  name:'Angled',        ico:SV('M1.5 1.5h17v6l-17 7z')},
+  {k:'oval',   name:'Circle / oval', ico:SV('M10 1.5c4.7 0 8.5 2.9 8.5 6.5s-3.8 6.5-8.5 6.5S1.5 11.6 1.5 8 5.3 1.5 10 1.5z')},
+  {k:'custom', name:'Plot points',        ico:SV('M2 14.5 1.5 5 8 1.5l10.5 3-2 6-6 .5-2.5 3.5z')}
+];
+const shapeOf = k => SHAPES.find(x => x.k === k) || SHAPES[0];
+let justAdded = null;
+
+function hintBox(svg, text){ return `<div class="shape-hint"><svg viewBox="0 0 70 46">${svg}</svg><span>${text}</span></div>`; }
+function dimsHTML(a){
+  if (a.shape === 'rect') return `<div class="grid">${field(a,'L','Length','e.g. 40')}${field(a,'W','Width','e.g. 25\' 6"')}</div>
+    <div style="margin-top:12px">${field(a,'r','Rounded corners (radius)','Optional — leave blank for square')}</div>`;
+  if (a.shape === 'L') return hintBox(`<path d="M2 2h66v26H44v16H2z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/>`,
+      `Enter the full outside size, then the size of the corner piece that's cut out (red).`)
+    + `<div class="grid">${field(a,'A','Overall length')}${field(a,'B','Overall width')}${field(a,'c','Cut-out length')}${field(a,'d','Cut-out width')}</div>`;
+  if (a.shape === 'angle') return hintBox(`<path d="M2 4h66v14L2 42z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M5 6v34M65 6v10" stroke="#c0392b" stroke-width="1.5" marker-end="none"/>`,
+      `One long straight side, with a different width at each end (red). Use 0 for a point to make a triangle.`)
+    + `<div class="grid">${field(a,'L','Length (straight side)')}<div></div>${field(a,'W1','Width at one end')}${field(a,'W2','Width at other end','0 for a point')}</div>`;
+  if (a.shape === 'oval') return `<div class="grid">${field(a,'L','Length','e.g. 30')}${field(a,'W','Width','Same as length for a circle')}</div>`;
+  /* custom */
+  const pts = a.pts && a.pts.length ? a.pts : [];
+  const rows = pts.map((p, i) => `<div class="pt"><span class="pn">${i+1}</span>
+      <input inputmode="decimal" data-id="${a.id}" data-pt="${i}" data-ax="x" value="${esc(p.x)}" placeholder="Across" aria-label="Corner ${i+1} across">
+      <input inputmode="decimal" data-id="${a.id}" data-pt="${i}" data-ax="y" value="${esc(p.y)}" placeholder="Up" aria-label="Corner ${i+1} up">
+      <button class="x" data-ptdel="${i}" data-id="${a.id}" aria-label="Remove corner"${pts.length <= 3 ? ' disabled' : ''}>×</button></div>`).join('');
+  const im = a.imp;
+  const imp = `<div class="imp">
+      <div class="imp-h"><b>Have a Moasure or other measuring tool?</b><span>Import its CSV or DXF export, or paste X, Y points.</span></div>
+      <div class="imp-b">
+        <label class="btn alt sm" style="margin:0">Import file<input type="file" accept=".csv,.txt,.dxf" data-impfile="${a.id}" hidden></label>
+        <button class="btn alt sm" type="button" data-pastetog="${a.id}" style="margin:0">Paste points</button>
+      </div>
+      <div class="paste" data-pastebox="${a.id}" style="display:none">
+        <textarea rows="5" data-pastetxt="${a.id}" placeholder="One point per line, X then Y:&#10;0, 0&#10;40, 0&#10;40, 22.5&#10;0, 22.5"></textarea>
+        <button class="btn sm" type="button" data-pastego="${a.id}">Use these points</button>
+      </div>
+      ${im ? `<div class="imp-ok">✓ ${esc(im.name)}: ${a.pts.length} points.${im.note ? ' ' + esc(im.note) : ''}
+        <span>Units in file: <select data-impunit="${a.id}">${[['ft','Feet'],['in','Inches'],['m','Meters'],['cm','Centimeters'],['mm','Millimeters']].map(([k, t]) => `<option value="${k}"${im.unit===k?' selected':''}>${t}</option>`).join('')}</select></span>
+        ${im.guessed ? '' : '<small>Check the size below. If it looks way off, change the units.</small>'}</div>` : ''}
+      <div class="imp-err" data-imperr="${a.id}"></div>
+    </div>`;
+  const listed = pts.length > 12
+    ? `<details class="cuts"><summary>Show all ${pts.length} points</summary><div class="pts" style="padding-bottom:10px"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div></details>`
+    : `<div class="pts"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div>`;
+  return imp + hintBox(`<path d="M6 40 4 14 26 4l38 10-6 18-22 2-8 6z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><circle cx="6" cy="40" r="3.5" fill="#c0392b"/><path d="M6 40h22M6 40V20" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="2 2"/>`,
+      `Or type them in: pick one corner as your start (0, 0). For every corner, going around the area in order, measure how far <b>across</b> and how far <b>up</b> it is from the start.`)
+    + listed + `
+       <button class="add sm" type="button" data-ptadd="${a.id}"><span>+</span>Add corner</button>`;
+}
+
+function cardHTML(a){
+  const sh = shapeOf(a.shape);
+  return `<div class="card${a.id===justAdded?' new':''}" data-card="${a.id}">
+    <div class="area-head"><div class="area-ico" style="color:#3f8f2f">${sh.ico}</div><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
+      ${state.areas.length > 1 ? `<button class="x" data-del="${a.id}" aria-label="Remove area" title="Remove area">×</button>` : ''}</div>
+    <div class="seg">${SHAPES.map(x => `<button class="${a.shape===x.k?'on':''}" data-shape="${x.k}" data-id="${a.id}">${x.ico}${x.name}</button>`).join('')}</div>
+    ${dimsHTML(a)}
+    <div class="opts">
+      <div class="grid">
+        <div><label>Roll direction</label><select data-id="${a.id}" data-f="dir">
+          <option value="auto"${a.dir==='auto'?' selected':''}>Best fit</option>
+          <option value="length"${a.dir==='length'?' selected':''}>Left to right</option>
+          <option value="width"${a.dir==='width'?' selected':''}>Top to bottom</option></select></div>
+        <div><label>Longest piece (head seams)</label><input inputmode="decimal" data-id="${a.id}" data-f="maxPiece" value="${esc(a.maxPiece)}" placeholder="No head seams">
+          <div class="hint">Enter a length to cut rolls shorter and add head seams. Max ${C.MAX_ROLL_LENGTH_FT}'.</div></div>
+      </div>
+      <label class="check"><input type="checkbox" data-id="${a.id}" data-f="halfRolls"${a.halfRolls?' checked':''}><span>Use a half roll (7'6") for the last strip when it fits</span></label>
+      <div class="grid">
+        <div><label>Outside border</label><select data-id="${a.id}" data-f="border">
+          <option value="board"${a.border==='board'?' selected':''}>2x4 (stapled)</option>
+          <option value="edge"${a.border==='edge'?' selected':''}>Buried edge (nailed)</option>
+          <option value="split"${a.border==='split'?' selected':''}>Some of each</option></select></div>
+        <div style="${a.border==='split'?'':'display:none'}" data-splitwrap="${a.id}">${field(a,'boardFt','Feet on 2x4','Rest is buried edge')}</div>
+      </div>
+    </div>
+    <div data-out="${a.id}"></div>
+  </div>`;
+}
+
+function renderAreas(){
+  $('#areas').innerHTML = state.areas.map(cardHTML).join('');
+  justAdded = null;
+  update();
+}
+
+function areaOut(a, r){
+  const el = document.querySelector(`[data-out="${a.id}"]`);
+  if (!el) return;
+  ['L','W','A','B','c','d','maxPiece','boardFt','r','W1','W2'].forEach(k => {
+    const inp = document.querySelector(`input[data-id="${a.id}"][data-f="${k}"]`);
+    const zeroOk = k === 'W1' || k === 'W2' || k === 'r';
+    if (inp) inp.classList.toggle('bad', inp.value.trim() !== '' && !(zeroOk ? parseLen(inp.value) >= 0 : parseLen(inp.value) > 0));
+  });
+  document.querySelectorAll(`input[data-id="${a.id}"][data-pt]`).forEach(inp => inp.classList.toggle('bad', inp.value.trim() !== '' && !(parseLen(inp.value) >= 0)));
+  if (!r.g && a.shape === 'custom'){ el.innerHTML = `<div class="empty">Enter at least 3 corners to see your roll layout.</div>`; return; }
+  if (!r.g){ el.innerHTML = `<div class="empty"><svg width="40" height="30" viewBox="0 0 40 30"><rect x="2" y="2" width="36" height="26" rx="3" fill="none" stroke="#86c440" stroke-width="2" stroke-dasharray="4 3"/></svg>Enter the size to see your roll layout.</div>`; return; }
+  if (r.g.error){ el.innerHTML = `<p class="err">${r.g.error}</p>`; return; }
+  const {g, lay} = r;
+  const list = lay.pieces.map((p, i) => `<li><span><span class="pn${p.half ? ' h' : ''}">${i+1}</span>${p.half ? 'Half roll' : 'Full roll'}</span><b>${widthLabel(p.half)} × ${p.len}'</b></li>`).join('');
+  el.innerHTML = `<div class="draw">${drawSVG(g, lay)}
+      <div class="legend"><span><i style="border-color:#5fae4f"></i>side seam</span>${lay.hLines.length ? '<span><i style="border-color:#e07b16"></i>head seam</span>' : ''}${lay.pieces.some(p=>p.half) ? '<span><b style="display:inline-block;width:12px;height:12px;background:#a5d38a;border-radius:2px;vertical-align:middle"></b> half roll</span>' : ''}</div></div>
+    <div class="tiles"><div><b>${n0(g.sf)}</b><span>sq ft</span></div><div><b>${lay.pieces.length}</b><span>pieces</span></div><div><b>${n0(lay.seamV + lay.seamH)}'</b><span>of seams</span></div></div>
+    <details class="cuts"><summary>Cut list for this area</summary><ul class="cutlist">${list}</ul></details>
+    <p class="hint">Rolls run ${lay.swap ? 'top to bottom' : 'left to right'} (${fmt(r.runAlong)}). Each piece includes ${fmt(C.END_ALLOWANCE_FT)} extra for trimming.</p>`;
+}
+
+/* ---------- totals ---------- */
+function totals(){
+  const T = {sf:0, ordered:0, seamV:0, seamH:0, board:0, edge:0, pieces:[], areas:[]};
+  state.areas.forEach(a => {
+    const r = solve(a);
+    areaOut(a, r);
+    if (!r.lay) return;
+    T.sf += r.g.sf; T.ordered += r.lay.orderedSf; T.seamV += r.lay.seamV; T.seamH += r.lay.seamH;
+    T.board += r.board; T.edge += r.edge;
+    r.lay.pieces.forEach(p => T.pieces.push({...p, area:a.name}));
+    T.areas.push({a, r});
+  });
+  const groups = {};
+  T.pieces.forEach(p => { const k = (p.half ? 'h' : 'f') + '|' + p.len; (groups[k] = groups[k] || {half:p.half, len:p.len, n:0}).n++; });
+  T.groups = Object.values(groups).sort((x, y) => (x.half - y.half) || (y.len - x.len));
+  T.seam = T.seamV + T.seamH;
+  T.infillLb = T.sf * C.INFILL_LB_PER_SF;
+  T.bags = Math.ceil(T.infillLb / C.INFILL_BAG_LB);
+  T.tapeRolls = T.seam > 0 ? Math.ceil(T.seam / C.SEAM_TAPE_ROLL_FT) : 0;
+  T.glue = T.seam > 0 ? Math.ceil(T.seam / C.GLUE_LF_PER_GAL) : 0;
+  T.staples = Math.ceil(T.board * 12 / C.STAPLE_SPACING_IN);
+  T.boards = Math.ceil(T.board / C.BOARD_LENGTH_FT);
+  T.nails = Math.ceil(T.edge * 12 / C.NAIL_SPACING_IN);
+  return T;
+}
+
+function update(){
+  const T = totals();
+  const res = $('#results');
+  if (!T.areas.length){
+    res.innerHTML = `<div class="empty" style="margin:0">Enter at least one area size to see your rolls and materials.</div>`;
+    $('#summary').textContent = '';
+    dock(null); save(); return;
+  }
+  const waste = T.ordered > 0 ? (T.ordered - T.sf) / T.ordered * 100 : 0;
+  const I = {
+    sand:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 19c3-8 6-11 9-11s6 3 9 11z" fill="#d9b86c"/></svg>',
+    tape:'<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#3f8f2f" stroke-width="4"/></svg>',
+    glue:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 8h10v12H7z" fill="#3f8f2f"/><path d="M10 3h4v5h-4z" fill="#86c440"/></svg>',
+    staple:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M5 18V8h14v10" fill="none" stroke="#5f6d62" stroke-width="2.6"/></svg>',
+    board:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="1" fill="#c99a5b"/></svg>',
+    nail:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 5h12M12 5v15l-1.5-2" fill="none" stroke="#5f6d62" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    edge:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M2 15c4-4 7-4 10 0s6 4 10 0" fill="none" stroke="#2f3b31" stroke-width="3" stroke-linecap="round"/></svg>',
+    roll:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="6" width="15" height="12" rx="2" fill="#479a3c"/><ellipse cx="18" cy="12" rx="3" ry="6" fill="#86c440"/><ellipse cx="18" cy="12" rx="1.2" ry="2.4" fill="#1d4424"/></svg>',
+    half:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="15" height="7" rx="1.5" fill="#a5d38a"/><ellipse cx="18" cy="12.5" rx="2" ry="3.5" fill="#86c440"/></svg>'
+  };
+  const rows = [];
+  rows.push([I.sand, 'Sand infill', `${C.INFILL_LB_PER_SF} lb/sq ft · ${n0(T.infillLb)} lb (${n1(T.infillLb/2000)} tons)`, `${n0(T.bags)} bags`]);
+  if (T.seam > 0){
+    rows.push([I.tape, 'Seam tape', `${n0(T.seam)} linear ft of seams · ${C.SEAM_TAPE_ROLL_FT}' rolls`, `${T.tapeRolls} roll${T.tapeRolls>1?'s':''}`]);
+    rows.push([I.glue, 'Seam glue', `about ${C.GLUE_LF_PER_GAL} linear ft per gallon`, `${T.glue} gal`]);
+  }
+  if (T.board > 0){
+    rows.push([I.board, '2x4 nailer board', `${n0(T.board)} linear ft of border`, `${T.boards} × ${C.BOARD_LENGTH_FT}'`]);
+    rows.push([I.staple, 'Staples', `every ${C.STAPLE_SPACING_IN}" into the 2x4`, `${n0(T.staples)}`]);
+  }
+  if (T.edge > 0){
+    rows.push([I.nail, 'Nails', `every ${C.NAIL_SPACING_IN}" along ${n0(T.edge)}' of buried edge`, `${n0(T.nails)}`]);
+  }
+  const li = r => `<li><div class="ico">${r[0]}</div><div class="what">${r[1]}<small>${r[2]}</small></div><div class="qty${r[4]?' roll':''}">${r[3]}</div></li>`;
+  res.innerHTML = `
+    <div class="tiles dark" style="margin:0 0 4px"><div><b>${n0(T.sf)}</b><span>sq ft turf area</span></div><div><b>${T.pieces.length}</b><span>rolls to cut</span></div><div><b>${n1(waste)}%</b><span>waste</span></div></div>
+    <h3>Turf rolls</h3>
+    <ul class="rlist">${T.groups.map(g => li([g.half ? I.half : I.roll, `${widthLabel(g.half)} wide × ${g.len}' long`, `${g.half ? 'Half roll · ' : ''}${n0(g.n * g.len * (g.half ? C.ROLL_WIDTH_FT/2 : C.ROLL_WIDTH_FT))} sq ft`, `${g.n} ×`, 1])).join('')}</ul>
+    <div class="note">${n0(T.ordered)} sq ft of turf to order · Side seams ${n0(T.seamV)}' · Head seams ${n0(T.seamH)}'. Seams are glued and taped, never stapled or nailed.</div>
+    <h3>Materials</h3>
+    <ul class="rlist">${rows.map(li).join('')}</ul>
+    <div class="note">Stone base is not included — supply and prep it on your end.</div>`;
+  dock(T);
+  $('#summary').textContent = buildSummary(T);
+  save();
+}
+
+/* ---------- summary / quote ---------- */
+function contact(){
+  const ids = ['name','company','phone','email','job','product','notes'];
+  const o = {}; ids.forEach(k => o[k] = $('#q_' + k).value.trim()); return o;
+}
+function buildSummary(T){
+  const c = contact(), L = [];
+  L.push('TURF TEK — QUOTE REQUEST', '');
+  L.push(`Name: ${c.name || '-'}`);
+  if (c.company) L.push(`Company: ${c.company}`);
+  L.push(`Phone: ${c.phone || '-'}`, `Email: ${c.email || '-'}`);
+  if (c.job) L.push(`Job: ${c.job}`);
+  if (c.product) L.push(`Turf product: ${c.product}`);
+  L.push('', 'AREAS');
+  T.areas.forEach(({a, r}) => {
+    const hs = parseLen(a.maxPiece) > 0 ? `, pieces max ${fmt(parseLen(a.maxPiece))}` : '';
+    L.push(`- ${a.name}: ${r.g.desc} = ${n0(r.g.sf)} sq ft; rolls run along ${fmt(r.runAlong)}; ${r.lay.pieces.length} pieces${a.halfRolls ? '' : ', no half rolls'}${hs}`);
+  });
+  L.push('', 'TURF ROLLS TO CUT');
+  T.groups.forEach(g => L.push(`- ${g.n} x ${widthLabel(g.half)} wide x ${g.len}' long${g.half ? ' (half roll)' : ''}`));
+  L.push(`Turf area: ${n0(T.sf)} sq ft | Turf ordered: ${n0(T.ordered)} sq ft`);
+  L.push(`Seams: ${n0(T.seamV)}' side + ${n0(T.seamH)}' head = ${n0(T.seam)}'`);
+  L.push('', 'MATERIALS');
+  L.push(`- Sand infill @ ${C.INFILL_LB_PER_SF} lb/sf: ${n0(T.infillLb)} lb = ${T.bags} x ${C.INFILL_BAG_LB} lb bags`);
+  if (T.seam > 0) L.push(`- Seam tape: ${n0(T.seam)} lf = ${T.tapeRolls} roll(s)`, `- Seam glue: ${T.glue} gal`);
+  if (T.board > 0) L.push(`- 2x4 nailer: ${n0(T.board)} lf (${T.boards} x ${C.BOARD_LENGTH_FT}'), staples: ${n0(T.staples)}`);
+  if (T.edge > 0) L.push(`- Buried edge: ${n0(T.edge)} lf, nails: ${n0(T.nails)}`);
+  L.push('(Stone base by contractor — not included)');
+  if (c.notes) L.push('', 'NOTES', c.notes);
+  return L.join('\n');
+}
+
+function showMsg(t, warn){ const m = $('#qmsg'); m.textContent = t; m.classList.toggle('warn', !!warn); m.classList.remove('show'); void m.offsetWidth; m.classList.add('show'); }
+function dock(T){
+  $('#dSf').textContent = T ? n0(T.sf) : '–';
+  $('#dRolls').textContent = T ? T.pieces.length : '–';
+  $('#dSeam').textContent = T ? n0(T.seam) : '–';
+}
+
+$('#quote').addEventListener('submit', e => {
+  e.preventDefault();
+  const c = contact();
+  const T = totals();
+  if (!T.areas.length) return showMsg('Add at least one area size first.', true);
+  if (!c.name || (!c.phone && !c.email)){
+    ['name','phone','email'].forEach(k => $('#q_' + k).classList.toggle('bad', k === 'name' ? !c.name : (!c.phone && !c.email)));
+    return showMsg('Please add your name and a phone number or email so we can reach you.', true);
+  }
+  const body = buildSummary(T);
+  const subj = `Turf quote request — ${c.company || c.name}${c.job ? ' — ' + c.job : ''}`;
+  const mailHref = `mailto:${C.SALES_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  // Show the thank-you screen right away; the request sends quietly in the background.
+  showThanks(T, c, mailHref);
+  const t0 = Date.now();
+  const fail = () => setTimeout(() => { const f = $('#tyMail'); $('#tyHead').textContent = 'Almost there'; $('#tyText').textContent = 'Your layout and material list are ready for our sales team. One last step to get it to us:'; f.style.display = 'none'; void f.offsetWidth; f.style.display = '';
+    if (navigator.vibrate) try { navigator.vibrate([120, 80, 120]); } catch(e) {}
+    setTimeout(() => f.scrollIntoView({behavior:'smooth', block:'center'}), 600); }, Math.max(0, 2500 - (Date.now() - t0)));
+  let url, payload;
+  if (C.QUOTE_ENDPOINT){
+    url = C.QUOTE_ENDPOINT;
+    payload = {subject:subj, summary:body, contact:c, sqft:Math.round(T.sf), rolls:T.pieces.length, areas:state.areas};
+  } else if (C.SALES_EMAIL || C.FORMSUBMIT_ID){
+    url = 'https://formsubmit.co/ajax/' + (C.FORMSUBMIT_ID || C.SALES_EMAIL);
+    payload = {_subject:subj, _template:'box', _captcha:'false', ...(c.email ? {_replyto:c.email} : {}),
+      Name:c.name, Company:c.company || '-', Phone:c.phone || '-', Email:c.email || '-', Job:c.job || '-', 'Quote request':body};
+  } else return fail();
+  fetch(url, {method:'POST', headers:{'Content-Type':'application/json', 'Accept':'application/json'}, body:JSON.stringify(payload)})
+    .then(r => r.ok ? r.json().catch(() => ({})) : Promise.reject())
+    .then(j => { if (j && (j.success === false || j.success === 'false')) fail(); })
+    .catch(fail);
+});
+
+const TY_TEXT = "Your quote request has been sent to the Turf Tek sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.";
+function showThanks(T, c, mailHref){
+  const ty = $('#thanks');
+  $('#tyName').textContent = c.name ? ', ' + c.name.split(/\s+/)[0] : '';
+  $('#tySf').textContent = n0(T.sf); $('#tyRolls').textContent = T.pieces.length; $('#tyAreas').textContent = T.areas.length;
+  $('#tyMail').style.display = 'none'; $('#tyMailBtn').href = mailHref;
+  $('#tyHead').textContent = 'Thank you'; $('#tyText').textContent = TY_TEXT;
+  ty.classList.remove('play'); ty.classList.add('show'); void ty.offsetWidth; ty.classList.add('play');
+  ty.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function hideThanks(){ $('#thanks').classList.remove('show', 'play'); document.body.style.overflow = ''; }
+$('#tyBack').addEventListener('click', hideThanks);
+$('#tyNew').addEventListener('click', () => { hideThanks(); state.areas = [newArea(1)]; ['product','notes','job'].forEach(k => $('#q_' + k).value = ''); state.contact = contact(); renderAreas(); window.scrollTo({top:0}); });
+
+$('#copyBtn').addEventListener('click', async () => {
+  const txt = $('#summary').textContent;
+  try { await navigator.clipboard.writeText(txt); showMsg('Summary copied.'); }
+  catch(e){
+    const r = document.createRange(); r.selectNodeContents($('#summary'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    showMsg('Summary selected — copy it with your device\'s copy command.');
+  }
+});
+
+['name','company','phone','email','job','product','notes'].forEach(k => {
+  const el = $('#q_' + k);
+  el.value = (state.contact && state.contact[k]) || '';
+  el.addEventListener('input', () => { el.classList.remove('bad'); state.contact = contact(); $('#summary').textContent = buildSummary(totals()); save(); });
+});
+
+/* ---------- events ---------- */
+function showImpErr(a, msg){ const el = document.querySelector(`[data-imperr="${a.id}"]`); if (el) el.textContent = msg; }
+const areaById = id => state.areas.find(a => a.id === id);
+$('#areas').addEventListener('input', e => {
+  const t = e.target, a = areaById(t.dataset.id); if (!a) return;
+  if (t.dataset.pt != null){ a.pts[+t.dataset.pt][t.dataset.ax] = t.value; update(); return; }
+  if (t.dataset.pastetxt) return;
+  if (!t.dataset.f) return;
+  a[t.dataset.f] = t.type === 'checkbox' ? t.checked : t.value;
+  if (t.dataset.f === 'border'){
+    const w = document.querySelector(`[data-splitwrap="${a.id}"]`); if (w) w.style.display = a.border === 'split' ? '' : 'none';
+  }
+  update();
+});
+$('#areas').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.impfile){
+    const a = areaById(t.dataset.impfile), file = t.files && t.files[0]; if (!a || !file) return;
+    if (/\.dwg$/i.test(file.name)){ showImpErr(a, 'DWG files can\'t be read here. Export as DXF or CSV instead.'); return; }
+    const rd = new FileReader();
+    rd.onload = () => { const r = importText(a, String(rd.result), file.name); r.error ? showImpErr(a, r.error) : renderAreas(); };
+    rd.readAsText(file); return;
+  }
+  if (t.dataset.impunit){ const a = areaById(t.dataset.impunit); a.imp.unit = t.value; a.imp.guessed = true; applyImport(a); renderAreas(); return; } if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') e.target.dispatchEvent(new Event('input', {bubbles:true})); });
+$('#areas').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.shape){
+    const a = areaById(b.dataset.id);
+    if (b.dataset.shape === 'custom' && !(a.pts && a.pts.some(p => String(p.x ?? '').trim() || String(p.y ?? '').trim()))){
+      const g = geometry(a);   // start the custom outline from the shape already entered
+      a.pts = g && g.poly && g.poly.length <= 12 ? g.poly.map(p => ({x:fmtIn(p[0]), y:fmtIn(g.Y - p[1])})) : [{x:'0',y:'0'},{x:'',y:''},{x:'',y:''},{x:'',y:''}];
+    }
+    a.shape = b.dataset.shape; renderAreas();
+  }
+  if (b.dataset.pastetog){ const box = document.querySelector(`[data-pastebox="${b.dataset.pastetog}"]`); box.style.display = box.style.display === 'none' ? '' : 'none'; if (box.style.display === '') box.querySelector('textarea').focus(); }
+  if (b.dataset.pastego){ const a = areaById(b.dataset.pastego), txt = document.querySelector(`[data-pastetxt="${a.id}"]`).value;
+    const r = importText(a, txt, 'Pasted points'); r.error ? showImpErr(a, r.error) : renderAreas(); }
+  if (b.dataset.ptadd){ const a = areaById(b.dataset.ptadd); a.pts.push({x:'',y:''}); renderAreas();
+    const ins = document.querySelectorAll(`input[data-id="${a.id}"][data-pt="${a.pts.length-1}"]`); if (ins[0]) ins[0].focus(); }
+  if (b.dataset.ptdel != null && !b.disabled){ const a = areaById(b.dataset.id); a.pts.splice(+b.dataset.ptdel, 1); renderAreas(); }
+  if (b.dataset.del){ state.areas = state.areas.filter(a => a.id !== b.dataset.del); renderAreas(); }
+});
+$('#addArea').addEventListener('click', () => {
+  const a = newArea(state.areas.length + 1); state.areas.push(a); justAdded = a.id; renderAreas();
+  const el = document.querySelector(`[data-card="${a.id}"]`);
+  if (el){ el.scrollIntoView({behavior:'smooth', block:'center'}); setTimeout(() => { const i = el.querySelector('input[data-f="L"]'); if (i) i.focus({preventScroll:true}); }, 400); }
+});
+let resetTimer;
+$('#resetBtn').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (!b.classList.contains('arm')){ b.classList.add('arm'); b.textContent = 'Tap again to clear all areas'; resetTimer = setTimeout(() => { b.classList.remove('arm'); b.textContent = 'Start over'; }, 3000); return; }
+  clearTimeout(resetTimer); b.classList.remove('arm'); b.textContent = 'Start over';
+  state.areas = [newArea(1)]; renderAreas(); window.scrollTo({top:0, behavior:'smooth'});
+});
+if ('IntersectionObserver' in window){
+  new IntersectionObserver(es => es.forEach(x => $('#dock').classList.toggle('hide', x.isIntersecting)), {threshold:0.05}).observe($('#quoteSec'));
+}
+
+renderAreas();
+
+/* intro: plays on every page load */
+(function(){
+  const el = $('#intro');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches){ el.remove(); return; }
+  document.body.style.overflow = 'hidden';
+  let done = false;
+  const leave = () => { if (done) return; done = true; el.classList.add('out'); document.body.style.overflow = '';
+    setTimeout(() => el.remove(), 750); };
+  setTimeout(leave, 2950);
+  el.addEventListener('click', leave);
+})();
+</script>
+</body>
+</html>
