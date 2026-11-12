@@ -1,4 +1,4 @@
-const V='hub-v2';
+const V='hub-v3';
 const CORE=['./','index.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{for(const k of await caches.keys()) if(k!==V&&k.startsWith('hub-v')) await caches.delete(k); await self.clients.claim();})());});

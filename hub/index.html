@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e8590c">
+<meta name="theme-color" content="#10261a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="TT Jobs">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <title>Turf Tek Jobs</title>
 <style>
 :root{--bg:#eef2f4;--panel:#fff;--ink:#15212b;--muted:#5b6b78;--line:#d3dce2;--paint:#e8590c;--paintsoft:#fff0e6;--steel:#1f5f8b;--steelsoft:#e6f0f7;--good:#1e7d45;--goodbg:#e3f3e9;--warn:#a86500;--warnbg:#fbefd9;--bad:#b42318;--badbg:#fbe4e1;--shadow:0 1px 2px rgba(21,33,43,.06),0 4px 14px rgba(21,33,43,.06);--display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:"Atkinson Hyperlegible",system-ui,sans-serif}
@@ -101,10 +101,120 @@ label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:1
 .btag{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+
+/* ===== Turf Tek look: same field, sun and grass as the Turf Tek Direct calculator ===== */
+:root{--brand:#86c440;--brand-d:#5f9b25;--sun:#e2e773;--forest:#10261a;--forest2:#1d4424;--green-l:#eef6e6;
+  --bg:#f1f4ee;--panel:#fff;--ink:#16221a;--muted:#5f6d62;--line:#e3e9df;--paint:#73b02f;--paintsoft:#eef6e6;--steel:#2f6d2a;--steelsoft:#eef6e6;--good:#3f8f2f;--goodbg:#e6f3dc;
+  --shadow:0 1px 2px rgba(16,38,26,.06),0 6px 20px rgba(16,38,26,.06);--body:Barlow,system-ui,sans-serif;
+  --stripes:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px);
+  --field:radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,#1d4424 45%,#10261a 100%)}
+body{line-height:1.4}
+.top{background:var(--stripes),var(--field);padding-bottom:14px;box-shadow:0 4px 18px rgba(16,38,26,.22)}
+.top:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+.top .mark{width:46px;height:auto;flex:none;margin:-4px -2px -2px -4px;overflow:visible}
+.brand{letter-spacing:.06em;font-size:25px;line-height:1}
+.brand b{color:var(--sun)}
+.sub{margin-top:2px}
+.iconbtn{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:12px;width:42px;height:42px;font-size:20px;transition:transform .4s}
+.iconbtn:active{transform:rotate(60deg)}
+.tabs{background:rgba(16,38,26,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:0}
+.tabs button{color:rgba(255,255,255,.55);position:relative;transition:color .2s}
+.tabs button span{transition:transform .25s cubic-bezier(.2,.9,.3,1.4)}
+.tabs button.on{color:var(--sun)}
+.tabs button.on span{transform:translateY(-2px) scale(1.12)}
+.tabs button.on:before{content:"";position:absolute;top:0;left:28%;right:28%;height:3px;border-radius:0 0 4px 4px;background:var(--brand);animation:tabIn .3s ease-out}
+@keyframes tabIn{from{transform:scaleX(0)}to{transform:none}}
+h2{color:var(--forest2)}
+.card,.list{border:1px solid var(--line);border-radius:18px}
+.jobname{color:var(--forest2)}
+.btn{background:var(--green-l);color:var(--forest2);transition:transform .1s,box-shadow .15s,background .15s}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.paint{background:linear-gradient(180deg,#8fcd48,#73b02f);color:var(--forest);box-shadow:0 6px 16px rgba(115,176,47,.35)}
+.btn.paint:active{box-shadow:0 3px 8px rgba(115,176,47,.3)}
+.btn.ghost{background:none;color:var(--brand-d);box-shadow:none}
+.mic{background:linear-gradient(180deg,#8fcd48,#73b02f);color:var(--forest)}
+.mic.live{animation:micPulse 1.1s ease-out infinite}
+@keyframes micPulse{0%{box-shadow:0 0 0 0 rgba(134,196,64,.75)}100%{box-shadow:0 0 0 16px rgba(134,196,64,0)}}
+.check{border-color:#cdd8c7;transition:background .15s,border-color .15s}
+.check.on{background:var(--brand);border-color:var(--brand);color:var(--forest);animation:tick .35s cubic-bezier(.2,.9,.3,1.5)}
+@keyframes tick{0%{transform:scale(.5)}100%{transform:none}}
+.chip{transition:all .15s}
+.chip.on{border-color:var(--brand);background:var(--green-l);color:var(--forest2)}
+.seg{background:#e4ebe0;border-radius:12px}
+.seg button{transition:all .15s}
+.seg button.on{color:var(--forest2);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.tag{background:var(--green-l);color:var(--forest2)}
+.tag.lsi{background:#e6eef7;color:#24527a}.tag.pp{background:#fdf0e0;color:#8a4b06}.tag.kompan{background:#e6f3dc;color:#2f6d2a}
+.bar{background:#e4ebe0}
+.bar i{background:linear-gradient(90deg,var(--brand),var(--sun));transform-origin:left;animation:barIn 1s cubic-bezier(.3,0,.15,1)}
+@keyframes barIn{from{transform:scaleX(0)}}
+input[type=text],input[type=date],input[type=number],input[type=search],input[type=url],select,textarea{border-color:#dbe3d7;background:#fbfcfa;border-radius:11px;transition:border-color .15s,box-shadow .15s,background .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand)!important;background:#fff;box-shadow:0 0 0 4px rgba(134,196,64,.2)}
+.istoday{background:var(--green-l)}
+.istoday .daynum b{color:var(--brand-d)}
+.wsum{background:var(--forest2);color:#fff}
+.hit mark{background:var(--sun)}
+.toast{background:var(--forest2);box-shadow:0 6px 20px rgba(16,38,26,.3)}
+/* today: the field card */
+.hero-card{background:var(--stripes),var(--field);color:#fff;border:0;position:relative;overflow:hidden;padding-bottom:16px}
+.hero-card:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+.hero-card .sunbg{position:absolute;right:-34px;top:-30px;width:150px;height:150px;border-radius:50%;background:var(--sun);opacity:.13;animation:sunGrow .8s cubic-bezier(.2,.9,.3,1.25) both}
+@keyframes sunGrow{from{transform:scale(0)}to{transform:scale(1)}}
+.hero-card>*:not(.sunbg){position:relative}
+.hero-card .muted{color:rgba(255,255,255,.7)!important}
+.hero-card .today-date{color:var(--sun)}
+.hero-card .jobname{color:#fff}
+.hero-card .btn.ghost{color:var(--sun)}
+.hero-card .btn:not(.paint):not(.ghost){background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.14)}
+.hero-card .tag.lsi,.hero-card .tag.pp,.hero-card .tag.kompan{background:rgba(255,255,255,.12);color:#fff}
+/* motion */
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#view.anim>*{animation:pop .4s ease-out both}
+#view.anim>*:nth-child(2){animation-delay:.05s}#view.anim>*:nth-child(3){animation-delay:.1s}#view.anim>*:nth-child(4){animation-delay:.15s}
+#view.anim>*:nth-child(5){animation-delay:.2s}#view.anim>*:nth-child(6){animation-delay:.25s}#view.anim>*:nth-child(n+7){animation-delay:.3s}
+.sheetbg{animation:fadeIn .2s ease-out}
+.sheet{animation:sheetUp .34s cubic-bezier(.2,.9,.3,1)}
+@keyframes sheetUp{from{transform:translateY(40%);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+/* sun + grass mark */
+.mk .sun{transform-box:fill-box;transform-origin:50% 100%}
+.mk.play .sun{transform:scale(0);opacity:0;animation:sunUp .6s cubic-bezier(.2,.9,.3,1.25) .1s forwards}
+.mk.play .ground{stroke-dasharray:1 1;stroke-dashoffset:1;animation:grow .5s ease-out .45s forwards}
+.mk.play .g{stroke-dasharray:1 1;stroke-dashoffset:1}
+.mk.play .g1{animation:grow .9s cubic-bezier(.3,0,.15,1) .55s forwards}
+.mk.play .g2{animation:grow 1.1s cubic-bezier(.3,0,.15,1) .7s forwards}
+.mk.play .g3{animation:grow .85s cubic-bezier(.3,0,.15,1) .9s forwards}
+.mk .blades{transform-box:fill-box;transform-origin:50% 100%}
+.mk.play .blades{animation:sway 5s ease-in-out 2.4s infinite}
+@keyframes sunUp{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes grow{to{stroke-dashoffset:0}}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.6deg)}}
+/* splash + day-wrapped screens */
+.field{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;background:var(--stripes),var(--field);padding:30px 22px calc(30px + env(safe-area-inset-bottom));cursor:pointer}
+.field:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+.field .mk{width:min(240px,62vw);height:auto;overflow:visible}
+.field h1,.field h2{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin:6px 0 0;color:#fff}
+.field h1{font-size:46px;line-height:.95}.field h1 b{color:var(--sun)}
+.field h2{font-size:38px;line-height:1}
+.field p{color:rgba(255,255,255,.8);margin:10px 0 0}
+.field .fade{opacity:0;transform:translateY(8px);animation:pop .5s ease-out forwards}
+.field.intro{transition:transform .6s cubic-bezier(.65,0,.25,1)}
+.field.out{transform:translateY(-100%)}
+.field.done{animation:fadeIn .35s ease-out}
+.field.bye{opacity:0;transition:opacity .3s}
+.field .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px;margin-top:22px}
+.field .tiles div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px}
+.field .tiles b{display:block;font-family:var(--display);font-size:32px;line-height:1.05;color:#fff}
+.field .tiles div:first-child b{color:var(--sun)}
+.field .tiles span{font-size:12px;color:rgba(255,255,255,.7)}
+.field .btn.paint{margin-top:24px;max-width:420px;width:100%;font-size:18px}
+.field .skip{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));left:0;right:0;font-size:12.5px;color:rgba(255,255,255,.45)}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}
 </style>
 </head>
 <body>
 <header class="top">
+  <svg class="mark mk" viewBox="0 0 200 150" aria-hidden="true"></svg>
   <div><div class="brand">TURF TEK <b>JOBS</b></div><div class="sub" id="hdrSub"></div></div>
   <div class="sp"></div>
   <button class="iconbtn" id="gear" aria-label="Settings">⚙︎</button>
@@ -149,7 +259,37 @@ DB.crew??=[];DB.rem??=[];DB.sched??={};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Could not save on this device')}};
 save();
 
-const S={tab:'today',job:null,jtab:'overview',filter:'active',q:''};
+const S={tab:'today',job:null,jtab:'overview',filter:'active',q:'',anim:true};
+/* ---------- sun + grass mark (same shape as the Turf Tek Direct logo) ---------- */
+const MARK=`<defs><clipPath id="mkc"><rect x="0" y="0" width="200" height="138"/></clipPath></defs>
+  <circle class="sun" cx="104" cy="112" r="46" fill="#e2e773" clip-path="url(#mkc)"/>
+  <g class="blades" fill="none" stroke="#86c440" stroke-linecap="round" clip-path="url(#mkc)">
+    <path class="g g1" pathLength="1" stroke-width="8" d="M84.1,140 L84.1,137.7 C83.7,98.7 89.8,65 113.4,39.2 L119,33"/>
+    <path class="g g2" pathLength="1" stroke-width="9.5" d="M96.2,140 L96.2,137.7 C99.6,85.4 128.8,39.3 175.4,11 L183,6.3"/>
+    <path class="g g3" pathLength="1" stroke-width="7.5" d="M111.3,140 L111.3,137.7 C112.8,107.6 125.2,83.7 147.2,66.4 L152.9,61.7"/>
+  </g>
+  <path class="ground" pathLength="1" d="M18,139 L190,139" stroke="#86c440" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+document.querySelector('.top .mark').innerHTML=MARK;
+function splash(){
+  try{if(sessionStorage.getItem('hub_intro'))return;sessionStorage.setItem('hub_intro','1')}catch(e){}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const el=document.createElement('div');el.className='field intro';
+  el.innerHTML=`<svg class="mk play" viewBox="0 0 200 150">${MARK}</svg><h1 class="fade" style="animation-delay:1.2s">Turf Tek <b>Jobs</b></h1><p class="fade" style="animation-delay:1.35s">${fmt(TODAY())}</p><div class="skip">Tap to skip</div>`;
+  document.body.appendChild(el);
+  let done=false;const leave=()=>{if(done)return;done=true;el.classList.add('out');setTimeout(()=>el.remove(),650)};
+  setTimeout(leave,2300);el.onclick=leave;
+}
+function wrapped(stats){
+  const el=document.createElement('div');el.className='field done';
+  el.innerHTML=`<svg class="mk play" viewBox="0 0 200 150">${MARK}</svg>
+    <h2 class="fade" style="animation-delay:1.1s">${stats.moved?'Day wrapped':'Clean sweep'}</h2>
+    <p class="fade" style="animation-delay:1.2s">${esc(stats.job)} · Build day ${stats.day}</p>
+    <div class="tiles fade" style="animation-delay:1.35s"><div><b data-n="${stats.done}">0</b><span>done</span></div><div><b data-n="${stats.ahead}">0</b><span>ahead of plan</span></div><div><b data-n="${stats.moved}">0</b><span>${stats.next?'to '+esc(stats.next):'moved on'}</span></div></div>
+    <button class="btn paint big fade" style="animation-delay:1.5s">Done</button>`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.querySelectorAll('[data-n]').forEach(b=>{const n=+b.dataset.n,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/700);b.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}),1400);
+  const bye=()=>{el.classList.add('bye');setTimeout(()=>el.remove(),300)};el.onclick=bye;
+}
 const job=id=>DB.jobs.find(j=>j.id===id);
 const layoutURL=j=>j.layout===null||j.layout===undefined?null:(/^https?:/.test(j.layout)?j.layout:LAYOUT_BASE+j.layout);
 const mfrTag=m=>{const k=/kompan/i.test(m)?'kompan':/landscape|lsi/i.test(m)?'lsi':/play|park|supermax/i.test(m)?'pp':'';return m?`<span class="tag ${k}">${esc(m)}</span>`:''};
@@ -182,18 +322,27 @@ const NEG=/\b(didn'?t|did not|not|no|never|couldn'?t|could not|still|need|needs|
 function sameHole(a,b){a=String(a).toLowerCase();b=String(b).toLowerCase();if(a===b)return true;const ra=a.match(/^([a-z]*)0*(\d+)$/),rb=b.match(/^([a-z]*)0*(\d+)$/);return !!(ra&&rb&&ra[2]===rb[2]&&(ra[1]===rb[1]||!rb[1]))}
 function matchSpoken(text,N){
   const hits=new Set(),E=Object.entries(N);
-  for(const raw of String(text).split(/[.;!?\n]+|,?\s+but\s+|\s+except\s+|\s+however\s+/i)){
-    const c=normT(raw);if(!c.trim()||NEG.test(c))continue;
+  let lastKw='',lastNeg=false;
+  for(const raw of String(text).split(/[.;!?\n,]+|\s+but\s+|\s+except\s+|\s+however\s+/i)){
+    let c=normT(raw);if(!c.trim())continue;
+    const cont=/^\s*(and\s+)?[a-z]{0,2}\d/.test(c);
+    if(cont&&lastKw)c=' '+lastKw+c.replace(/^\s*and\s+/,' ');
+    const neg=cont?lastNeg||NEG.test(c):NEG.test(c);
+    const kw=c.match(/\b(poles?|holes?|posts?|footings?)\s+[a-z]{0,2}\d/);if(kw)lastKw=kw[1];else if(!cont)lastKw='';
+    lastNeg=neg;if(neg)continue;
     const foot=/footing|pour|concrete|slab|pad/.test(c);
     const re=/\b(poles?|holes?|posts?|footings?)\s+((?:[a-z]{0,2}\d+)(?:\s+(?:and|through|thru|to|n)?\s*[a-z]{0,2}\d+)*)/g;let m;
-    while((m=re.exec(c))){const toks=m[2].split(/\s+/).filter(Boolean),nums=[];
+    while((m=re.exec(c))){const toks=m[2].split(/\s+/).filter(Boolean),nums=[],fill=new Set();
       for(let i=0;i<toks.length;i++){const t=toks[i];
-        if(/^(through|thru|to)$/.test(t)&&nums.length&&toks[i+1]){const last=nums[nums.length-1],pre=(last.match(/^[a-z]*/)||[''])[0],a=parseInt(last.replace(/\D/g,'')),b=parseInt(toks[i+1].replace(/\D/g,''));if(b>a&&b-a<60)for(let x=a+1;x<=b;x++)nums.push(pre+x);i++}
+        if(/^(through|thru|to)$/.test(t)&&nums.length&&toks[i+1]){const last=nums[nums.length-1],pre=(last.match(/^[a-z]*/)||[''])[0],a=parseInt(last.replace(/\D/g,'')),b=parseInt(toks[i+1].replace(/\D/g,''));if(b>a&&b-a<60)for(let x=a+1;x<b;x++){nums.push(pre+x);fill.add(pre+x)}nums.push(toks[i+1]);i++}
         else if(/\d/.test(t))nums.push(t)}
       const wantFoot=foot&&!/^pole|^post/.test(m[1]);
-      for(const [k,v] of E){
-        if(!wantFoot&&v.t==='pole'&&nums.some(n=>sameHole(v.h,n)))hits.add(k);
-        if(wantFoot&&v.t==='foot'&&(v.hs||[]).some(h=>nums.some(n=>sameHole(h,n))))hits.add(k)}}
+      const exact=(a,b)=>{const ra=String(a).toLowerCase().match(/^([a-z]*)0*(\d+)$/),rb=String(b).toLowerCase().match(/^([a-z]*)0*(\d+)$/);return ra&&rb?ra[1]===rb[1]&&ra[2]===rb[2]:String(a).toLowerCase()===String(b).toLowerCase()};
+      for(const n of nums){
+        const holesOf=v=>wantFoot?(v.t==='foot'?(v.hs||[]):[]):(v.t==='pole'?[v.h]:[]);
+        let got=E.filter(([k,v])=>holesOf(v).some(h=>exact(h,n)));
+        if(!got.length&&!fill.has(n))got=E.filter(([k,v])=>holesOf(v).some(h=>sameHole(h,n)));
+        got.forEach(([k])=>hits.add(k))}}
     for(const [k,v] of E){if(v.t==='pole')continue;const core=normT(String(v.n).replace(/\(.*?\)/g,'')).trim();if(!core)continue;
       if(c.includes(' '+core+' ')){hits.add(k);continue}
       const w=core.split(' ');if(w.length>2){const sh=w.slice(0,2).join(' ');if((/\d/.test(w[1])||sh.length>=7)&&c.includes(' '+sh+' '))hits.add(k)}}
@@ -258,7 +407,8 @@ function wrapUp(j,dt){
       j.logs=j.logs.filter(l=>!(l.date===dt&&l.build));
       j.logs.push({id:uid(),date:dt,crew:[...crew],hours:Number(el.querySelector('#wh').value)||0,section:'',note:t.value.trim(),made:Date.now(),
         build:{day:i+1,planned,done:planned.filter(k=>done.has(k)),rolled:carry,extra:[...extra],names:nm}});
-      save();close();render();toast(carry.length?`Saved. ${carry.length} moved to ${nextD?fmt(nextD):'next day'}`:'Saved. Everything got done');
+      save();close();render();
+      wrapped({job:j.name,day:i+1,done:didK.length,ahead:extra.size,moved:carry.length,next:carry.length&&nextD?fmt(nextD):''});
     };
   });
 }
@@ -456,8 +606,8 @@ function vToday(){
     return `<div class="item"><button class="check" data-rem="${r.id}"></button><div class="grow"><div class="txt">${esc(r.text)}</div><div class="row wrap small" style="margin-top:4px">${jj?`<span class="tag">${esc(jj.name)}</span>`:''}${due}</div></div></div>`};
   const next=[1,2,3,4,5,6,7].map(n=>addDays(t,n)).filter(d=>(DB.sched[d]&&(DB.sched[d].job||DB.sched[d].note))||buildJobsOn(d).length);
   return `
-  <div class="card">
-    <div class="muted small" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}</div>
+  <div class="card hero-card"><div class="sunbg"></div>
+    <div class="muted small" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em;position:relative">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]}</div>
     <div class="today-date">${MON[new Date().getMonth()]} ${new Date().getDate()}</div>
     <div style="margin-top:12px" class="row"><div class="grow">
       ${j?`<div class="jobname">${esc(j.name)}</div><div class="row wrap" style="margin-top:4px">${mfrTag(j.mfr)}${j.site?`<span class="small muted">${esc(j.site)}</span>`:''}</div>`:'<div class="muted">No job set for today</div>'}
@@ -584,15 +734,16 @@ function render(){
   $('#hdrSub').textContent=`${active} active job${active===1?'':'s'}`;
   const v=$('#view');
   v.innerHTML=S.tab==='today'?vToday():S.tab==='jobs'?vJobs():S.tab==='sched'?vSched():vBrain();
+  v.classList.remove('anim');if(S.anim){void v.offsetWidth;v.classList.add('anim')}S.anim=false;
   bind(v);
 }
 function bind(v){
   const on=(sel,fn)=>v.querySelectorAll(sel).forEach(el=>el.addEventListener('click',e=>fn(el,e)));
-  on('[data-openjob]',el=>{S.tab='jobs';S.job=el.dataset.openjob;S.jtab='overview';render();scrollTo(0,0)});
+  on('[data-openjob]',el=>{S.anim=true;S.tab='jobs';S.job=el.dataset.openjob;S.jtab='overview';render();scrollTo(0,0)});
   on('[data-day]',el=>editDay(el.dataset.day));
   on('[data-rem]',el=>{const r=DB.rem.find(x=>x.id===el.dataset.rem);r.done=true;r.doneAt=Date.now();save();el.classList.add('on');el.textContent='✓';setTimeout(render,350);toast('Done')});
-  on('[data-filter]',el=>{S.filter=el.dataset.filter;render()});
-  on('[data-jtab]',el=>{S.jtab=el.dataset.jtab;render()});
+  on('[data-filter]',el=>{S.anim=true;S.filter=el.dataset.filter;render()});
+  on('[data-jtab]',el=>{S.anim=true;S.jtab=el.dataset.jtab;render()});
   const j=S.job&&job(S.job);
   on('[data-sec]',el=>{const s=j.sections.find(x=>x.id===el.dataset.sec);s.done=!s.done;save();render()});
   on('[data-delsec]',el=>{const s=j.sections.find(x=>x.id===el.dataset.delsec);if(confirm(`Remove section "${s.name}"?`)){j.sections=j.sections.filter(x=>x!==s);save();render()}});
@@ -610,14 +761,15 @@ function bind(v){
   id('qrem',()=>addReminder(undefined,true));id('qsched',()=>{S.tab='sched';render();scrollTo(0,0)});
   id('qlog',()=>addLog(todayJob()?.id));id('qpunch',()=>addPunch());
   id('newjob',()=>editJob());id('editjob',()=>editJob(j));
-  id('back',()=>{S.job=null;render()});
+  id('back',()=>{S.anim=true;S.job=null;render()});
   id('addpunch',()=>addPunch(j.id));id('addlog',()=>addLog(j.id));
   id('adddoc',()=>{const name=prompt('Name (e.g. Install manual, Site plan)');if(!name)return;const url=prompt('Link (paste the URL)');if(!url)return;j.docs.push({name,url});save();render()});
   const sa=v.querySelector('#seca');if(sa){const inp=v.querySelector('#secn');const add=()=>{const n=inp.value.trim();if(!n)return;j.sections.push({id:uid(),name:n,done:false});save();render()};sa.onclick=add;inp.onkeydown=e=>{if(e.key==='Enter')add()}}
   const q=v.querySelector('#q');if(q){q.oninput=()=>{S.q=q.value;const pos=q.selectionStart;render();const n=$('#q');n.focus();n.setSelectionRange(pos,pos)}}
 }
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{if(S.tab===b.dataset.tab&&b.dataset.tab==='jobs')S.job=null;S.tab=b.dataset.tab;render();scrollTo(0,0)});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{S.anim=true;if(S.tab===b.dataset.tab&&b.dataset.tab==='jobs')S.job=null;S.tab=b.dataset.tab;render();scrollTo(0,0)});
 $('#gear').onclick=settings;
+splash();
 addEventListener('storage',render);
 addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
 render();
