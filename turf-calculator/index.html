@@ -201,8 +201,28 @@
   .ty h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 0}
   .ty p{color:rgba(255,255,255,.8);font-size:16px;margin:12px 0 0}
   .ty .fade{opacity:0;transform:translateY(8px)}
-  .ty.play .fade{animation:up .5s ease-out forwards}
-  .ty.play .f1{animation-delay:2.2s}.ty.play .f2{animation-delay:2.35s}.ty.play .f3{animation-delay:2.5s}.ty.play .f4{animation-delay:2.65s}
+  .ty.txt .fade{animation:up .5s ease-out forwards}
+  .ty.txt .f1{animation-delay:0s}.ty.txt .f2{animation-delay:.15s}.ty.txt .f3{animation-delay:.3s}.ty.txt .f4{animation-delay:.45s}
+  /* quote delivery stage: bubble pops, rides the flatbed, lands on the lawn, then the logo grows in */
+  .ty-stage{position:relative;width:100%;aspect-ratio:16/10;cursor:pointer;margin-top:-10px}
+  .ty-stage svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #tyScene{transition:opacity .4s ease;border-radius:18px}
+  .ty-stage.logo #tyScene{opacity:0}
+  .ty-logo{overflow:visible}
+  .ty-logo .i-sun{transform-origin:480px 216px;transform:scale(0);opacity:0}
+  .ty-logo .i-g{stroke-dasharray:1 1;stroke-dashoffset:1}
+  .ty-logo .i-logo{opacity:0}
+  .ty-stage.logo .i-sun{animation:sunUp .55s cubic-bezier(.2,.9,.3,1.25) .1s forwards}
+  .ty-stage.logo .i-g1{animation:grow 1s cubic-bezier(.3,0,.15,1) .45s forwards}
+  .ty-stage.logo .i-g2{animation:grow 1.2s cubic-bezier(.3,0,.15,1) .6s forwards}
+  .ty-stage.logo .i-g3{animation:grow .95s cubic-bezier(.3,0,.15,1) .8s forwards}
+  .ty-stage.logo .i-logo{animation:fadeIn .6s ease-out 1.75s forwards}
+  .ty-stage.end .i-sun{animation:none;transform:none;opacity:1}
+  .ty-stage.end .i-g{animation:none;stroke-dashoffset:0}
+  .ty-stage.end .i-logo{animation:none;opacity:1}
+  .ty-cap{height:20px;margin-top:2px;font-size:13px;font-weight:600;letter-spacing:.3px;color:rgba(255,255,255,.6);transition:opacity .3s}
+  .ty-cap small{font-weight:400;color:rgba(255,255,255,.38);margin-left:8px}
+
   @keyframes up{to{opacity:1;transform:none}}
   .ty-fail{width:100%;margin-top:20px;background:#e8891c;color:#1a1206;border-radius:16px;padding:16px;text-align:left;
     box-shadow:0 0 0 0 rgba(232,137,28,.7);animation:failIn .5s cubic-bezier(.2,.9,.3,1.3) both, failPulse 1.4s ease-out .5s 4}
@@ -291,19 +311,86 @@
 </main>
 
 <div class="ty" id="thanks" role="dialog" aria-modal="true" aria-labelledby="tyTitle"><div class="ty-in">
-  <svg class="mark" viewBox="40 -12 160 170" aria-hidden="true">
-    <defs><clipPath id="tyClip"><rect x="0" y="-40" width="240" height="179"/></clipPath>
-      <mask id="tyM1" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g1" pathLength="1" d="M77.5,146 L77.5,139 C77,95 84,57 110.6,27.8 L116,22" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask>
-      <mask id="tyM2" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g2" pathLength="1" d="M91.2,146 L91.2,139 C95,80 128,28 180.6,-4 L188,-9" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/></mask>
-      <mask id="tyM3" maskUnits="userSpaceOnUse" x="0" y="-40" width="240" height="200"><path class="grow g3" pathLength="1" d="M108.2,146 L108.2,139 C110,105 124,78 148.8,58.6 L154,54" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/></mask></defs>
-    <circle class="sun" cx="100" cy="110" r="52" fill="#e2e773" clip-path="url(#tyClip)"/>
-    <g class="sway" style="transform-origin:95px 139px">
-      <path class="blade" mask="url(#tyM1)" d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
-      <path class="blade" mask="url(#tyM2)" d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
-      <path class="blade" mask="url(#tyM3)" d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
-    </g>
-    <line class="ground" x1="20" y1="146" x2="180" y2="146" stroke="#86c440" stroke-width="4" stroke-linecap="round"/>
-  </svg>
+  <div class="ty-stage" id="tyStage" aria-hidden="true">
+    <svg id="tyScene" viewBox="64 214 512 320" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="ttTurf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8cc63f"/><stop offset="1" stop-color="#6aa832"/></linearGradient>
+        <radialGradient id="ttGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e2e773" stop-opacity=".35"/><stop offset="1" stop-color="#e2e773" stop-opacity="0"/></radialGradient>
+        <clipPath id="ttSunClip"><rect x="0" y="-40" width="240" height="179"/></clipPath>
+        <clipPath id="ttDoorClip"><rect x="252" y="332" width="136" height="72"/></clipPath>
+        <clipPath id="ttTurfClip"><rect id="ttTurfRect" x="2520" y="390" width="0" height="70"/></clipPath>
+        <g id="ttMark">
+          <circle cx="100" cy="110" r="52" fill="#e2e773" clip-path="url(#ttSunClip)"/>
+          <path d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
+          <path d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
+          <path d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
+        </g>
+      </defs>
+      <g id="ttFar"><path d="M-500 404 L-500 372 C-300 330 -120 340 60 380 C200 336 340 330 520 372 S760 330 900 366 L900 404Z" fill="#1a3f22"/></g>
+      <g id="ttNear"><path d="M-400 404 L-400 386 C-200 360 0 368 160 396 C330 360 470 366 640 392 S900 352 1100 388 L1100 404Z" fill="#163a1f"/></g>
+      <g id="ttTrees"></g>
+      <g id="ttWarehouse">
+        <rect x="168" y="278" width="304" height="126" fill="#e9e4d9"/>
+        <path d="M156 282 L320 236 L484 282Z" fill="#c5c9c4" stroke="#c5c9c4" stroke-width="6" stroke-linejoin="round"/>
+        <image href="logo-dark.png" x="261" y="281" width="118" height="45.2"/>
+        <rect x="252" y="332" width="136" height="72" fill="#0b1710"/>
+        <ellipse cx="320" cy="404" rx="58" ry="9" fill="#e2e773" opacity=".22"/>
+        <g clip-path="url(#ttDoorClip)"><g id="ttDoor">
+          <rect x="252" y="332" width="136" height="72" fill="#a3a9ac"/>
+          <g fill="#8c9295"><rect x="252" y="341" width="136" height="2"/><rect x="252" y="352" width="136" height="2"/><rect x="252" y="363" width="136" height="2"/><rect x="252" y="374" width="136" height="2"/><rect x="252" y="385" width="136" height="2"/><rect x="252" y="396" width="136" height="2"/></g>
+        </g></g>
+        <rect x="246" y="327" width="148" height="6" rx="2" fill="#cfd2cc"/>
+        <rect x="190" y="340" width="40" height="28" rx="3" fill="#cfe4ea"/>
+        <rect x="410" y="340" width="40" height="28" rx="3" fill="#cfe4ea"/>
+      </g>
+      <rect x="-1000" y="402" width="4200" height="48" fill="#1f4a25"/>
+      <rect x="-1000" y="402" width="4200" height="3" fill="#86c440" opacity=".5"/>
+      <rect x="-1000" y="450" width="4200" height="50" fill="#0c1b12"/>
+      <g id="ttDash" fill="rgba(255,255,255,.22)"></g>
+      <rect x="-1000" y="500" width="4200" height="80" fill="#132f1b"/>
+      <g transform="translate(-1270 0)">
+        <ellipse cx="2520" cy="350" rx="190" ry="90" fill="url(#ttGlow)"/>
+        <rect x="2400" y="330" width="240" height="74" rx="3" fill="#f4efe3"/>
+        <path d="M2384 334 L2520 270 L2656 334Z" fill="#c9765a" stroke="#c9765a" stroke-width="6" stroke-linejoin="round"/>
+        <rect x="2504" y="356" width="32" height="48" rx="3" fill="#7a5a44"/>
+        <rect x="2428" y="350" width="40" height="28" rx="3" fill="#f3e9a0"/>
+        <rect x="2572" y="350" width="40" height="28" rx="3" fill="#f3e9a0"/>
+        <rect x="2320" y="406" width="400" height="42" rx="6" fill="#8a6a4c"/>
+        <g clip-path="url(#ttTurfClip)"><rect x="2320" y="406" width="400" height="42" rx="6" fill="url(#ttTurf)"/></g>
+        <g id="ttBlades" fill="#7dbb36"></g>
+      </g>
+      <g id="ttTruck">
+        <rect x="-108" y="460" width="200" height="9" rx="3" fill="#2a2e33"/>
+        <rect x="-112" y="452" width="108" height="8" rx="3" fill="#e4e6e8"/>
+        <rect x="40" y="436" width="44" height="34" rx="7" fill="#fbfbf9" stroke="#d9dcdf" stroke-width="1.5"/>
+        <rect x="0" y="414" width="46" height="56" rx="8" fill="#fbfbf9" stroke="#d9dcdf" stroke-width="1.5"/>
+        <rect x="24" y="421" width="17" height="16" rx="3" fill="#cfe4ea"/>
+        <use href="#ttMark" transform="translate(-1 441) scale(.09)"/>
+        <text x="11" y="451" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="8.5" fill="#10261a" letter-spacing=".3">TURF TEK</text>
+        <rect x="82" y="456" width="5" height="12" rx="2" fill="#bfc3c7"/>
+        <g id="ttWheels"></g>
+      </g>
+      <g id="ttBub"><g transform="scale(.77) translate(-100 -139)">
+        <use href="#ttMark"/>
+      </g></g>
+    </svg>
+    <svg class="ty-logo" viewBox="-60 -146.75 1020 637.5">
+      <defs>
+        <clipPath id="tyInClip"><rect x="0" y="0" width="900" height="274.5"/></clipPath>
+        <mask id="tyInMask" maskUnits="userSpaceOnUse" x="0" y="-40" width="900" height="400">
+          <g fill="none" stroke="#fff" stroke-linecap="round">
+            <path class="i-g i-g1" pathLength="1" stroke-width="26" d="M437.6,276 L437.6,270.7 C436.7,187.7 449.8,116.1 500,61.1 L512,48"/>
+            <path class="i-g i-g2" pathLength="1" stroke-width="30" d="M463.4,276 L463.4,270.7 C470.6,159.5 532.8,61.5 631.9,1.2 L648,-9"/>
+            <path class="i-g i-g3" pathLength="1" stroke-width="26" d="M495.5,276 L495.5,270.7 C498.8,206.6 525.2,155.7 572,119.1 L584,109"/>
+          </g>
+        </mask>
+      </defs>
+      <circle class="i-sun" cx="480" cy="216" r="98" fill="#e2e773" clip-path="url(#tyInClip)"/>
+      <g mask="url(#tyInMask)"><image href="logo.png" x="-3.5" y="-3" width="900" height="345" clip-path="url(#tyInClip)"/></g>
+      <image class="i-logo" href="logo.png" x="-3.5" y="-3" width="900" height="345"/>
+    </svg>
+  </div>
+  <div class="ty-cap" id="tyCap"></div>
   <h2 id="tyTitle" class="fade f1"><span id="tyHead">Thank you</span><span id="tyName"></span></h2>
   <p class="fade f2" id="tyText">Your quote request has been sent to the Turf Tek sales team. We're reviewing your layout and material list and will be in touch shortly with pricing.</p>
   <div class="ty-fail" id="tyMail" style="display:none" role="alert">
@@ -329,6 +416,7 @@ const C = {
   SALES_EMAIL: "quote@turftekusa.com",               // where quote requests go, e.g. "sales@yourdomain.com"
   FORMSUBMIT_ID: "",             // optional: the random ID FormSubmit gives after activation, hides the email address in the page
   QUOTE_ENDPOINT: "",            // optional: website form URL that accepts a JSON POST. If set, requests send directly (no email app).
+  DEMO: false,                   // true = plays the quote animation without sending anything to sales
   ROLL_WIDTH_FT: 15,             // roll width as ordered
   FULL_COVER_FT: 14 + 10/12,     // usable width after trimming (14'10")
   HALF_COVER_FT: 7 + 5/12,       // usable width of a half roll (7'5")
@@ -956,9 +1044,10 @@ $('#quote').addEventListener('submit', e => {
   // Show the thank-you screen right away; the request sends quietly in the background.
   showThanks(T, c, mailHref);
   const t0 = Date.now();
-  const fail = () => setTimeout(() => { const f = $('#tyMail'); $('#tyHead').textContent = 'Almost there'; $('#tyText').textContent = 'Your layout and material list are ready for our sales team. One last step to get it to us:'; f.style.display = 'none'; void f.offsetWidth; f.style.display = '';
+  if (C.DEMO) return;
+  const fail = () => TA.whenDone(() => setTimeout(() => { const f = $('#tyMail'); $('#tyHead').textContent = 'Almost there'; $('#tyText').textContent = 'Your layout and material list are ready for our sales team. One last step to get it to us:'; f.style.display = 'none'; void f.offsetWidth; f.style.display = '';
     if (navigator.vibrate) try { navigator.vibrate([120, 80, 120]); } catch(e) {}
-    setTimeout(() => f.scrollIntoView({behavior:'smooth', block:'center'}), 600); }, Math.max(0, 2500 - (Date.now() - t0)));
+    setTimeout(() => f.scrollIntoView({behavior:'smooth', block:'center'}), 600); }, 300));
   let url, payload;
   if (C.QUOTE_ENDPOINT){
     url = C.QUOTE_ENDPOINT;
@@ -981,10 +1070,85 @@ function showThanks(T, c, mailHref){
   $('#tySf').textContent = n0(T.sf); $('#tyRolls').textContent = T.pieces.length; $('#tyAreas').textContent = T.areas.length;
   $('#tyMail').style.display = 'none'; $('#tyMailBtn').href = mailHref;
   $('#tyHead').textContent = 'Thank you'; $('#tyText').textContent = TY_TEXT;
-  ty.classList.remove('play'); ty.classList.add('show'); void ty.offsetWidth; ty.classList.add('play');
+  ty.classList.remove('play', 'txt'); ty.classList.add('show'); void ty.offsetWidth; ty.classList.add('play');
   ty.scrollTop = 0; document.body.style.overflow = 'hidden';
+  TA.play();
 }
-function hideThanks(){ $('#thanks').classList.remove('show', 'play'); document.body.style.overflow = ''; }
+function hideThanks(){ TA.stop(); $('#thanks').classList.remove('show', 'play', 'txt'); document.body.style.overflow = ''; }
+
+/* ---------- quote delivery animation ----------
+   The flatbed pulls up to the warehouse, the door rolls up and the Turf Tek logo drops onto the bed, rides to the house,
+   hops onto the dirt lawn and turns it to turf. Then the logo grows in like the opening screen. */
+const TA = (() => {
+  const NS = 'http://www.w3.org/2000/svg', stage = $('#tyStage'), svg = $('#tyScene'), cap = $('#tyCap');
+  const q = id => document.getElementById(id);
+  const mk = (tag, at, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); parent.appendChild(e); return e; };
+  [[60,34,0],[560,42,1],[700,40,1],[880,34,0],[1640,40,1],[1900,32,0],[2150,38,1]].forEach(([x, r, i]) => {
+    mk('rect', {x:x-4, y:404-r, width:8, height:r, rx:3, fill:'#0f2416'}, q('ttTrees'));
+    mk('circle', {cx:x, cy:404-r-r*.8, r, fill:i ? '#2a5e2e' : '#255429'}, q('ttTrees'));
+  });
+  for (let x = -600; x < 3000; x += 70) mk('rect', {x, y:473, width:34, height:4, rx:2}, q('ttDash'));
+  const wheel = (cx, cy, r) => { const g = mk('g', {}, q('ttWheels'));
+    mk('circle', {r, fill:'#14171a'}, g); mk('circle', {r:r*.4, fill:'#c9cdd1'}, g);
+    mk('rect', {x:-1.2, y:-r+2, width:2.4, height:r*.4, rx:1, fill:'#55595e'}, g); return {g, cx, cy, r}; };
+  const wheels = [-90, -32, 64].map(cx => wheel(cx, 481, 13));
+  const blades = [];
+  for (let x = 2326; x <= 2714; x += 7){ const h = 6 + ((x*37) % 7);
+    blades.push({x, p:mk('path', {d:`M-2 0 Q0 ${-h} ${1 + (x % 3)} ${-h-2} Q1 ${-h/2} 2 0Z`}, q('ttBlades'))}); }
+
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a)*t;
+  const P = (t, a, b) => clamp((t - a)/(b - a));
+  const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2, easeOut = t => 1 - Math.pow(1 - t, 3), easeIn = t => t*t*t;
+  const back = t => { const c = 1.7; return 1 + (c + 1)*Math.pow(t - 1, 3) + c*Math.pow(t - 1, 2); };
+
+  const HX = 1250, LX = 2520, C0 = 320, T0 = -190, T1 = C0 + 58, T2 = HX + 248, T3 = HX + 1000;
+  const BED_TOP = 452, LAWN_Y = 444, POP_Y = 384, POP_S = 1.2;
+  const LOGO_AT = 7.3, TEXT_AT = 9.8, END = 9.8, DX = C0;
+  let start = 0, raf = 0, logoOn = false, txtOn = false, waiting = [];
+
+  function render(t){
+    const tx = t < 3.4 ? lerp(T0, T1, easeOut(P(t, .2, 1.4))) : t < 6.3 ? lerp(T1, T2, ease(P(t, 3.4, 5.3))) : lerp(T2, T3, easeIn(P(t, 6.3, 7.4)));
+    const cam = t < 3.4 ? C0 : t < 5.4 ? lerp(C0, HX + 110, ease(P(t, 3.4, 5.3))) : lerp(HX + 110, HX, ease(P(t, 5.4, 6.2)));
+    svg.setAttribute('viewBox', `${cam - 256} 214 512 320`);
+    q('ttFar').setAttribute('transform', `translate(${cam*.85} 0)`);
+    q('ttNear').setAttribute('transform', `translate(${cam*.6} 0)`);
+    q('ttTruck').setAttribute('transform', `translate(${tx} 0)`);
+    wheels.forEach(w => w.g.setAttribute('transform', `translate(${w.cx} ${w.cy}) rotate(${(tx - T0)/w.r*57.3})`));
+
+    // warehouse door rolls up, then back down once it's loaded
+    const open = t < 3.0 ? ease(P(t, 1.4, 2.0)) : 1 - ease(P(t, 3.2, 3.7));
+    q('ttDoor').setAttribute('transform', `translate(0 ${-72*open})`);
+
+    // the logo: out of the doorway, onto the bed, to the house, onto the lawn
+    let x = DX, y = 404, s = .62, sx = null, r = 0;
+    if (t < 2.4){ s = .62*back(P(t, 1.85, 2.3)); }
+    else if (t < 2.9){ const p = ease(P(t, 2.4, 2.9)); y = lerp(404, BED_TOP, p) - 45*Math.sin(Math.PI*p); s = lerp(.62, 1, p); }
+    else if (t < 5.4){ const sq = Math.sin(Math.PI*P(t, 2.9, 3.15))*.1; x = tx - 58; y = BED_TOP; sx = 1 + sq; s = 1 - sq; }
+    else if (t < 6.1){ const p = ease(P(t, 5.4, 6.1)); x = lerp(T2 - 58, HX, p); y = lerp(BED_TOP, LAWN_Y, p) - 115*Math.sin(Math.PI*p); r = -9*Math.sin(Math.PI*p); s = 1; }
+    else { const sq = Math.sin(Math.PI*P(t, 6.1, 6.35))*.1; x = HX; y = LAWN_Y; sx = 1 + sq; s = 1 - sq; }
+    q('ttBub').setAttribute('transform', `translate(${x} ${y}) rotate(${r}) scale(${sx ?? s} ${s})`);
+
+    // turf spreads out from where it landed
+    const half = 205*ease(P(t, 6.2, 7.1));
+    q('ttTurfRect').setAttribute('x', LX - half); q('ttTurfRect').setAttribute('width', half*2);
+    blades.forEach(b => b.p.setAttribute('transform', `translate(${b.x} 407) scale(1 ${easeOut(clamp((half - Math.abs(b.x - LX))/40))})`));
+
+    cap.innerHTML = t < 2.9 ? 'Loading your quote…<small>tap to skip</small>' : t < 6.1 ? 'Out for delivery…<small>tap to skip</small>' : t < LOGO_AT ? 'Delivered!' : '';
+    if (!logoOn && t >= LOGO_AT){ logoOn = true; stage.classList.add('logo'); }
+    if (!txtOn && t >= TEXT_AT) showText();
+  }
+  function frame(now){ const t = (now - start)/1000; render(Math.min(t, END)); if (t < END) raf = requestAnimationFrame(frame); }
+  function showText(){ if (txtOn) return; txtOn = true; $('#thanks').classList.add('txt'); waiting.splice(0).forEach(f => f()); }
+  function stop(){ cancelAnimationFrame(raf); }
+  function skip(){ stop(); render(END); stage.classList.add('logo', 'end'); showText(); }
+  function play(){
+    stop(); logoOn = txtOn = false; waiting = []; stage.classList.remove('logo', 'end');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return skip();
+    render(0); showText(); start = performance.now(); raf = requestAnimationFrame(frame);
+  }
+  stage.addEventListener('click', skip);
+  return {play, stop, skip, whenDone:f => txtOn ? f() : waiting.push(f)};
+})();
 $('#tyBack').addEventListener('click', hideThanks);
 $('#tyNew').addEventListener('click', () => { hideThanks(); state.areas = [newArea(1)]; ['product','notes','job'].forEach(k => $('#q_' + k).value = ''); state.contact = contact(); renderAreas(); window.scrollTo({top:0}); });
 
