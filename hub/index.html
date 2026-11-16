@@ -250,12 +250,16 @@ function seed(){
     {id:'neary',name:'Neary Elementary',mfr:'Kompan',site:'',status:'active',start:'',contact:'',notes:'',layout:'neary/',remKey:'nry_rem',sections:[],punch:[],logs:[],docs:[]},
     {id:'bear-mountain',name:'Bear Mountain State Park',mfr:'Landscape Structures',site:'Tomkins Cove, NY',status:'upcoming',start:'',contact:'',notes:'~60 working days, 6-man crew. Bill by section.',layout:'bear-mountain/',remKey:'bm_rem',
       sections:sec(['Shades','Walkway','142" + embankment slides','Snag tower','23\' RPL tower + Adventurescapes + long slide','2–5 area','Misc / punch list']),punch:[],logs:[],docs:[]}
+,
+    {id:'guggenheim',name:'Guggenheim Elementary (Second)',mfr:'Burke',site:'Sands Point, NY',status:'upcoming',start:'',contact:'',notes:'Burke order 265395. Footprint/stakes not final yet.',layout:'guggenheim/',remKey:'gug_rem',sections:[],punch:[],logs:[],docs:[]}
   ]};
 }
 let DB;
 try{DB=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!DB||!DB.jobs)DB=seed();
 DB.crew??=[];DB.rem??=[];DB.sched??={};
+DB.seeded??=[...DB.jobs.map(j=>j.id),'sawmill','hagedorn','neary','bear-mountain'];
+for(const j of seed().jobs) if(!DB.seeded.includes(j.id)){ if(!DB.jobs.some(x=>x.id===j.id)) DB.jobs.push(j); DB.seeded.push(j.id); }
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Could not save on this device')}};
 save();
 
@@ -301,7 +305,7 @@ function layoutRems(j){
 }
 function dayPlan(d){return DB.sched[d]||{}}
 /* ---------- build plan shared with the layout apps (same site, same phone) ---------- */
-const PFX={sawmill:'swl_',hagedorn:'hgl_',neary:'nry_','bear-mountain':'bm_'};
+const PFX={sawmill:'swl_',hagedorn:'hgl_',neary:'nry_','bear-mountain':'bm_',guggenheim:'gug_'};
 const pfx=j=>j&&(j.pfx??PFX[j.id]??null);
 function getPlan(j){const p=pfx(j);if(!p)return null;try{const P=JSON.parse(localStorage.getItem(p+'build'));if(P&&Array.isArray(P.days)&&P.days.length){P.off=Array.isArray(P.off)?P.off:[];P.days.forEach(d=>{d.items=d.items||[];d.done=d.done||[]});return P}}catch(e){}return null}
 function setPlan(j,P){try{localStorage.setItem(pfx(j)+'build',JSON.stringify(P))}catch(e){toast('Could not save the plan')}}

@@ -1,0 +1,3113 @@
+{
+"names": {
+"001-0118": "3/8\" \u00d7 1 1/4\" SS Button Head Cap Screw",
+"021-0033": "3/8\" SS Flat Washer",
+"001-0152": "3/8\" \u00d7 1 1/4\" SS Button Head Cap Screw W/O Locking Thread",
+"019-0020": "1/4\" \u00d7 1/2\" Drive Rivet",
+"001-0117": "3/8\" \u00d7 1\" SS Button Head Cap Screw",
+"021-0032": "5/16\" SS Flat Washer",
+"001-0116": "3/8\" \u00d7 3/4\" SS Button Head Cap Screw",
+"002-0053": "3/8\" \u00d7 1/2\" SS Socket Head Barrel Nut",
+"002-0036": "3/8\" SS Nut",
+"001-0120": "3/8\" \u00d7 1 3/4\" SS Button Head Cap Screw",
+"001-0143": "3/8\" \u00d7 1/2\" SS Button Head Cap Screw",
+"001-0121": "3/8\" \u00d7 2\" SS Button Head Cap Screw",
+"002-0062": "3/8\" \u00d7 3/4\" SS Socket Head Barrel Nut",
+"001-0119": "3/8\" \u00d7 1 1/2\" SS Button Head Cap Screw",
+"003-0023": "#10 \u00d7 5/8\" SS Button Head Cap Screw",
+"001-0123": "3/8\" \u00d7 2 1/2\" SS Button Head Cap Screw",
+"001-0263": "3/8\"-16 \u00d7 1\" T45 Button Head Shoulder Bolt",
+"002-0065": "#10 \u00d7 5/8\" SS Torx Head Barrel Nut",
+"021-0054": "#10 SS Flat Washer",
+"003-0018": "#10-24 \u00d7 1/2\" SS Button Head Cap Screw",
+"001-0246": "#10 \u00d7 3/4\" T-25 SS Button Head Cap Screw",
+"001-0267": "#10 \u00d7 1\" SS Button Head Cap Screw",
+"001-0165": "3/8\" \u00d7 3/8\" SS Button Head Cap Screw",
+"021-0004": "1 1/4\" OD \u00d7 1/2\" ID \u00d7 .083 Washer",
+"002-0063": "3/8\" \u00d7 3/8\" SS Socket Head Barrel Nut",
+"001-0199": "3/8\" \u00d7 3 1/4\" SS Button Head Cap Screw",
+"001-0122": "3/8\" \u00d7 2 1/4\" SS Button Head Cap Screw",
+"002-0018": "3/8\" Nut",
+"001-0193": "3/8\" \u00d7 1 3/4\" SS Button Head Cap Screw (no locking thread)",
+"002-0012": "3/8\" Lock Nut",
+"019-0024": "Domed Head 1/8\" Aluminum Rivet"
+},
+"components": [
+{
+"key": "tri",
+"name": "Triangle platform (72\" \u00d72, 120\" \u00d72)",
+"model": "270-0129",
+"doc": "tri",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0118": 3,
+"021-0033": 3,
+"001-0152": 3
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (3 places)",
+"step": "",
+"page": 68,
+"n": 3,
+"per": [
+[
+1,
+"001-0118"
+],
+[
+1,
+"021-0033"
+],
+[
+1,
+"001-0152"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 4,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1",
+"196C1",
+"200S1",
+"200S3",
+"200S2"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "unit",
+"name": "Evolution unitary enclosure",
+"model": "270-0120",
+"doc": "unit",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"019-0020": 2,
+"001-0117": 4,
+"021-0032": 8,
+"021-0033": 4,
+"001-0118": 4,
+"001-0116": 4,
+"002-0053": 4
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 66,
+"n": 2,
+"per": [
+[
+1,
+"019-0020"
+],
+[
+2,
+"001-0117"
+],
+[
+2,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (2 places)",
+"step": "",
+"page": 66,
+"n": 2,
+"per": [
+[
+2,
+"021-0033"
+],
+[
+2,
+"001-0118"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (4 places)",
+"step": "",
+"page": 66,
+"n": 4,
+"per": [
+[
+1,
+"001-0116"
+],
+[
+1,
+"021-0032"
+],
+[
+1,
+"002-0053"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 2,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "cme",
+"name": "Evolution center mount enclosure",
+"model": "270-0292",
+"doc": "cme",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 10,
+"001-0117": 9,
+"002-0036": 2
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 70,
+"n": 2,
+"per": [
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 70,
+"n": 1,
+"per": [
+[
+3,
+"001-0117"
+],
+[
+4,
+"021-0032"
+],
+[
+2,
+"002-0036"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "evoclimb",
+"name": "Evolution inclusive climber (72\" \u2192 120\" link)",
+"model": "370-0209",
+"doc": "evoclimb",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"002-0036": 10,
+"001-0119": 2,
+"021-0033": 60,
+"001-0120": 2,
+"001-0117": 18,
+"002-0053": 12,
+"001-0116": 38,
+"001-0143": 34,
+"001-0121": 4,
+"019-0020": 4,
+"021-0032": 12
+},
+"piles": [
+{
+"d": "AA",
+"t": "Detail AA",
+"step": "",
+"page": 73,
+"n": 1,
+"per": [
+[
+2,
+"002-0036"
+],
+[
+2,
+"001-0119"
+],
+[
+4,
+"021-0033"
+]
+],
+"note": ""
+},
+{
+"d": "AB",
+"t": "Detail AB",
+"step": "",
+"page": 73,
+"n": 1,
+"per": [
+[
+6,
+"021-0033"
+],
+[
+2,
+"001-0120"
+],
+[
+4,
+"002-0036"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 73,
+"n": 1,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+2,
+"021-0033"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (2 places)",
+"step": "",
+"page": 74,
+"n": 2,
+"per": [
+[
+4,
+"002-0053"
+],
+[
+3,
+"021-0033"
+],
+[
+3,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D (34 places)",
+"step": "",
+"page": 74,
+"n": 34,
+"per": [
+[
+1,
+"021-0033"
+],
+[
+1,
+"001-0143"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E (4 places)",
+"step": "",
+"page": 74,
+"n": 4,
+"per": [
+[
+1,
+"001-0121"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F (4 places)",
+"step": "",
+"page": 75,
+"n": 4,
+"per": [
+[
+1,
+"019-0020"
+],
+[
+2,
+"001-0117"
+],
+[
+3,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "G",
+"t": "Detail G (4 places)",
+"step": "",
+"page": 75,
+"n": 4,
+"per": [
+[
+1,
+"002-0036"
+],
+[
+2,
+"001-0117"
+],
+[
+2,
+"021-0033"
+],
+[
+1,
+"002-0053"
+]
+],
+"note": ""
+},
+{
+"d": "H",
+"t": "Detail H (32 places)",
+"step": "",
+"page": 75,
+"n": 32,
+"per": [
+[
+1,
+"001-0116"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"180C3",
+"192C2",
+"200S1",
+"196C1"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "topo",
+"name": "Topo climber",
+"model": "370-0287",
+"doc": "topo",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 11,
+"001-0117": 4,
+"002-0062": 1,
+"001-0121": 1,
+"001-0116": 7,
+"002-0053": 7
+},
+"piles": [
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 78,
+"n": 1,
+"per": [
+[
+1,
+"021-0032"
+],
+[
+1,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 79,
+"n": 1,
+"per": [
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0117"
+],
+[
+1,
+"002-0062"
+],
+[
+1,
+"001-0121"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (7 places)",
+"step": "",
+"page": 80,
+"n": 7,
+"per": [
+[
+1,
+"021-0032"
+],
+[
+1,
+"001-0116"
+],
+[
+1,
+"002-0053"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"196C2",
+3
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "transfer",
+"name": "Transfer inclusive climber 72\"",
+"model": "370-1729",
+"doc": "transfer",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"002-0036": 8,
+"021-0033": 58,
+"001-0118": 4,
+"001-0117": 7,
+"002-0053": 42,
+"001-0143": 36,
+"001-0116": 3
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 83,
+"n": 1,
+"per": [
+[
+4,
+"002-0036"
+],
+[
+8,
+"021-0033"
+],
+[
+4,
+"001-0118"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 83,
+"n": 1,
+"per": [
+[
+2,
+"002-0036"
+],
+[
+4,
+"021-0033"
+],
+[
+2,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C",
+"step": "",
+"page": 84,
+"n": 1,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+4,
+"021-0033"
+],
+[
+2,
+"002-0036"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D",
+"step": "",
+"page": 84,
+"n": 1,
+"per": [
+[
+36,
+"002-0053"
+],
+[
+36,
+"021-0033"
+],
+[
+36,
+"001-0143"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E",
+"step": "",
+"page": 85,
+"n": 1,
+"per": [
+[
+6,
+"002-0053"
+],
+[
+3,
+"001-0116"
+],
+[
+3,
+"021-0033"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F",
+"step": "",
+"page": 85,
+"n": 1,
+"per": [
+[
+3,
+"021-0033"
+],
+[
+3,
+"001-0117"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"204C1",
+"192C1",
+24,
+25
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "podstep",
+"name": "Podstep climber 64\"\u201372\"",
+"model": "370-1733",
+"doc": "podstep",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0119": 38,
+"003-0023": 27,
+"021-0032": 51,
+"001-0120": 4,
+"001-0116": 27,
+"001-0117": 24,
+"001-0123": 8
+},
+"piles": [
+{
+"d": "B",
+"t": "Detail B (4 places)",
+"step": "",
+"page": 90,
+"n": 4,
+"per": [
+[
+1,
+"001-0119"
+],
+[
+3,
+"003-0023"
+],
+[
+3,
+"021-0032"
+],
+[
+1,
+"001-0120"
+],
+[
+3,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "A",
+"t": "Detail A (5 places)",
+"step": "",
+"page": 90,
+"n": 5,
+"per": [
+[
+6,
+"001-0119"
+],
+[
+3,
+"003-0023"
+],
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (4 places)",
+"step": "",
+"page": 90,
+"n": 4,
+"per": [
+[
+1,
+"001-0119"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D (8 places)",
+"step": "",
+"page": 90,
+"n": 8,
+"per": [
+[
+3,
+"001-0117"
+],
+[
+3,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F (4 places)",
+"step": "",
+"page": 91,
+"n": 4,
+"per": [
+[
+2,
+"001-0123"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"180C1",
+"180C2",
+"180C3",
+"204C1"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "ropetri",
+"name": "Rope triangle climber 48\" to 120\"",
+"model": "370-1746",
+"doc": "ropetri",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 34,
+"001-0117": 74,
+"001-0263": 384
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (4 places)",
+"step": "",
+"page": 95,
+"n": 4,
+"per": [
+[
+4,
+"021-0032"
+],
+[
+2,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (2 places)",
+"step": "",
+"page": 95,
+"n": 2,
+"per": [
+[
+1,
+"021-0032"
+],
+[
+1,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (24 places)",
+"step": "",
+"page": 95,
+"n": 24,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+16,
+"001-0263"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D (4 places)",
+"step": "",
+"page": 95,
+"n": 4,
+"per": [
+[
+4,
+"021-0032"
+],
+[
+4,
+"001-0117"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"196C1",
+"200S3",
+"196C2"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "roofB",
+"name": "Evolution bottom roof support, single",
+"model": "470-0006",
+"doc": "roofB",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0117": 4,
+"021-0032": 4
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 98,
+"n": 2,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+2,
+"021-0032"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"200S1",
+"200S2",
+"200S3"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "roofL",
+"name": "Evolution side roof support, left",
+"model": "470-0008",
+"doc": "roofL",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0117": 4,
+"021-0032": 4
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 100,
+"n": 2,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+2,
+"021-0032"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"200S1",
+"200S2",
+"200S3"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "roofR",
+"name": "Evolution side roof support, right",
+"model": "470-0009",
+"doc": "roofR",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0117": 4,
+"021-0032": 4
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 102,
+"n": 2,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+2,
+"021-0032"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"200S1",
+"200S2",
+"200S3"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "apex",
+"name": "Evolution triangle apex roof",
+"model": "470-0017",
+"doc": "apex",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0117": 5,
+"021-0033": 18,
+"002-0036": 9,
+"001-0116": 3,
+"001-0118": 1
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (5 places)",
+"step": "",
+"page": 104,
+"n": 5,
+"per": [
+[
+1,
+"001-0117"
+],
+[
+2,
+"021-0033"
+],
+[
+1,
+"002-0036"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C",
+"step": "",
+"page": 105,
+"n": 1,
+"per": [
+[
+3,
+"001-0116"
+],
+[
+6,
+"021-0033"
+],
+[
+3,
+"002-0036"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D",
+"step": "",
+"page": 106,
+"n": 1,
+"per": [
+[
+1,
+"001-0118"
+],
+[
+2,
+"021-0033"
+],
+[
+1,
+"002-0036"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"200S1",
+"200S2",
+"200S3"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "velo",
+"name": "Velo slide 64\"\u201372\" (no hood)",
+"model": "470-0754",
+"doc": "velo",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0033": 9,
+"001-0116": 5,
+"001-0117": 4
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 109,
+"n": 1,
+"per": [
+[
+3,
+"021-0033"
+],
+[
+3,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 109,
+"n": 1,
+"per": [
+[
+2,
+"021-0033"
+],
+[
+2,
+"001-0116"
+],
+[
+4,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C",
+"step": "",
+"page": 109,
+"n": 1,
+"per": [
+[
+4,
+"021-0033"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"192C1",
+"192C2",
+26,
+27
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "arch",
+"name": "Core slide arch",
+"model": "470-0875",
+"doc": "arch",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0118": 2,
+"021-0033": 6,
+"001-0152": 2,
+"021-0032": 68,
+"001-0117": 24,
+"019-0020": 2,
+"001-0116": 48,
+"002-0053": 48
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 113,
+"n": 2,
+"per": [
+[
+1,
+"001-0118"
+],
+[
+1,
+"021-0033"
+],
+[
+1,
+"001-0152"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (4 places)",
+"step": "",
+"page": 114,
+"n": 4,
+"per": [
+[
+6,
+"021-0032"
+],
+[
+6,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (2 places)",
+"step": "",
+"page": 114,
+"n": 2,
+"per": [
+[
+1,
+"019-0020"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E (2 places)",
+"step": "",
+"page": 115,
+"n": 2,
+"per": [
+[
+22,
+"021-0032"
+],
+[
+24,
+"001-0116"
+],
+[
+24,
+"002-0053"
+],
+[
+2,
+"021-0033"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"192C1",
+"192C2"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "niche",
+"name": "Niche capsule",
+"model": "470-0979",
+"doc": "niche",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 36,
+"001-0117": 6,
+"002-0065": 70,
+"021-0054": 68,
+"003-0018": 24,
+"001-0143": 22,
+"001-0116": 8,
+"002-0053": 30,
+"001-0246": 46
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 119,
+"n": 2,
+"per": [
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (2 places)",
+"step": "",
+"page": 119,
+"n": 2,
+"per": [
+[
+12,
+"002-0065"
+],
+[
+12,
+"021-0054"
+],
+[
+12,
+"003-0018"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C",
+"step": "",
+"page": 120,
+"n": 1,
+"per": [
+[
+20,
+"021-0032"
+],
+[
+16,
+"001-0143"
+],
+[
+4,
+"001-0116"
+],
+[
+12,
+"002-0053"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D",
+"step": "",
+"page": 120,
+"n": 1,
+"per": [
+[
+18,
+"002-0053"
+],
+[
+4,
+"001-0116"
+],
+[
+10,
+"021-0032"
+],
+[
+6,
+"001-0143"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E",
+"step": "",
+"page": 121,
+"n": 1,
+"per": [
+[
+22,
+"002-0065"
+],
+[
+22,
+"021-0054"
+],
+[
+24,
+"001-0246"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F",
+"step": "",
+"page": 121,
+"n": 1,
+"per": [
+[
+24,
+"002-0065"
+],
+[
+22,
+"021-0054"
+],
+[
+22,
+"001-0246"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"192C2",
+"196C1",
+1,
+2
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "viper",
+"name": "Viper spiral slide 96\"",
+"model": "470-1058",
+"doc": "viper",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0118": 4,
+"021-0033": 4,
+"021-0032": 8,
+"002-0062": 20,
+"001-0123": 5,
+"001-0116": 3
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 125,
+"n": 1,
+"per": [
+[
+4,
+"001-0118"
+],
+[
+4,
+"021-0033"
+],
+[
+5,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (4 places)",
+"step": "",
+"page": 125,
+"n": 4,
+"per": [
+[
+5,
+"002-0062"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C",
+"step": "",
+"page": 125,
+"n": 1,
+"per": [
+[
+5,
+"001-0123"
+],
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0116"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+18,
+19,
+20,
+21
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "cobra",
+"name": "Cobra Fusion S right 120 (tube slide)",
+"model": "470-1081",
+"doc": "cobra",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 29,
+"001-0118": 8,
+"001-0116": 17,
+"021-0033": 52,
+"001-0117": 24,
+"002-0036": 12,
+"002-0062": 5,
+"001-0123": 20
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 128,
+"n": 2,
+"per": [
+[
+3,
+"021-0032"
+],
+[
+2,
+"001-0118"
+],
+[
+1,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 129,
+"n": 1,
+"per": [
+[
+4,
+"021-0033"
+],
+[
+4,
+"001-0118"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C",
+"step": "",
+"page": 130,
+"n": 1,
+"per": [
+[
+12,
+"021-0033"
+],
+[
+24,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D",
+"step": "",
+"page": 130,
+"n": 1,
+"per": [
+[
+36,
+"021-0033"
+],
+[
+12,
+"002-0036"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E",
+"step": "",
+"page": 130,
+"n": 1,
+"per": [
+[
+12,
+"001-0116"
+],
+[
+5,
+"002-0062"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F (4 places)",
+"step": "",
+"page": 130,
+"n": 4,
+"per": [
+[
+5,
+"001-0123"
+],
+[
+5,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "J",
+"t": "Detail J",
+"step": "",
+"page": 131,
+"n": 1,
+"per": [
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0116"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"200S2",
+"200S3",
+4,
+5,
+6,
+7
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "lxc",
+"name": "Level X Extreme \u2013 center",
+"model": "560-2699",
+"doc": "lxc",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0267": 128,
+"001-0117": 70,
+"021-0032": 186,
+"001-0165": 38,
+"021-0033": 110,
+"021-0004": 26,
+"002-0062": 14,
+"002-0063": 45,
+"001-0199": 8,
+"019-0020": 6,
+"001-0122": 2,
+"001-0263": 480,
+"001-0123": 6,
+"001-0119": 8,
+"003-0023": 9,
+"001-0116": 104,
+"001-0120": 2,
+"002-0053": 145,
+"001-0143": 66,
+"001-0118": 14
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 136,
+"n": 2,
+"per": [
+[
+32,
+"001-0267"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (2 places)",
+"step": "",
+"page": 136,
+"n": 2,
+"per": [
+[
+4,
+"001-0117"
+],
+[
+8,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (2 places)",
+"step": "",
+"page": 136,
+"n": 2,
+"per": [
+[
+4,
+"021-0032"
+],
+[
+8,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D (2 places)",
+"step": "",
+"page": 138,
+"n": 2,
+"per": [
+[
+6,
+"021-0032"
+],
+[
+4,
+"001-0117"
+],
+[
+7,
+"001-0165"
+],
+[
+7,
+"021-0033"
+],
+[
+7,
+"021-0004"
+],
+[
+2,
+"002-0062"
+],
+[
+7,
+"002-0063"
+],
+[
+2,
+"001-0199"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E (2 places)",
+"step": "",
+"page": 138,
+"n": 2,
+"per": [
+[
+32,
+"001-0267"
+],
+[
+2,
+"002-0062"
+],
+[
+4,
+"001-0117"
+],
+[
+6,
+"021-0032"
+],
+[
+2,
+"001-0199"
+]
+],
+"note": ""
+},
+{
+"d": "G",
+"t": "Detail G (2 places)",
+"step": "",
+"page": 140,
+"n": 2,
+"per": [
+[
+1,
+"019-0020"
+],
+[
+1,
+"001-0122"
+],
+[
+1,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F (2 places)",
+"step": "",
+"page": 140,
+"n": 2,
+"per": [
+[
+1,
+"002-0062"
+]
+],
+"note": ""
+},
+{
+"d": "J",
+"t": "Detail J (2 places)",
+"step": "",
+"page": 140,
+"n": 2,
+"per": [
+[
+4,
+"021-0032"
+],
+[
+1,
+"019-0020"
+],
+[
+4,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "I",
+"t": "Detail I (2 places)",
+"step": "",
+"page": 140,
+"n": 2,
+"per": [
+[
+1,
+"019-0020"
+]
+],
+"note": ""
+},
+{
+"d": "K",
+"t": "Detail K (30 places)",
+"step": "",
+"page": 141,
+"n": 30,
+"per": [
+[
+16,
+"001-0263"
+]
+],
+"note": ""
+},
+{
+"d": "M",
+"t": "Detail M (3 places)",
+"step": "",
+"page": 142,
+"n": 3,
+"per": [
+[
+2,
+"001-0123"
+],
+[
+1,
+"001-0119"
+],
+[
+3,
+"003-0023"
+]
+],
+"note": ""
+},
+{
+"d": "O",
+"t": "Detail O (2 places)",
+"step": "",
+"page": 142,
+"n": 2,
+"per": [
+[
+3,
+"021-0032"
+],
+[
+3,
+"001-0116"
+],
+[
+1,
+"001-0120"
+]
+],
+"note": ""
+},
+{
+"d": "P",
+"t": "Detail P (2 places)",
+"step": "",
+"page": 143,
+"n": 2,
+"per": [
+[
+1,
+"002-0053"
+],
+[
+1,
+"021-0033"
+],
+[
+1,
+"001-0143"
+]
+],
+"note": ""
+},
+{
+"d": "Q",
+"t": "Detail Q (5 places)",
+"step": "",
+"page": 143,
+"n": 5,
+"per": [
+[
+1,
+"002-0053"
+],
+[
+1,
+"021-0032"
+],
+[
+1,
+"001-0119"
+]
+],
+"note": ""
+},
+{
+"d": "S",
+"t": "Detail S (46 places)",
+"step": "",
+"page": 144,
+"n": 46,
+"per": [
+[
+1,
+"002-0053"
+],
+[
+1,
+"021-0033"
+],
+[
+1,
+"001-0143"
+]
+],
+"note": ""
+},
+{
+"d": "R",
+"t": "Detail R (7 places)",
+"step": "",
+"page": 144,
+"n": 7,
+"per": [
+[
+2,
+"021-0033"
+],
+[
+2,
+"001-0117"
+]
+],
+"note": ""
+},
+{
+"d": "T",
+"t": "Detail T (2 places)",
+"step": "",
+"page": 145,
+"n": 2,
+"per": [
+[
+27,
+"002-0053"
+],
+[
+18,
+"021-0032"
+],
+[
+18,
+"001-0116"
+],
+[
+5,
+"021-0033"
+],
+[
+5,
+"001-0118"
+]
+],
+"note": ""
+},
+{
+"d": "U",
+"t": "Detail U",
+"step": "",
+"page": 145,
+"n": 1,
+"per": [
+[
+24,
+"021-0032"
+],
+[
+24,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "V",
+"t": "Detail V (2 places)",
+"step": "",
+"page": 146,
+"n": 2,
+"per": [
+[
+6,
+"002-0063"
+],
+[
+3,
+"021-0032"
+],
+[
+2,
+"001-0117"
+],
+[
+6,
+"021-0004"
+],
+[
+6,
+"021-0033"
+],
+[
+6,
+"001-0165"
+],
+[
+1,
+"001-0118"
+],
+[
+1,
+"002-0062"
+]
+],
+"note": ""
+},
+{
+"d": "W",
+"t": "Detail W (2 places)",
+"step": "",
+"page": 147,
+"n": 2,
+"per": [
+[
+1,
+"001-0118"
+],
+[
+9,
+"021-0032"
+],
+[
+1,
+"002-0062"
+],
+[
+6,
+"001-0116"
+],
+[
+2,
+"001-0117"
+],
+[
+6,
+"002-0053"
+]
+],
+"note": ""
+},
+{
+"d": "",
+"t": "Hardware on this page",
+"step": "",
+"page": 148,
+"n": 1,
+"per": [
+[
+7,
+"002-0063"
+],
+[
+18,
+"002-0053"
+],
+[
+25,
+"021-0032"
+],
+[
+18,
+"001-0143"
+],
+[
+18,
+"001-0116"
+]
+],
+"note": ""
+},
+{
+"d": "X",
+"t": "Detail X",
+"step": "",
+"page": 149,
+"n": 1,
+"per": [
+[
+8,
+"001-0116"
+],
+[
+8,
+"021-0032"
+],
+[
+8,
+"002-0053"
+]
+],
+"note": ""
+},
+{
+"d": "Y",
+"t": "Detail Y (2 places)",
+"step": "",
+"page": 150,
+"n": 2,
+"per": [
+[
+3,
+"001-0165"
+],
+[
+3,
+"021-0033"
+],
+[
+3,
+"002-0063"
+]
+],
+"note": ""
+},
+{
+"d": "Z",
+"t": "Detail Z (2 places)",
+"step": "",
+"page": 150,
+"n": 2,
+"per": [
+[
+3,
+"001-0165"
+],
+[
+3,
+"021-0033"
+],
+[
+3,
+"002-0063"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+8,
+9,
+10,
+11,
+12,
+13,
+14,
+15,
+16,
+17
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "lxr",
+"name": "Level X Extreme \u2013 right wing",
+"model": "560-2717",
+"doc": "lxr",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"019-0020": 5,
+"001-0117": 1,
+"021-0032": 11,
+"001-0267": 32,
+"001-0263": 240,
+"001-0120": 8,
+"002-0018": 4,
+"001-0193": 4,
+"001-0123": 4
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 155,
+"n": 1,
+"per": [
+[
+5,
+"019-0020"
+],
+[
+1,
+"001-0117"
+],
+[
+3,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 156,
+"n": 1,
+"per": [
+[
+32,
+"001-0267"
+],
+[
+16,
+"001-0263"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (4 places)",
+"step": "",
+"page": 156,
+"n": 4,
+"per": [
+[
+2,
+"001-0120"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D (4 places)",
+"step": "",
+"page": 157,
+"n": 4,
+"per": [
+[
+1,
+"002-0018"
+],
+[
+2,
+"021-0032"
+],
+[
+1,
+"001-0193"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E (14 places)",
+"step": "",
+"page": 158,
+"n": 14,
+"per": [
+[
+16,
+"001-0263"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F (2 places)",
+"step": "",
+"page": 158,
+"n": 2,
+"per": [
+[
+2,
+"001-0123"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+22,
+23
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "lxl",
+"name": "Level X Extreme \u2013 left link",
+"model": "560-2720",
+"doc": "lxl",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0117": 5,
+"021-0032": 16,
+"001-0120": 2,
+"021-0033": 4,
+"002-0012": 2,
+"001-0123": 4,
+"001-0263": 80
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 161,
+"n": 1,
+"per": [
+[
+3,
+"001-0117"
+],
+[
+4,
+"021-0032"
+],
+[
+2,
+"001-0120"
+],
+[
+3,
+"021-0033"
+],
+[
+1,
+"002-0012"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B",
+"step": "",
+"page": 161,
+"n": 1,
+"per": [
+[
+1,
+"021-0033"
+],
+[
+1,
+"002-0012"
+],
+[
+1,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "C",
+"t": "Detail C (2 places)",
+"step": "",
+"page": 162,
+"n": 2,
+"per": [
+[
+2,
+"001-0123"
+]
+],
+"note": ""
+},
+{
+"d": "D",
+"t": "Detail D (5 places)",
+"step": "",
+"page": 163,
+"n": 5,
+"per": [
+[
+2,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "E",
+"t": "Detail E",
+"step": "",
+"page": 163,
+"n": 1,
+"per": [
+[
+2,
+"001-0117"
+],
+[
+16,
+"001-0263"
+],
+[
+1,
+"021-0032"
+]
+],
+"note": ""
+},
+{
+"d": "F",
+"t": "Detail F (4 places)",
+"step": "",
+"page": 163,
+"n": 4,
+"per": [
+[
+16,
+"001-0263"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"180C1",
+"180C2"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "filler",
+"name": "Fully enclosed side filler brackets",
+"model": "570-0059",
+"doc": "filler",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 6,
+"001-0117": 6
+},
+"piles": [
+{
+"d": "B",
+"t": "Detail B (6 places)",
+"step": "",
+"page": 166,
+"n": 6,
+"per": [
+[
+1,
+"021-0032"
+],
+[
+1,
+"001-0117"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "signpanel",
+"name": "Signing 2-sided play panel",
+"model": "570-0848",
+"doc": "signpanel",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0119": 1,
+"002-0036": 1,
+"021-0032": 5,
+"001-0117": 2,
+"001-0118": 1,
+"002-0053": 1
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A",
+"step": "",
+"page": 168,
+"n": 1,
+"per": [
+[
+1,
+"001-0119"
+],
+[
+1,
+"002-0036"
+],
+[
+5,
+"021-0032"
+],
+[
+2,
+"001-0117"
+],
+[
+1,
+"001-0118"
+],
+[
+1,
+"002-0053"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "sanct",
+"name": "Stability Sanctuary",
+"model": "570-2717",
+"doc": "sanct",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"021-0032": 22,
+"001-0117": 22,
+"001-0263": 8,
+"002-0053": 14
+},
+"piles": [
+{
+"d": "A",
+"t": "Detail A (2 places)",
+"step": "",
+"page": 170,
+"n": 2,
+"per": [
+[
+4,
+"021-0032"
+],
+[
+4,
+"001-0117"
+],
+[
+2,
+"001-0263"
+]
+],
+"note": ""
+},
+{
+"d": "B",
+"t": "Detail B (2 places)",
+"step": "",
+"page": 171,
+"n": 2,
+"per": [
+[
+7,
+"001-0117"
+],
+[
+7,
+"021-0032"
+],
+[
+2,
+"001-0263"
+],
+[
+7,
+"002-0053"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+"68C1",
+"200S2"
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "wlabel",
+"name": "Warning / age label",
+"model": "\u2014",
+"doc": "wlabel",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"019-0024": 6
+},
+"piles": [
+{
+"d": "",
+"t": "Hardware on this page",
+"step": "",
+"page": 174,
+"n": 1,
+"per": [
+[
+6,
+"019-0024"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "idlabel",
+"name": "Structure ID label",
+"model": "\u2014",
+"doc": "idlabel",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"019-0024": 2
+},
+"piles": [
+{
+"d": "",
+"t": "Hardware on this page",
+"step": "",
+"page": 176,
+"n": 1,
+"per": [
+[
+2,
+"019-0024"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "sign",
+"name": "Welcome sign, ages 5\u201312",
+"model": "580-1397",
+"doc": "sign",
+"bag": "see box label",
+"adapters": 0,
+"parts": {
+"001-0143": 5
+},
+"piles": [
+{
+"d": "",
+"t": "Hardware on this page",
+"step": "",
+"page": 192,
+"n": 1,
+"per": [
+[
+5,
+"001-0143"
+]
+],
+"note": ""
+}
+],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "Where it goes",
+"holes": [
+28,
+29
+]
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "border",
+"name": "6' stone border (2 drive pins each)",
+"model": "046-0053",
+"doc": "border",
+"bag": "see box label",
+"adapters": 0,
+"parts": {},
+"piles": [],
+"notes": [],
+"qty": 46,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "plug",
+"name": "Border plug",
+"model": "046-0054",
+"doc": "plug",
+"bag": "see box label",
+"adapters": 0,
+"parts": {},
+"piles": [],
+"notes": [],
+"qty": 3,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "endcap",
+"name": "Border end cap",
+"model": "046-0055",
+"doc": "endcap",
+"bag": "see box label",
+"adapters": 0,
+"parts": {},
+"piles": [],
+"notes": [],
+"qty": 3,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "ramp",
+"name": "Border ramp w/ stakes",
+"model": "046-0153",
+"doc": "ramp",
+"bag": "see box label",
+"adapters": 0,
+"parts": {},
+"piles": [],
+"notes": [],
+"qty": 1,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+},
+{
+"key": "mat",
+"name": "Playmat 3' \u00d7 5' \u00d7 2\"",
+"model": "046-0536",
+"doc": "mat",
+"bag": "see box label",
+"adapters": 0,
+"parts": {},
+"piles": [],
+"notes": [],
+"qty": 3,
+"where": [
+{
+"label": "See the site plan",
+"holes": []
+}
+],
+"check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
+"spare": []
+}
+]
+}
