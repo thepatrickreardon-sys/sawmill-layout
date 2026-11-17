@@ -2956,6 +2956,150 @@ elevRefresh();
 
   window.addEventListener('hashchange',()=>{ if(location.hash==='#build') requestAnimationFrame(()=>{ if(!vb||!lastW){ lastW=W(); fitV(); } renderAllB(); }); });
   let lastW=0; addEventListener('resize',()=>{ if(document.querySelector('[data-view=build]').hidden) return; const w=W(); if(Math.abs(w-lastW)<2){ /* phone bar show/hide: keep the zoom, just stretch to the new height */ const nh=vb.w*H()/W(); vb.y+= (vb.h-nh)/2; vb.h=nh; draw(); return; } lastW=w; fitV(); draw(); });
+  /* ---------- BUILD BOOK: the build days in order, one component per page ---------- */
+  (function(){
+  document.head.insertAdjacentHTML('beforeend',`<style>
+.bkrd{position:fixed;inset:0;z-index:24;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bkbar{display:flex;align-items:center;gap:8px;padding:8px max(12px,env(safe-area-inset-left,0px));background:var(--panel);border-bottom:1px solid var(--line)}
+.bkbar .bkt{flex:1 1 auto;min-width:0}
+.bkbar .bkt b{display:block;font-family:var(--display);font-size:18px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bkbar .bkt small{color:var(--muted);font-size:13px}
+.bkbar button{min-height:42px;min-width:42px}
+.bkprog{height:5px;background:var(--line)}.bkprog i{display:block;height:100%;background:var(--dc,var(--ink));transition:width .2s}
+.bkbody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px max(12px,env(safe-area-inset-left,0px)) 24px}
+.bkbody>*{max-width:900px;margin-inline:auto}
+.bkhead{border-left:6px solid var(--dc);padding:2px 0 2px 12px;margin-bottom:12px}
+.bkhead .bkday{font-weight:800;color:var(--dc);font-size:15px}
+.bkhead h2{margin:2px 0;font-size:26px;line-height:1.15}
+.bkhead p{margin:2px 0;color:var(--muted);font-size:14px}
+.bkdone{min-height:44px;font-weight:800;font-size:16px;padding:0 16px}
+.bkdone[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:#fff}
+.bkinfo{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 12px}
+.bkinfo h3{margin:0 0 6px;font-size:16px}
+.bkinfo table{border-collapse:collapse;width:100%;font-size:15px}
+.bkinfo td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}
+.bkinfo td:first-child{font-weight:800;white-space:nowrap;font-family:var(--display);font-size:17px}
+.bkchips{display:flex;flex-wrap:wrap;gap:6px}
+.bkchips button{min-height:38px;font-size:14px}
+.bkpg{margin:0 0 14px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bkpg figcaption{font-size:13px;color:var(--muted);padding:6px 10px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.bkpg img{display:block;width:100%;height:auto}
+.bknext{display:block;width:100%;min-height:64px;margin:8px 0 0;font-size:18px;font-weight:800;text-align:left;padding:10px 16px;border-radius:14px;background:var(--ink);color:var(--panel);border:0}
+.bknext small{display:block;font-weight:600;font-size:13px;opacity:.8}
+.bkfoot{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;padding:8px max(12px,env(safe-area-inset-left,0px));background:var(--panel);border-top:1px solid var(--line)}
+.bkfoot button{min-height:52px;font-size:17px;font-weight:800}
+.bkfoot .nx{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.bktoc{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.bktoc li button{width:100%;display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;text-align:left;padding:8px;min-height:48px;border-radius:10px;background:var(--panel);border:1px solid var(--line)}
+.bktoc li.done button{opacity:.55}.bktoc li.done .bdname{text-decoration:line-through}
+.bktoc h3{margin:12px 0 6px;font-size:17px;color:var(--dc)}
+.bkcover{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+.bkcover button{min-height:52px;font-size:17px;font-weight:800;padding:0 18px}
+</style>`);
+  main.insertAdjacentHTML('beforeend',`<section data-view="book" hidden><div class="card" id="bkToc"></div></section>`);
+  document.body.insertAdjacentHTML('beforeend',`<div class="bkrd" id="bkRd" hidden role="dialog" aria-modal="true" aria-label="Build book">
+    <div class="bkbar"><button id="bkX" aria-label="Close book">✕</button><div class="bkt"><b id="bkTitle"></b><small id="bkSub"></small></div><button id="bkList" aria-label="All steps">☰</button></div>
+    <div class="bkprog"><i id="bkProg"></i></div>
+    <div class="bkbody" id="bkBody"></div>
+    <div class="bkfoot"><button id="bkPrev">◀ ${T('Back')}</button><button class="bkdone" id="bkDone" aria-pressed="false">✓</button><button class="nx" id="bkNext">${T('Next')} ▶</button></div>
+  </div>`);
+  GROUPS.home.push('book'); if(typeof TABS!=='undefined'&&!TABS.includes('book')) TABS.push('book');
+  if(typeof SUBLAB!=='undefined') SUBLAB.book='Book';
+  try{ const v=store.get('last_home',null); if(v==='book') LAST.home='book'; }catch(e){}
+
+  // every planned item, in build-day order
+  const seq=()=>{ const out=[]; P.days.forEach((d,di)=>d.items.forEach((k,i)=>{ if(BYK[k]) out.push({k,d:di,i,n:d.items.length}); })); return out; };
+  let pos=0;
+  const NM=it=>it.kind==='deck'&&/^\d+"$/.test(it.name.trim())?`${it.name.trim()} deck`:it.name;
+  const ITEMDOCS=(JOB.itemDocs||[]).map(([p,k])=>[new RegExp(p,'i'),k]);
+  function docsOf(it){ const out=[]; const add=k=>{ if(k&&DOCS[k]&&!out.includes(k)) out.push(k); };
+    if(it.kind==='pole'){ const h=HB.get(String(it.h)); if(h&&typeof docsFor==='function') docsFor(h).forEach(add); }
+    else if(it.kind==='deck'){ const d=(JOB.decks||[])[+it.k.slice(1)]; const t=d?`${d.t} platform ${d.t} deck deck`:''; for(const [re,k] of ITEMDOCS) if(re.test(t)) add(k); }
+    else (it.docs||[]).forEach(add);
+    return out; }
+  // the main sheets shown right in the book: the part's own manual; for poles, the bury key
+  function mainDoc(it,ds){ if(it.kind==='pole') return ds.find(k=>k===(JOB.postDoc||{})[HB.get(String(it.h))?.part])||ds[0]; return ds[0]; }
+  const FT=(JOB.footing||{}), ftOf=n=>{ for(const [t,hs] of Object.entries(FT.holes||{})) if(hs.map(String).includes(String(n))) return FT.types[t]; return null; };
+  function holeRows(ns){ return ns.map(n=>{ const h=HB.get(String(n)); if(!h) return ''; const f=ftOf(n), o=(FT.overrides||{})[String(n)];
+    return `<tr><td>${esc(n)}</td><td>${esc(h.d||'')}${f?`<br><span class="muted small">${esc(f.label)}</span>`:''}${o&&o.note?`<br><span class="muted small">${esc(o.note)}</span>`:''}</td><td><button data-bkhole="${esc(n)}" style="min-height:34px;font-size:13px">${T('Tapes')}</button></td></tr>`; }).join(''); }
+  function chapter(it){
+    let h='';
+    if(it.kind==='pole'){ const p=HB.get(String(it.h)); if(p){
+      h+=`<div class="bkinfo"><h3>${T('Pole marks')} <span class="muted small">${T('measured from the bottom of the post')}</span></h3><table>${(p.marks||[]).map(m=>`<tr><td>${esc(m[0])}</td><td>${esc(m[2])}<br><span class="muted small">${esc(m[1])}</span></td></tr>`).join('')}</table>
+        ${p.note?`<p class="small" style="margin:8px 0 0"><b>${T('Note')}:</b> ${esc(p.note)}</p>`:''}
+        <p class="small" style="margin:8px 0 0">${esc(p.len||'')}${ftOf(p.h)?` · ${esc(ftOf(p.h).label)}`:''}</p>
+        <div class="bkchips" style="margin-top:8px"><button data-bkhole="${esc(p.h)}">📏 ${T('Tapes for this hole')}</button><button data-bkpole="${esc(p.h)}">${T('Show on pole map')}</button></div></div>`; } }
+    else if(it.kind==='deck'){ const d=(JOB.decks||[])[+it.k.slice(1)];
+      if(d) h+=`<div class="bkinfo"><h3>${T('Deck on poles')}</h3><table>${d.p.map(n=>{ const p=HB.get(String(n)); const m=p&&(p.marks||[]).find(m=>/platform/i.test(m[2])); return `<tr><td>${esc(n)}</td><td>${m?`${esc(m[2])} · <b>${esc(m[0])}</b> ${T('from bottom')}`:''}</td></tr>`; }).join('')}</table></div>`; }
+    else if(it.kind==='part'&&it.poles){ h+=`<div class="bkinfo"><h3>${T('Hangs on')}</h3><table>${it.poles.map(n=>{ const p=HB.get(String(n)); const re=new RegExp((JOB.itemDocs||[]).filter(([,k])=>(it.docs||[]).includes(k)).map(([p])=>p).join('|')||'^$','i'); const ms=p?(p.marks||[]).filter(m=>re.test(m[2]||'')):[]; return `<tr><td>${esc(n)}</td><td>${ms.map(m=>`${esc(m[2])} · <b>${esc(m[0])}</b>`).join('<br>')}</td></tr>`; }).join('')}</table></div>`; }
+    if((it.kind==='comp'||it.kind==='foot')&&it.holes&&it.holes.length) h+=`<div class="bkinfo"><h3>${T('Holes')}</h3><table>${holeRows(it.holes)}</table></div>`;
+    const ds=docsOf(it), md=mainDoc(it,ds);
+    const others=ds.filter(k=>k!==md);
+    if(others.length) h+=`<div class="bkinfo"><h3>${T('Other sheets for this')}</h3><div class="bkchips">${others.map(k=>`<button data-doc="${k}">${esc(DOCS[k][0])}</button>`).join('')}</div></div>`;
+    if(md){ const [t,a,b]=DOCS[md], wide=(JOB.wideDocs||[]).includes(md);
+      h+=`<h3 style="margin:14px 0 8px">📘 ${esc(t)}</h3>`;
+      for(let n=a;n<=b;n++) h+=`<figure class="bkpg"><figcaption><span>${T('Sheet')} ${n-a+1} ${T('of')} ${b-a+1} · ${T('page')} ${n}</span><button data-doc="${md}" data-page="${n}" style="min-height:32px;font-size:13px">🔍 ${T('Zoom')}</button></figcaption><img loading="${n-a<2?'eager':'lazy'}" ${wide?'width="1700" height="1100"':'width="935" height="1210"'} src="sheets/p-${String(n).padStart(3,'0')}.jpg" alt="${esc(t)}, page ${n}"></figure>`; }
+    else h+=`<p class="muted">${T('No install sheet is tied to this one. Use Install docs to look it up.')}</p>`;
+    return h; }
+  function show(i){ const S=seq(); if(!S.length){ closeBook(); return; } pos=Math.max(0,Math.min(S.length-1,i)); const s=S[pos], it=BYK[s.k];
+    store.set('book_pos',s.k);
+    const rd=document.getElementById('bkRd'); rd.style.setProperty('--dc',dcol(s.d));
+    document.getElementById('bkTitle').textContent=NM(it);
+    document.getElementById('bkSub').textContent=`${T('Day')} ${s.d+1}${dLabel(s.d)?' ('+dLabel(s.d)+')':''} · ${s.i+1}/${s.n} · ${T('step')} ${pos+1} ${T('of')} ${S.length}`;
+    document.getElementById('bkProg').style.width=((pos+1)/S.length*100)+'%';
+    const done=P.days[s.d].done.includes(s.k), nx=S[pos+1];
+    const nxt=nx?`<button class="bknext" data-bkgo="${pos+1}">${T('Next')} ▶ ${esc(NM(BYK[nx.k]))}<small>${nx.d!==s.d?`${T('Starts Day')} ${nx.d+1}${dLabel(nx.d)?' · '+dLabel(nx.d):''}`:`${T('Day')} ${nx.d+1} · ${nx.i+1}/${nx.n}`} · ${esc(T(KIND1[BYK[nx.k].kind]))}</small></button>`:`<p class="muted" style="text-align:center;margin:16px 0">${T('That is the last thing planned. Add more in Build days.')}</p>`;
+    document.getElementById('bkBody').innerHTML=`<div class="bkhead" style="--dc:${dcol(s.d)}"><div class="bkday">${T('Day')} ${s.d+1}${dLabel(s.d)?' · '+dLabel(s.d):''} · ${s.i+1} ${T('of')} ${s.n}</div><h2>${esc(NM(it))}</h2><p>${esc(T(KIND1[it.kind]))} · ${esc(it.sub||'')}</p>
+      ${done?`<p style="margin:6px 0 0;color:var(--good);font-weight:800">✓ ${T('Done')}</p>`:''}</div>
+      <div>${chapter(it)}${nxt}</div>`;
+    const db=document.getElementById('bkDone'); db.setAttribute('aria-pressed',done); db.textContent=done?'✓ '+T('Done'):T('Mark done');
+    document.getElementById('bkPrev').disabled=pos===0; document.getElementById('bkNext').disabled=!nx;
+    document.getElementById('bkBody').scrollTop=0;
+    if(LANG==='es'&&window.trDom){ try{ trDom(rd); }catch(e){} } }
+  function openBook(i){ const S=seq(); if(!S.length) return; if(i==null){ const k=store.get('book_pos',null); i=Math.max(0,S.findIndex(s=>s.k===k)); }
+    document.getElementById('bkRd').hidden=false; document.body.style.overflow='hidden'; show(i); }
+  function closeBook(){ document.getElementById('bkRd').hidden=true; document.body.style.overflow=''; renderToc(); }
+  function toggleDone(){ const s=seq()[pos]; if(!s) return; const d=P.days[s.d]; d.done.includes(s.k)?d.done=d.done.filter(x=>x!==s.k):d.done.push(s.k); save(); show(pos); }
+  window.openBuildBook=openBook;
+  function renderToc(){ const el=document.getElementById('bkToc'); if(!el) return; const S=seq();
+    if(!S.length){ el.innerHTML=`<h2 style="margin:0">📖 ${T('Build book')}</h2><p class="muted">${T('Nothing planned yet. Plan your build days first, then the book walks you through them in order.')}</p><button class="primary" onclick="location.hash='build'" style="min-height:44px">${T('Go to Build days')}</button>`; return; }
+    const k=store.get('book_pos',null), at=Math.max(0,S.findIndex(s=>s.k===k)), nd=S.filter(s=>P.days[s.d].done.includes(s.k)).length;
+    const firstOpen=S.findIndex(s=>!P.days[s.d].done.includes(s.k));
+    let h=`<h2 style="margin:0">📖 ${T('Build book')}</h2><p class="muted small" style="margin:4px 0 0">${T('Your build days in order, one component at a time with its install sheets. Tap Next to go to the next one.')} ${nd}/${S.length} ${T('done')}.</p>
+      <div class="bkcover"><button class="primary" data-bkopen="${at}">▶ ${at?T('Continue')+': ':T('Start')+': '}${esc(NM(BYK[S[at].k]))}</button>${firstOpen>=0&&firstOpen!==at?`<button data-bkopen="${firstOpen}">${T('First not done')}: ${esc(NM(BYK[S[firstOpen].k]))}</button>`:''}</div>`;
+    let last=-1;
+    S.forEach((s,i)=>{ if(s.d!==last){ if(last>=0) h+='</ol>'; h+=`<h3 style="--dc:${dcol(s.d)}">${T('Day')} ${s.d+1}${dLabel(s.d)?` <small class="muted">${dLabel(s.d)}</small>`:''}</h3><ol class="bktoc">`; last=s.d; }
+      const it=BYK[s.k], done=P.days[s.d].done.includes(s.k);
+      h+=`<li class="${done?'done':''}"><button data-bkopen="${i}"><span class="bdn" style="--dc:${dcol(s.d)}">${done?'✓':s.i+1}</span><span><span class="bdname">${esc(NM(it))}</span><br><span class="bdsub">${esc(T(KIND1[it.kind]))} · ${esc(it.sub||'')}</span></span><span aria-hidden="true">▶</span></button></li>`; });
+    h+='</ol>'; el.innerHTML=h; if(LANG==='es'&&window.trDom){ try{ trDom(el); }catch(e){} } }
+
+  document.getElementById('bkToc').addEventListener('click',e=>{ const b=e.target.closest('[data-bkopen]'); if(b) openBook(+b.dataset.bkopen); });
+  document.getElementById('bkX').onclick=closeBook;
+  document.getElementById('bkList').onclick=()=>{ closeBook(); location.hash='book'; };
+  document.getElementById('bkPrev').onclick=()=>show(pos-1);
+  document.getElementById('bkNext').onclick=()=>show(pos+1);
+  document.getElementById('bkDone').onclick=toggleDone;
+  document.getElementById('bkBody').addEventListener('click',e=>{ let b;
+    if(b=e.target.closest('[data-bkgo]')) show(+b.dataset.bkgo);
+    else if(e.target.closest('[data-bkdone]')) toggleDone();
+    else if(b=e.target.closest('[data-bkhole]')){ const n=b.dataset.bkhole, key=HB.has(n)?n:null; closeBook(); try{ const hk=HOLES.find(h=>String(h.h)===n); location.hash='map'; route(); selectHole(hk?hk.h:n); }catch(err){} }
+    else if(b=e.target.closest('[data-bkpole]')){ closeBook(); try{ location.hash='poles'; route(); selectPole(b.dataset.bkpole); }catch(err){} } });
+  // swipe left / right between steps (only when the page isn't zoomed)
+  { let sx=null, sy=null, st=0; const bd=document.getElementById('bkBody');
+    bd.addEventListener('touchstart',e=>{ if(e.touches.length!==1){ sx=null; return; } sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now(); },{passive:true});
+    bd.addEventListener('touchend',e=>{ if(sx==null) return; const t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy; sx=null;
+      if(Date.now()-st<600&&Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*2&&(!window.visualViewport||visualViewport.scale<=1.05)) show(pos+(dx<0?1:-1)); },{passive:true}); }
+  addEventListener('keydown',e=>{ if(document.getElementById('bkRd').hidden||!document.getElementById('viewer').hidden) return; if(e.key==='ArrowRight') show(pos+1); else if(e.key==='ArrowLeft') show(pos-1); else if(e.key==='Escape') closeBook(); });
+  // the sheet viewer opens on top of the book
+  document.getElementById('viewer').style.zIndex='30';
+  // a "Build book" button on the Build days screen
+  { const top=document.querySelector('[data-view=build] .bdtop'); if(top) top.insertAdjacentHTML('beforeend',`<button class="primary" id="bdBook" style="min-height:40px">📖 ${T('Build book')}</button>`);
+    document.getElementById('bdBook')?.addEventListener('click',()=>{ const S=seq(); if(!S.length){ location.hash='book'; return; } const i=P.view==='all'?null:S.findIndex(s=>s.d===P.cur); openBook(i==null||i<0?null:i); }); }
+  addEventListener('hashchange',()=>{ if(location.hash==='#book') renderToc(); });
+  addEventListener('storage',e=>{ if(e.key&&/build$/.test(e.key)){ setTimeout(()=>{ renderToc(); if(!document.getElementById('bkRd').hidden) show(pos); },0); } });
+  if(location.hash==='#book') requestAnimationFrame(renderToc);
+  })();
+
   route();
   if(location.hash==='#build') requestAnimationFrame(()=>{ lastW=W(); fitV(); renderAllB(); });
 })();
