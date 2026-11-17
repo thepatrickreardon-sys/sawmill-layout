@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#e8590c">
+<title>Level X Extreme Center · Step by step</title>
+<style>
+:root{--bg:#eef2f4;--panel:#fff;--ink:#15212b;--muted:#5b6b78;--line:#d3dce2;--paint:#e8590c;--paintsoft:#fff0e6;--steel:#1f5f8b;--steelsoft:#e6f0f7;--warn:#a86500;--warnbg:#fbefd9;--bad:#b42318;--badbg:#fbe4e1;--good:#1e7d45;--goodbg:#e3f3e9;
+--display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0d141a;--panel:#16212a;--ink:#e6edf2;--muted:#93a4b1;--line:#293844;--paint:#ff7a2e;--paintsoft:#3a2414;--steel:#6fb3e6;--steelsoft:#14283a;--warn:#f0a63a;--warnbg:#3a2a10;--bad:#ff7466;--badbg:#3d1915;--good:#4cc47e;--goodbg:#163626;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 var(--body)}
+header{position:sticky;top:0;z-index:5;background:var(--paint);color:#fff;padding:10px 14px calc(10px) 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:15px;border:1.5px solid rgba(255,255,255,.7);border-radius:8px;padding:5px 10px;white-space:nowrap}
+header h1{font:700 22px/1.1 var(--display);margin:0;flex:1;letter-spacing:.3px}
+header .prog{font:700 15px var(--display);background:rgba(0,0,0,.2);border-radius:20px;padding:4px 10px;white-space:nowrap}
+main{max-width:720px;margin:0 auto;padding:12px 12px 80px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)}
+h2{font:700 20px var(--display);text-transform:uppercase;letter-spacing:.6px;color:var(--steel);margin:22px 4px 8px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.step.done{opacity:.55}
+.step.done .num{background:var(--good)}
+.top{display:flex;gap:12px;padding:12px 14px 6px;align-items:flex-start}
+.num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--paint);color:#fff;font:700 22px/40px var(--display);text-align:center;border:0;cursor:pointer}
+.what{font-weight:700;font-size:18px;padding-top:7px}
+.body{padding:0 14px 12px 66px}
+.hw{list-style:none;margin:6px 0 0;padding:0;font-size:15px}
+.hw li{padding:5px 0;border-top:1px dashed var(--line)}
+.hw li:first-child{border-top:0}
+.hw .q{display:inline-block;min-width:0;font-weight:700;color:var(--steel)}
+.pn{color:var(--muted);font-size:13px}
+.note{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--warnbg);color:var(--warn);font-size:15px;font-weight:700}
+.note.bad{background:var(--badbg);color:var(--bad)}
+.tip{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--steelsoft);color:var(--steel);font-size:15px}
+figure{margin:0;background:#fff;border-top:1px solid var(--line);padding:8px;text-align:center}
+figure img{max-width:100%;height:auto;max-height:340px;cursor:zoom-in}
+figcaption{font:700 14px var(--display);color:#5b6b78;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.figs{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:620px){.figs.two{grid-template-columns:1fr 1fr}}
+#zoom{position:fixed;inset:0;background:#fff;z-index:20;overflow:auto;display:none}
+#zoom.on{display:block}
+#zoom img{width:200%;max-width:none;display:block}
+#zoom button{position:fixed;top:10px;right:10px;font:700 17px var(--body);background:var(--paint);color:#fff;border:0;border-radius:10px;padding:10px 16px}
+.reset{display:block;margin:20px auto;font:15px var(--body);background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 14px}
+</style></head><body>
+<header><a href="../#docs">‹ App</a><h1>Level X Extreme Center · step by step</h1><span class="prog" id="prog"></span></header>
+<main>
+<div class="intro"><b>Burke 560-2699 Level X® Extreme Center</b>, packet pages 134–150. The steps follow Burke's install order, and each one has its hardware and the detail drawing right under it. <b>Hardware counts are per place.</b> Most details happen in 2 places (left and right), so pull double. <b>Tap the orange number</b> to check a step off. <b>Tap a drawing</b> to blow it up.</div>
+<div id="list"></div>
+<button class="reset" id="reset">Clear all check marks</button>
+</main>
+<div id="zoom"><button id="zclose">Close</button><img alt=""></div>
+<script>
+const D='lxc/';
+const S=[
+{sec:'Before you start'},
+{n:1,t:'Know your 10 footings',
+ hw:[['A','hole 17 · 18" round'],['B','hole 16 · 12" round'],['C','hole 15 · 18" round'],['D','hole 13 · 12" round'],['E','hole 14 · 18" round'],['F','hole 11 · 18" round'],['G','hole 10 · 12" round'],['H','hole 9 · 18" round'],['I','hole 12 · 12" round'],['J','hole 8 · 18" round'],['Depth','33" bury below top of surfacing (12" max loose fill)']],
+ notes:[['All ropes of the center component must be in BEFORE concrete. Don\'t pour until step 18.','bad']],
+ tip:'Burke letters A–J are on the footing plan. The hole numbers are the ones in the app (all-holes table from post 180C3).',figs:[['footplan','Footing placement – sheet 1'],['side','Side view – heights & footings']]},
+{sec:'Front posts'},
+{n:2,t:'Lay out the front post assembly',
+ tip:'Front left angled post 030-2977 and front right 030-2978, with the slide top bar, slide platform frame and bench support between them.',figs:[['frontview','Front post assembly view']]},
+{n:3,t:'Slide top bar to the front angled posts, and cap the posts',d:['A'],
+ hw:[['4×','3/8" × 1" SS button head cap screw','001-0117'],['4×','5/16" SS flat washer','021-0032'],['1×','5" OD post cap','000-0511'],['1×','#10-32 × 1" SS button head cap screw (cap)','001-0267']],
+ tip:'Line up the threaded insert on the cap flange with the hole in the tube. 2 places (left and right).'},
+{n:4,t:'Slide platform frame between the front posts',d:['B'],
+ hw:[['4×','3/8" × 1" SS button head cap screw','001-0117'],['4×','5/16" SS flat washer','021-0032']],tip:'2 places.'},
+{n:5,t:'Bench support between the front posts',d:['C'],
+ hw:[['4×','3/8" × 1" SS button head cap screw','001-0117'],['4×','5/16" SS flat washer','021-0032']],tip:'2 places.'},
+{sec:'Back posts, links & arches'},
+{n:6,t:'Set up the back posts, top links, arched beam and pod arches',
+ notes:[['Slide side barriers: the 4-tab side faces INWARD.'],['Top link tabs: follow the tab orientation drawing (45° outside, 90° inside between the link arches, one tab down).']],
+ tip:'Parts: back left angled post 030-2979, back right 030-2980, 3½" top left link 030-2969, top right link 030-2970, arched beam 030-2461, 2× pod arch 030-2987, top crossbar 030-3028, 2× slide side barrier 030-2966, 2× top and 2× bottom 8 ga infill plates.',figs:[['backview','Back post assembly view'],['tabs','Top link tab orientation']]},
+{n:7,t:'Top crossbar, slide side barriers, infill plates and top links at the front posts',d:['D'],
+ hw:[['2×','3/8" × 1" SS button head cap screw (top crossbar)','001-0117'],['2×','5/16" SS flat washer (top crossbar)','021-0032'],['2×','3/8" × 1" SS button head cap screw (top infill plate)','001-0117'],['2×','5/16" SS flat washer (top infill plate)','021-0032'],['7×','3/8" × 3/8" SS button head cap screw','001-0165'],['7×','3/8" SS flat washer','021-0033'],['7×','1¼" OD × ½" ID washer','021-0004'],['7×','3/8" × 3/8" SS socket head barrel nut','002-0063'],['2×','3/8" × 3¼" SS button head cap screw (top link)','001-0199'],['2×','5/16" SS flat washer (top link)','021-0032'],['2×','3/8" × 3/4" SS socket head barrel nut (top link)','002-0062']],
+ notes:[['The curve of the top crossbar faces AWAY from the angled post.']],tip:'2 places.'},
+{n:8,t:'Top link, arched beam and pod arch at the back angled post, then cap it',d:['E'],
+ hw:[['4×','3/8" × 1" SS button head cap screw (arched beam)','001-0117'],['4×','5/16" SS flat washer (arched beam)','021-0032'],['2×','3/8" × 3¼" SS button head cap screw (pod arch)','001-0199'],['2×','5/16" SS flat washer (pod arch)','021-0032'],['2×','3/8" × 3/4" SS socket head barrel nut (pod arch)','002-0062'],['1×','5" OD post cap','000-0511'],['1×','#10-32 × 1" SS button head cap screw (cap)','001-0267']],
+ tip:'2 places. Line up the cap\'s threaded insert with the hole in the tube.'},
+{sec:'Climber'},
+{n:9,t:'Lay out the climber parts',
+ tip:'Upper left siderail 030-2971, upper right 030-2972, lower left 030-2967, lower right 030-2968, 2× middle climber 030-2985, 2× cross tube 015-1424, composite transfer platform 030-2984.',figs:[['climbx','Climber exploded view']]},
+{n:10,t:'Cross tube into the upper siderails',d:['F'],notes:[['No hardware.']],tip:'2 places.'},
+{n:11,t:'Upper siderail onto the lower siderail',d:['G'],
+ hw:[['1×','¼" × ½" drive rivet','019-0020']],
+ notes:[['Drill a ¼" hole through the swaged stub using the predrilled hole in the tube as a guide. Spray with touch-up paint.']],tip:'2 places.'},
+{n:12,t:'Middle climber into the siderail joint',d:['H'],
+ hw:[['1×','3/8" × 2¼" SS button head cap screw','001-0122'],['1×','5/16" SS flat washer','021-0032'],['1×','3/8" × 3/4" SS socket head barrel nut','002-0062']],tip:'2 places.'},
+{n:13,t:'Upper siderails into the slide platform frame',d:['I'],
+ hw:[['1×','¼" × ½" drive rivet','019-0020']],
+ notes:[['Drill a ¼" hole through the swaged stub using the predrilled hole as a guide. Spray with touch-up paint.']],tip:'2 places.',figs:[['climba','Climber assembly view']]},
+{n:14,t:'Lower siderails into the transfer platform, platform to the back angled posts',d:['J'],
+ hw:[['4×','3/8" × 1" SS button head cap screw','001-0117'],['4×','5/16" SS flat washer','021-0032'],['1×','¼" × ½" drive rivet','019-0020']],
+ notes:[['Drill ¼" through the swaged stub using the predrilled hole, rivet, touch-up paint.']],tip:'2 places.'},
+{sec:'Ropes (all before concrete)'},
+{n:15,t:'Top net and the two 20 mm side nets',d:['K'],
+ hw:[['30×','3/8"-16 × 1" T45 button head shoulder bolt (1 per rope tab)','001-0263']],
+ notes:[['All ropes of the center component must be installed before concrete.','bad']],
+ tip:'Top net 020-0156, 2× side net 020-0162. 30 places total.',figs:[['ropes','Rope assembly view']]},
+{n:16,t:'Hanging ropes with half spheres and tread pods',d:['L','M','O'],
+ hw:[['','Ropes: 20 mm × 61 11/16" (020-0154) and 20 mm × 49 11/16" (020-0155)',''],['Per sphere','2× 5" OD half sphere (018-0216), 2× 3/8" × 2½" SS button head cap screw (001-0123), 3× 5/8" acetal ball (016-0050)',''],['Per pod','tread pod 018-0215, podstep trim/cable connector 018-2669, pod mount 030-2988 (tab side up), aluminum stop shaft 046-2143, 20 mm rope-to-tube adapter 046-2142, clevis shackle 046-0314',''],['Pod screws','1× 3/8" × 1½" (001-0119), 3× #10-24 × 5/8" (003-0023), 3× 3/8" × 3/4" (001-0116) + 3× 5/16" washer (021-0032), 1× 3/8" × 1¾" (001-0120)','']],
+ notes:[['Put 2 acetal balls in one half sphere and 1 in the other through the vent hole BEFORE you bolt it to the rope (it rattles).'],['Loctite on the 3/8" × 1¾" screw threads.']],
+ tip:'Detail M is 3 places, Detail O is 2 places. Heights above surfacing: spheres at 36" and 60", pods at 12" and 24", the second rope\'s sphere at 48".'},
+{n:17,t:'Anchor tubes for the hanging ropes',d:['N'],
+ hw:[['1×','Anchor tube','015-0300'],['1×','Clevis shackle with bolt','046-0314'],['1×','Spacer 1.13" OD × .25"','046-0089']],
+ notes:[['Anchor point goes BELOW the full depth of surfacing but ABOVE the concrete footer.','bad'],['Pull the chain tight and cut the excess. Loctite on the shackle bolt.']],tip:'2 places.'},
+{n:18,t:'Plumb, check rope tension, then pour',
+ notes:[['Make sure every rope is tight before pouring concrete.','bad'],['Front and back posts lean 75° (see side view), so brace them before you pour.']],
+ tip:'Footing sizes in step 1. The concrete detail for 5" OD and 2⅜" OD tubing is in the Burke manual front pages.',figs:[['side','Side view']]},
+{sec:'Climber belt'},
+{n:19,t:'Lay the climber belt and 7 hand grips',
+ notes:[['The end of the belt with the two Ø¼" holes goes on the BOTTOM.']],tip:'Climber belt 046-2139, 7× hand grip 018-2675.',figs:[['belt','Belt connection view']]},
+{n:20,t:'Belt top to the slide platform frame',d:['P'],
+ hw:[['1×','3/8" × ½" SS socket head barrel nut','002-0053'],['1×','14 ga cover plate','007-1824'],['1×','3/8" SS flat washer','021-0033'],['1×','3/8" × ½" SS button head cap screw','001-0143']],
+ notes:[['Push the plate outward to close the gap between the belt and the side tube.']],tip:'2 places.'},
+{n:21,t:'Belt to the cross tubes',d:['Q'],
+ hw:[['1×','3/8" × ½" SS socket head barrel nut','002-0053'],['1×','5/16" SS flat washer','021-0032'],['1×','3/8" × 1½" SS button head cap screw','001-0119']],tip:'5 places.'},
+{n:22,t:'Belt edges to the siderails',d:['S'],
+ hw:[['1×','3/8" × ½" SS socket head barrel nut','002-0053'],['1×','3/8" SS flat washer','021-0033'],['1×','3/8" × ½" SS button head cap screw','001-0143']],tip:'46 places. That\'s 46 of each.'},
+{n:23,t:'Hand grips onto the belt',d:['R'],
+ hw:[['2×','3/8" × 1" SS button head cap screw','001-0117'],['2×','3/8" SS flat washer','021-0033']],
+ notes:[['Undercut side of the grip goes toward the top.'],['Don\'t overtighten or the washer pulls through the belt. Stop when the washer is flush with the belt.','bad']],tip:'7 places.'},
+{sec:'HDPE panels'},
+{n:24,t:'Transfer platform panels',d:['T'],
+ hw:[['8×','3/8" × ½" SS socket head barrel nut','002-0053'],['8×','5/16" SS flat washer','021-0032'],['8×','3/8" × 3/4" SS button head cap screw','001-0116'],['5×','3/8" × ½" SS socket head barrel nut','002-0053'],['5×','3/8" SS flat washer','021-0033'],['5×','3/8" × 1¼" SS button head cap screw','001-0118'],['1×','14 ga cover plate','007-1816'],['10×','5/16" SS flat washer (cover plate)','021-0032'],['10×','3/8" × 3/4" SS button head cap screw (cover plate)','001-0116']],
+ notes:[['Reach into the access slots in the square tubes to assemble the panel.']],tip:'2 places. Panel 018-2644. The slide platform panel 018-2645 goes on the same way (see the assembly view).',figs:[['hdpe','2-layer HDPE assembly view']]},
+{n:25,t:'Seat panel',d:['U'],
+ hw:[['14×','3/8" × ½" SS socket head barrel nut','002-0053'],['14×','5/16" SS flat washer','021-0032'],['14×','3/8" × 3/4" SS button head cap screw','001-0116'],['1×','14 ga cover plate','007-1816'],['10×','5/16" SS flat washer (cover plate)','021-0032'],['10×','3/8" × 3/4" SS button head cap screw (cover plate)','001-0116']],
+ notes:[['Reach into the access slots in the square tubes to assemble the panel.']],tip:'Seat panel 018-2655.'},
+{sec:'Slide barriers & activity panels'},
+{n:26,t:'Slide barriers and slide infill plates at the top',d:['V'],
+ hw:[['2×','3/8" × 1" SS button head cap screw','001-0117'],['2×','5/16" SS flat washer','021-0032'],['6×','3/8" × 3/8" SS button head cap screw','001-0165'],['6×','3/8" SS flat washer','021-0033'],['6×','1¼" OD × ½" ID washer','021-0004'],['6×','3/8" × 3/8" SS socket head barrel nut','002-0063'],['1×','3/8" × 1¼" SS button head cap screw','001-0118'],['1×','5/16" SS flat washer','021-0032'],['1×','3/8" × 3/4" SS socket head barrel nut','002-0062']],
+ notes:[['Slide the barrier fully onto the swaged stub on the front post. Make sure it\'s tight, then drill a 9/16" hole in the stub using the hole in the barrier as a guide. Spray with touch-up paint.']],
+ tip:'2 places. Slide barrier 030-2974 (4 total), 8 ga slide infill plate 007-1808.',figs:[['barview','Side barrier connection view']]},
+{n:27,t:'Lower slide barriers and the activity assemblies',d:['W'],
+ hw:[['1×','3/8" × 1¼" SS button head cap screw','001-0118'],['1×','5/16" SS flat washer','021-0032'],['1×','3/8" × 3/4" SS socket head barrel nut','002-0062'],['6×','3/8" × 3/4" SS button head cap screw','001-0116'],['6×','5/16" SS flat washer','021-0032'],['6×','3/8" × ½" SS socket head barrel nut','002-0053'],['2×','3/8" × 1" SS button head cap screw','001-0117'],['2×','5/16" SS flat washer','021-0032']],
+ notes:[['Same as step 26: barrier fully onto the swaged stub, drill 9/16" through, touch-up paint.']],tip:'2 places. Activity assembly 049-2870 right, 049-2869 left.'},
+{sec:'Cozy seat'},
+{n:28,t:'Build the cozy seat on the ground',
+ hw:[['18×','3/8" × 3/4" SS button head cap screw','001-0116'],['18×','5/16" SS flat washer','021-0032'],['18×','3/8" × ½" SS socket head barrel nut','002-0053'],['7×','3/8" × ½" SS button head cap screw (roof panel)','001-0143'],['7×','5/16" SS flat washer (roof panel)','021-0032'],['7×','3/8" × 3/8" SS socket head barrel nut (roof panel)','002-0063']],
+ notes:[['Leave the side panel hardware LOOSE so it slips onto the post plates in the next step.']],
+ tip:'Roof panel 018-2666, back panel 018-2667, 2× side panel 018-2665, formed roof plate 006-0814, 2× formed plate 006-0813, 2× side infill plate 007-1826.',figs:[['cozyx','Cozy seat exploded view'],['cozya','Cozy seat assembled view']]},
+{n:29,t:'Hang the cozy seat on the angled posts',d:['X'],
+ hw:[['8×','3/8" × 3/4" SS button head cap screw','001-0116'],['8×','5/16" SS flat washer','021-0032'],['8×','3/8" × ½" SS socket head barrel nut','002-0053']],
+ notes:[['The plate on the angled post slides in between the panel and the infill plate. Then tighten everything.']],figs:[['cozyview','Cozy seat assembly view']]},
+{sec:'Slide handles'},
+{n:30,t:'Slide arch handles at the Viper spiral entrance',d:['Y'],
+ hw:[['3×','3/8" × 3/8" SS button head cap screw','001-0165'],['3×','3/8" SS flat washer','021-0033'],['3×','3/8" × 3/8" SS socket head barrel nut','002-0063'],['1×','12 ga galv cover plate','007-1809']],
+ notes:[['Viper: the handle uses the HIGHEST holes. The cover plate covers the open hole.'],['The angle of the handle always faces toward the slide.']],
+ tip:'2 places. Slide arch handle 030-2946. Burke\'s Detail Z (Velo XL, lowest holes) doesn\'t apply here, because this job\'s Velo is on the main structure, not the Level X.',figs:[['viperh','Viper slide handle assembly view']]},
+];
+const KEY='gug-lxc-steps-done';
+let done={}; try{done=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+  let h='';
+  for(const s of S){
+    if(s.sec){h+=`<h2>${esc(s.sec)}</h2>`;continue;}
+    const id=String(s.n);
+    const figs=(s.d||[]).map(k=>[D+'d'+k+'.jpg','Detail '+k]).concat((s.figs||[]).map(([f,c])=>[D+f+'.jpg',c]));
+    h+=`<section class="step${done[id]?' done':''}" data-id="${esc(id)}"><div class="top"><button class="num" aria-label="Check off step ${esc(id)}">${done[id]?'✓':esc(id)}</button><div class="what">${esc(s.t)}${s.d?` <span class="pn">· Detail ${s.d.join(' & ')}</span>`:''}</div></div>`;
+    if(s.hw||s.notes||s.tip){h+='<div class="body">';
+      if(s.hw) h+='<ul class="hw">'+s.hw.map(([q,w,p])=>`<li>${q?`<span class="q">${esc(q)}</span> `:''}${esc(w)}${p?` <span class="pn">${esc(p)}</span>`:''}</li>`).join('')+'</ul>';
+      for(const [t,c] of (s.notes||[])) h+=`<div class="note ${c||''}">⚠ ${esc(t)}</div>`;
+      if(s.tip) h+=`<div class="tip">${esc(s.tip)}</div>`;
+      h+='</div>';}
+    if(figs.length) h+=`<div class="figs${figs.length>1?' two':''}">`+figs.map(([src,c])=>`<figure><figcaption>${esc(c)}</figcaption><img src="${src}" alt="${esc(c)}" loading="lazy"></figure>`).join('')+'</div>';
+    h+='</section>';
+  }
+  document.getElementById('list').innerHTML=h;
+  const steps=S.filter(s=>!s.sec), n=steps.filter(s=>done[String(s.n)]).length;
+  document.getElementById('prog').textContent=n+' / '+steps.length;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.num'); if(b){const id=b.closest('.step').dataset.id; done[id]=!done[id]; if(!done[id]) delete done[id]; try{localStorage.setItem(KEY,JSON.stringify(done))}catch(_){} render(); return;}
+  const im=e.target.closest('figure img'); if(im){const z=document.getElementById('zoom'); z.querySelector('img').src=im.src; z.classList.add('on'); z.scrollTo(0,0); return;}
+});
+document.getElementById('zclose').onclick=()=>document.getElementById('zoom').classList.remove('on');
+document.getElementById('reset').onclick=()=>{ if(confirm('Clear all check marks?')){done={}; try{localStorage.removeItem(KEY)}catch(_){} render();} };
+render();
+</script>
+</body></html>
