@@ -99,7 +99,7 @@ function login(){
     <div><div class="eye">Sign in</div><h2>Welcome back.</h2></div>
     <div class="field"><label for="cid">Contractor ID</label><input class="inp" id="cid" placeholder="TT-0000" autocapitalize="characters"></div>
     <div class="field"><label for="pin">PIN</label><input class="inp" id="pin" type="password" inputmode="numeric" placeholder="••••"></div>
-    ${getHandoff() ? '<div class="hint" style="background:#F7EEDF"><b>Your Turf Calculator layout is waiting.</b> Log in to add it to your order.</div>' : ''}
+    ${getHandoff() ? '<div class="hint" style="background:rgba(214,164,97,.2)"><b>Your Turf Calculator layout is waiting.</b> Log in to add it to your order.</div>' : ''}
     <div class="err" id="lerr"></div>
     <button class="btn btn-v" type="submit">Log in →</button>
     <div class="hint"><b>Demo accounts</b> — tap to fill:<br>
