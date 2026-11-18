@@ -349,6 +349,27 @@ footer .logo img{height:64px;width:auto;margin-bottom:16px}
 @keyframes float{0%,100%{translate:0 0}50%{translate:0 -6px}}
 @media(max-width:700px){.calc-bubble{flex-wrap:wrap;margin-top:-40px}.calc-bubble .btn{width:100%;justify-content:center}}
 
+/* opening animation — same as the Turf Calculator */
+.intro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;cursor:pointer;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),radial-gradient(120% 90% at 50% 0%,#22372B 0%,var(--ds) 45%,var(--ds2) 100%);
+  transition:transform .7s cubic-bezier(.65,0,.25,1)}
+.intro.out{transform:translateY(-100%)}
+.intro:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--vf),var(--fb),var(--vf))}
+.intro svg{width:min(460px,92vw);height:auto;overflow:visible}
+.intro .i-sun{transform-origin:480px 216px;transform:scale(0);opacity:0;animation:sunUp .55s cubic-bezier(.2,.9,.3,1.25) .1s forwards}
+.intro .i-g{stroke-dasharray:1 1;stroke-dashoffset:1}
+.intro .i-g1{animation:grow 1s cubic-bezier(.3,0,.15,1) .45s forwards}
+.intro .i-g2{animation:grow 1.2s cubic-bezier(.3,0,.15,1) .6s forwards}
+.intro .i-g3{animation:grow .95s cubic-bezier(.3,0,.15,1) .8s forwards}
+.intro .i-logo{opacity:0;animation:fadeIn .6s ease-out 1.75s forwards}
+.intro .skip{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:12.5px;color:rgba(255,255,255,.45)}
+@keyframes sunUp{to{transform:scale(1);opacity:1}}
+@keyframes grow{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+body.splash{overflow:hidden}
+body.splash .hero .in,body.splash .hero .bg{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.intro{display:none}}
+
 .concept{position:fixed;left:14px;bottom:14px;z-index:70;background:var(--ds2);color:#fff;font-size:.72rem;padding:7px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.15);opacity:.92}
 .totop{position:fixed;right:18px;bottom:18px;z-index:55;width:48px;height:48px;border-radius:50%;background:var(--vf);color:var(--ds);font-weight:900;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);transform:translateY(90px);transition:transform .5s var(--ease)}
 body.scrolled .totop{transform:none}
@@ -357,6 +378,34 @@ body.scrolled .totop{transform:none}
 </style>
 </head>
 <body>
+<div class="intro" id="intro" aria-hidden="true">
+  <svg viewBox="0 0 900 345">
+    <defs>
+      <clipPath id="inClip"><rect x="0" y="0" width="900" height="274.5"/></clipPath>
+      <mask id="inMask" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="345">
+        <g fill="none" stroke="#fff" stroke-linecap="round">
+          <path class="i-g i-g1" pathLength="1" stroke-width="26" d="M437.6,276 L437.6,270.7 C436.7,187.7 449.8,116.1 500,61.1 L512,48"/>
+          <path class="i-g i-g2" pathLength="1" stroke-width="30" d="M463.4,276 L463.4,270.7 C470.6,159.5 532.8,61.5 631.9,1.2 L648,-9"/>
+          <path class="i-g i-g3" pathLength="1" stroke-width="26" d="M495.5,276 L495.5,270.7 C498.8,206.6 525.2,155.7 572,119.1 L584,109"/>
+        </g>
+      </mask>
+    </defs>
+    <circle class="i-sun" cx="480" cy="216" r="98" fill="#E2E872" clip-path="url(#inClip)"/>
+    <g mask="url(#inMask)"><image href="assets/logo-white-fresh-blade.png" x="-3.5" y="-3" width="900" height="345" clip-path="url(#inClip)"/></g>
+    <image class="i-logo" href="assets/logo-white-fresh-blade.png" x="-3.5" y="-3" width="900" height="345"/>
+  </svg>
+  <div class="skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('intro');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches){ el.remove(); return; }
+  document.body.classList.add('splash');
+  var done=false;
+  function leave(){ if(done) return; done=true; el.classList.add('out'); document.body.classList.remove('splash'); setTimeout(function(){ el.remove(); },750); }
+  setTimeout(leave,2950); el.addEventListener('click',leave);
+})();
+</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <filter id="wind" x="-3%" y="-30%" width="106%" height="160%" color-interpolation-filters="sRGB">
@@ -412,7 +461,7 @@ body.scrolled .totop{transform:none}
 <button class="totop" id="totop" aria-label="Back to top">↑</button>
 <div class="concept">Redesign concept — not the live site · pending brand approval</div>
 
-<script src="pages.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="pages.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
