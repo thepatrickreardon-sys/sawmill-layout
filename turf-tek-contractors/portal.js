@@ -83,7 +83,8 @@ function addToCart(line){ const c = cart(), ex = c.find(x => x.k === line.k);
   if (ex){ if (line.type === 'turf'){ ex.rolls += line.rolls; Object.assign(ex, turfLine(TURF.find(t=>t.id===ex.id), ex.len, ex.rolls, ex.half)); } else { ex.q += line.q; Object.assign(ex, matLine(MATS.find(m=>m.id===ex.id), ex.q)); } }
   else c.push(line);
   save(); badge(); toast(`Added ${line.n} to your order`); }
-function badge(){ const n = cart().length, b = $('#cartCnt'); if (b){ b.textContent = n; b.classList.toggle('on', n > 0); } }
+function badge(){ const n = cart().length, b = $('#cartCnt'); if (b){ b.textContent = n; b.classList.toggle('on', n > 0); }
+  const bar = $('#cartBar'); if (bar){ const t = totals(cart()); bar.classList.toggle('on', n > 0); $('#cbN').textContent = `${n} item${n===1?'':'s'} · ${money(t.net)}`; } }
 
 /* ---------- Login ---------- */
 function login(){
@@ -124,7 +125,7 @@ function shell(active, inner){
   <div class="shell"><aside class="side"><a class="logo" href="#${staff?'admin':'dash'}"><img src="assets/logo-white-fresh-blade.png" alt="Turf Tek"></a>
     ${nav.map(n => `<a class="nl ${active===n[0]?'on':''}" href="#${n[0]}">${IC[n[2]]}${n[1]}${n[0]==='cart'?'<span class="cnt" id="cartCnt"></span>':''}</a>`).join('')}
     <div class="who"><b>${staff ? 'Turf Tek staff' : esc(c.co)}</b>${staff ? 'Back office' : c.id + ' · ' + c.disc + '% off'}<br><button id="lo">Log out</button></div>
-  </aside><main class="main"><div class="view">${inner}</div></main></div>`;
+  </aside><main class="main"><div class="view">${inner}</div></main></div>${active==='shop' ? '<a class="cartbar" id="cartBar" href="#cart"><span id="cbN"></span><b>Review order →</b></a>' : ''}`;
   const out = () => { S.session = null; save(); location.hash = '#login'; route(); };
   $('#lo').addEventListener('click', out); $('#lo2').addEventListener('click', out);
   badge();
@@ -157,7 +158,7 @@ function dash(){
 function orderTable(list){
   if (!list.length) return `<div class="empty">${IC.orders.replace('currentColor','#CFE4B1')}<p>No orders yet.</p></div>`;
   return `<div class="tw"><table class="tbl"><thead><tr><th>Order</th><th>Job</th><th>Date</th><th>Status</th><th style="text-align:right">Total</th></tr></thead><tbody>
-  ${list.map(o => `<tr class="click" data-o="${o.no}"><td><b>${o.no}</b></td><td>${esc(o.job)}</td><td>${new Date(o.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</td><td><span class="chip s-${o.status}">${o.status}</span></td><td style="text-align:right">${money(o.total)}</td></tr>`).join('')}</tbody></table></div>`;
+  ${list.map(o => `<tr class="click" data-o="${o.no}"><td data-l="Order"><b>${o.no}</b></td><td data-l="Job" class="tj">${esc(o.job)}</td><td data-l="Date">${new Date(o.date+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</td><td data-l="Status"><span class="chip s-${o.status}">${o.status}</span></td><td data-l="Total" class="tt" style="text-align:right">${money(o.total)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function wireOrders(){ $$('tr[data-o]').forEach(r => r.addEventListener('click', () => { const o = S.orders.find(x => x.no === r.dataset.o), c = S.contractors.find(x => x.id === o.cid);
   const steps = ['Requested','Confirmed','Scheduled','Delivered'], at = o.status === 'Paid' ? 1 : steps.indexOf(o.status);
@@ -285,7 +286,7 @@ function importPage(){
 function admin(){
   shell('admin', `<div class="ph1"><div><div class="eye">Back office</div><h1>Contractors</h1><p class="mute">Set each contractor's discount and PIN. Changes apply the next time they log in.</p></div><button class="btn btn-v" id="addc">+ Add contractor</button></div>
   <div class="card"><div class="tw"><table class="tbl"><thead><tr><th>ID</th><th>Company</th><th>PIN</th><th>Discount</th><th>Tier</th><th>Orders</th><th></th></tr></thead><tbody>
-  ${S.contractors.map(c => `<tr data-c="${c.id}"><td><b>${c.id}</b></td><td>${esc(c.co)}<div class="note">${esc(c.name)} · ${esc(c.town)}</div></td><td><input class="inp pct pin" value="${esc(c.pin)}" maxlength="6"></td><td><input class="inp pct dsc" type="number" min="0" max="40" value="${c.disc}">%</td><td><span class="chip" style="background:${TIERS[tierFor(c.disc)].c}">${tierFor(c.disc)}</span></td><td>${S.orders.filter(o => o.cid === c.id).length}</td><td><button class="btn btn-l btn-sm sv">Save</button></td></tr>`).join('')}
+  ${S.contractors.map(c => `<tr data-c="${c.id}"><td data-l="ID"><b>${c.id}</b></td><td data-l="Company" class="tj">${esc(c.co)}<div class="note">${esc(c.name)} · ${esc(c.town)}</div></td><td data-l="PIN"><input class="inp pct pin" value="${esc(c.pin)}" maxlength="6" inputmode="numeric"></td><td data-l="Discount"><input class="inp pct dsc" type="number" min="0" max="40" value="${c.disc}" inputmode="numeric"> %</td><td data-l="Tier"><span class="chip" style="background:${TIERS[tierFor(c.disc)].c}">${tierFor(c.disc)}</span></td><td data-l="Orders">${S.orders.filter(o => o.cid === c.id).length}</td><td class="ts"><button class="btn btn-l btn-sm sv">Save</button></td></tr>`).join('')}
   </tbody></table></div></div>
   <p class="note" style="margin-top:14px">Demo: changes are saved in this browser only. <button id="reset" style="text-decoration:underline">Reset demo data</button></p>`);
   $$('tr[data-c]').forEach(r => { $('.sv', r).addEventListener('click', () => { const c = S.contractors.find(x => x.id === r.dataset.c); c.disc = Math.max(0, Math.min(40, +$('.dsc', r).value || 0)); c.pin = $('.pin', r).value.trim() || c.pin; save(); toast(`${c.co}: ${c.disc}% saved`); admin(); }); });
@@ -301,7 +302,7 @@ function allOrders(){
   const list = S.orders.slice().reverse();
   shell('allorders', `<div class="ph1"><div><div class="eye">Back office</div><h1>All orders</h1><p class="mute">Move orders along as they're confirmed, scheduled and delivered.</p></div></div>
   <div class="card"><div class="tw"><table class="tbl"><thead><tr><th>Order</th><th>Contractor</th><th>Job</th><th>Total</th><th>Status</th></tr></thead><tbody>
-  ${list.map(o => { const c = S.contractors.find(x => x.id === o.cid); return `<tr><td><b>${o.no}</b><div class="note">${o.date}</div></td><td>${esc(c ? c.co : o.cid)}</td><td>${esc(o.job)}</td><td>${money(o.total)}</td><td><select class="inp st" data-o="${o.no}" style="padding:.45em .6em;width:auto">${['Requested','Paid','Confirmed','Scheduled','Delivered'].map(s => `<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`; }).join('')}
+  ${list.map(o => { const c = S.contractors.find(x => x.id === o.cid); return `<tr><td data-l="Order"><b>${o.no}</b><div class="note">${o.date}</div></td><td data-l="Contractor" class="tj">${esc(c ? c.co : o.cid)}</td><td data-l="Job">${esc(o.job)}</td><td data-l="Total">${money(o.total)}</td><td data-l="Status"><select class="inp st" data-o="${o.no}" style="padding:.45em .6em;width:auto">${['Requested','Paid','Confirmed','Scheduled','Delivered'].map(s => `<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`; }).join('')}
   </tbody></table></div></div>`);
   $$('.st').forEach(s => s.addEventListener('change', () => { S.orders.find(o => o.no === s.dataset.o).status = s.value; save(); toast(`${s.dataset.o} → ${s.value}`); }));
 }

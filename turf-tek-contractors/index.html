@@ -186,6 +186,52 @@ h1,h2,h3{font-family:var(--head);font-weight:400;line-height:1.15}
 .pct{width:80px;padding:.45em .6em}
 .note{font-size:.8rem;color:var(--mute)}
 
+/* ---------- phone layout ---------- */
+.demo-bar .short{display:none}
+.grid>*{min-width:0}
+.cartbar{display:none}
+@media(max-width:700px){
+  body{font-size:15.5px}
+  .demo-bar .long{display:none}.demo-bar .short{display:inline}
+  .main{padding:16px 14px 110px}
+  .ph1{margin-bottom:18px}.ph1 .btn{width:100%}
+  .ph1 h1{font-size:2rem}
+  .card{padding:16px;border-radius:14px}
+  .hello{padding:22px 20px 56px;border-radius:18px}.hello .btn{width:100%}
+  .big{font-size:1.75rem}
+  .g4{gap:10px}
+  .grid[style*="1fr 1fr"]{grid-template-columns:1fr!important}
+  .opt{grid-template-columns:1fr}
+  .tabs{display:flex;width:100%}.tabs button{flex:1}
+  .prods{grid-template-columns:1fr}
+  /* tables become stacked cards */
+  .tbl thead{display:none}
+  .tbl,.tbl tbody{display:block}
+  .tbl tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:14px 2px;border-bottom:1px solid var(--line)}
+  .tbl tr:last-child{border-bottom:0}
+  .tbl td{display:block;padding:0;border:0;text-align:left!important;font-size:.92rem}
+  .tbl td::before{content:attr(data-l);display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+  .tbl td.tj{grid-column:1/-1;order:-1;font-weight:700;font-size:1rem}
+  .tbl td.tj::before{display:none}
+  .tbl td.tt{font-weight:900}
+  .tbl td.ts{grid-column:1/-1}.tbl td.ts .btn{width:100%}
+  .tbl .pct{width:90px}
+  .tw{overflow:visible}
+  /* cart */
+  .line{grid-template-columns:1fr auto;gap:4px 12px}
+  .line .x{grid-row:1/3;grid-column:2;align-self:start}
+  .line>div[style*="text-align:right"]{text-align:left!important;grid-column:1}
+  .cartbar{display:flex;position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:35;justify-content:space-between;align-items:center;gap:10px;background:var(--vf);color:var(--ds);padding:14px 16px;border-radius:14px;box-shadow:0 14px 30px -12px rgba(20,33,27,.55);transform:translateY(140%);opacity:0;transition:transform .45s var(--ease),opacity .3s;pointer-events:none}
+  .cartbar.on{transform:none;opacity:1;pointer-events:auto}
+  .toast{bottom:calc(150px + env(safe-area-inset-bottom));max-width:calc(100% - 32px);text-align:center}
+  .modal{align-items:end;padding:0}
+  .modal .box{border-radius:22px 22px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom));max-height:88vh;transform:translateY(100%)}
+  .modal.on .box{transform:none}
+  .lcard{padding:24px}
+  .login .l{padding:28px 22px 6px}
+  .login .l p{font-size:1rem}
+}
+
 /* opening animation (same as the Turf Calculator) */
 .intro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;cursor:pointer;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),radial-gradient(120% 90% at 50% 0%,#22372B 0%,var(--ds) 45%,var(--ds2) 100%);transition:transform .7s cubic-bezier(.65,0,.25,1)}
 .intro.out{transform:translateY(-100%)}
@@ -231,9 +277,9 @@ h1,h2,h3{font-family:var(--head);font-weight:400;line-height:1.15}
   </filter>
   <pattern id="grassV" patternUnits="userSpaceOnUse" width="444.8" height="70"><image href="assets/grass-verdant.png" width="444.8" height="70" preserveAspectRatio="none"/></pattern>
 </defs></svg>
-<div class="demo-bar">DEMO — sample prices and demo accounts only. Not a secure system; nothing is ordered or charged.</div>
+<div class="demo-bar"><span class="long">DEMO — sample prices and demo accounts only. Not a secure system; nothing is ordered or charged.</span><span class="short">DEMO · sample prices · nothing is ordered</span></div>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
-<script src="portal.js?v=2"></script>
+<script src="portal.js?v=4"></script>
 </body>
 </html>
