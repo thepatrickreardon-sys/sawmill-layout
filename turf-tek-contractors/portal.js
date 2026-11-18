@@ -269,15 +269,18 @@ function importPage(){
     if (h.bags) L.push(matLine(m('sand'), h.bags)); if (h.tapeRolls) L.push(matLine(m('tape'), h.tapeRolls)); if (h.glue) L.push(matLine(m('glue'), h.glue));
     if (h.boards) L.push(matLine(m('board'), h.boards)); if (h.staples) L.push(matLine(m('staples'), Math.ceil(h.staples / 1000))); if (h.nails) L.push(matLine(m('nails'), Math.ceil(h.nails / 50)));
     return L; };
-  const render = pid => { const L = build(pid), t = totals(L);
-    $('#impLines').innerHTML = L.map(l => `<div class="line" style="grid-template-columns:1fr auto"><div><b>${esc(l.n)}</b><span>${esc(l.desc)}</span></div><div style="text-align:right"><b>${money(l.list*(1-disc()))}</b><span><s>${money(l.list)}</s></span></div></div>`).join('');
+  const skip = new Set();
+  const render = pid => { const all = build(pid), L = all.filter(l => !skip.has(l.k)), t = totals(L);
+    $('#impLines').innerHTML = all.map(l => { const off = skip.has(l.k), mat = l.type === 'mat';
+      return `<div class="line imp ${off?'off':''}" style="grid-template-columns:${mat?'auto ':''}1fr auto">${mat ? `<label class="tg" aria-label="Include ${esc(l.n)}"><input type="checkbox" data-k="${l.k}" ${off?'':'checked'}><span></span></label>` : ''}<div><b>${esc(l.n)}</b><span>${esc(l.desc)}${off ? ' · not included' : ''}</span></div><div style="text-align:right"><b>${money(l.list*(1-disc()))}</b><span><s>${money(l.list)}</s></span></div></div>`; }).join('');
+    $$('#impLines .tg input').forEach(c => c.addEventListener('change', () => { c.checked ? skip.delete(c.dataset.k) : skip.add(c.dataset.k); L2 = render($('#impProd').value); }));
     $('#impSum').innerHTML = `<div><span>List price</span><span>${money(t.list)}</span></div><div class="disc"><span>Your ${me().disc}% discount</span><span>−${money(t.off)}</span></div><div class="tot"><span>Total</span><span>${money(t.net)}</span></div>`; return L; };
-  shell('cart', `<div class="ph1"><div><div class="eye">From the Turf Calculator</div><h1>Your layout is ready to order</h1><p class="mute">${esc(h.areas.join(', '))} · ${h.sf.toLocaleString()} sq ft of turf area. Staples and nails are rounded up to full boxes.</p></div><a class="btn btn-l" href="${CALC}">← Back to layout</a></div>
+  shell('cart', `<div class="ph1"><div><div class="eye">From the Turf Calculator</div><h1>Your layout is ready to order</h1><p class="mute">${esc(h.areas.join(', '))} · ${h.sf.toLocaleString()} sq ft of turf area. Switch off any materials you already have. Staples and nails are rounded up to full boxes.</p></div><a class="btn btn-l" href="${CALC}">← Back to layout</a></div>
   <div class="grid g2"><div class="card"><div class="field" style="max-width:360px;margin-bottom:8px"><label>Turf product</label><select class="inp" id="impProd">${TURF.map(t => `<option value="${t.id}" ${t.id===h.product?'selected':''}>${t.n}</option>`).join('')}</select></div><div id="impLines"></div></div>
   <div class="card" style="align-self:start"><h2 style="font-size:1.5rem;margin-bottom:14px">Summary</h2><div class="sum" id="impSum"></div>
     <button class="btn btn-v" id="impAdd" style="width:100%;margin-top:18px">Add all to my cart →</button><button class="btn btn-l" id="impSkip" style="width:100%;margin-top:10px">Discard</button></div></div>`);
-  let L = render(h.product); $('#impProd').addEventListener('change', e => { L = render(e.target.value); });
-  $('#impAdd').addEventListener('click', () => { L.forEach(l => { const c = cart(), ex = c.find(x => x.k === l.k); if (ex){ if (l.type==='turf'){ ex.rolls += l.rolls; Object.assign(ex, turfLine(TURF.find(t=>t.id===ex.id), ex.len, ex.rolls, ex.half)); } else { ex.q += l.q; Object.assign(ex, matLine(MATS.find(m=>m.id===ex.id), ex.q)); } } else c.push(l); });
+  var L2 = render(h.product); $('#impProd').addEventListener('change', e => { L2 = render(e.target.value); });
+  $('#impAdd').addEventListener('click', () => { L2.forEach(l => { const c = cart(), ex = c.find(x => x.k === l.k); if (ex){ if (l.type==='turf'){ ex.rolls += l.rolls; Object.assign(ex, turfLine(TURF.find(t=>t.id===ex.id), ex.len, ex.rolls, ex.half)); } else { ex.q += l.q; Object.assign(ex, matLine(MATS.find(m=>m.id===ex.id), ex.q)); } } else c.push(l); });
     S.jobHint = h.areas.join(' + '); save(); localStorage.removeItem('tt-handoff'); toast('Layout added to your order'); location.hash = '#cart'; });
   $('#impSkip').addEventListener('click', () => { localStorage.removeItem('tt-handoff'); location.hash = '#shop'; });
 }
