@@ -43,7 +43,7 @@ h2{font-size:clamp(2rem,4vw,3rem)}
 .util{background:var(--ds2);color:var(--mist);font-size:.82rem;position:relative;z-index:61}
 .util .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;height:38px}
 .util a:hover{color:#fff} .util b{color:var(--vf)}
-@media(max-width:720px){.util .addr{display:none}}
+@media(max-width:720px){.util .addr{display:none}.util .wrap{justify-content:center;font-size:.78rem}}
 header.nav{position:sticky;top:0;z-index:60;transition:background .45s var(--ease),box-shadow .45s var(--ease)}
 header.nav .bar{display:flex;align-items:center;justify-content:space-between;height:82px;transition:height .45s var(--ease)}
 body.scrolled header.nav,body.solid header.nav{background:rgba(34,55,43,.96);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);box-shadow:0 10px 30px -18px rgba(0,0,0,.6)}
@@ -60,6 +60,7 @@ body.scrolled .brand img{height:44px}
 .menu>li.open .caret{transform:rotate(180deg)}
 .nav-cta{display:flex;gap:10px;align-items:center}
 .nav-cta .btn{padding:.7em 1.15em;font-size:.95rem}
+.btn-login svg{transition:transform .35s var(--ease)}.btn-login:hover svg{transform:translateY(-2px)}
 /* smooth dropdown panel */
 .panel{position:absolute;top:calc(100% + 10px);left:50%;min-width:520px;transform:translate(-50%,10px) scale(.98);transform-origin:top center;opacity:0;visibility:hidden;pointer-events:none;
   background:#fff;color:var(--ink);border-radius:18px;box-shadow:0 30px 60px -20px rgba(20,33,27,.45),0 0 0 1px rgba(34,55,43,.06);padding:22px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px 26px;
@@ -82,7 +83,9 @@ body.scrolled .brand img{height:44px}
 body.mopen .burger span:nth-child(1){top:21px;transform:rotate(45deg)}
 body.mopen .burger span:nth-child(2){opacity:0}
 body.mopen .burger span:nth-child(3){top:21px;transform:rotate(-45deg)}
-@media(max-width:1060px){.menu,.nav-cta .btn-o{display:none}.burger{display:block}}
+.menu .top,.nav-cta .btn{white-space:nowrap}
+@media(max-width:1280px){.menu{gap:0}.menu .top{padding:10px 10px;font-size:.93rem}.nav-cta .btn{padding:.65em .95em;font-size:.9rem}.brand img{height:48px}}
+@media(max-width:1120px){.menu,.nav-cta .btn-o{display:none}.burger{display:block}}
 /* mobile drawer */
 .drawer-bg{position:fixed;inset:0;background:rgba(20,33,27,.5);opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility 0s linear .4s;z-index:58}
 body.mopen .drawer-bg{opacity:1;visibility:visible;transition:opacity .4s var(--ease)}
@@ -422,14 +425,14 @@ body.scrolled .totop{transform:none}
 
 <div class="util"><div class="wrap">
   <span class="addr">6137 Jericho Turnpike, Commack, NY 11725</span>
-  <span><a href="tel:6316515777"><b>(631) 651-5777</b></a> &nbsp;·&nbsp; <a id="calcTop" href="#">Turf Calculator →</a></span>
+  <span><a href="tel:6316515777"><b>(631) 651-5777</b></a> &nbsp;·&nbsp; <a id="calcTop" href="#">Turf Calculator →</a> &nbsp;·&nbsp; <a href="../turf-tek-contractors/"><b style="color:var(--fb)">Contractor Login</b></a></span>
 </div></div>
 
 <header class="nav"><div class="wrap bar">
   <a class="brand" href="#home" aria-label="Turf Tek USA home"><img src="assets/logo-white-fresh-blade.png" alt="Turf Tek — premium synthetic grass provider"></a>
   <ul class="menu" id="menu"></ul>
   <div class="nav-cta">
-    <a class="btn btn-o" href="tel:6316515777">(631) 651-5777</a>
+    <a class="btn btn-o btn-login" href="../turf-tek-contractors/"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Contractor Login</a>
     <a class="btn btn-v" href="#contact">Free Estimate</a>
     <button class="burger" id="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
@@ -452,6 +455,7 @@ body.scrolled .totop{transform:none}
         <li><a href="tel:6316515777">(631) 651-5777</a></li>
         <li><a href="#contact">Free estimate →</a></li>
         <li><a id="calcFoot" href="#">Turf Calculator →</a></li>
+        <li><a href="../turf-tek-contractors/">Contractor Login →</a></li>
       </ul></div>
     </div>
     <div class="fbot"><span>© 2026 Turf Tek USA</span><span>Facebook · Google · YouTube · LinkedIn · Instagram</span></div>
@@ -461,7 +465,7 @@ body.scrolled .totop{transform:none}
 <button class="totop" id="totop" aria-label="Back to top">↑</button>
 <div class="concept">Redesign concept — not the live site · pending brand approval</div>
 
-<script src="pages.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="pages.js?v=7"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
