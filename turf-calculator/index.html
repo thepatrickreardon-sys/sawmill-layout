@@ -165,6 +165,13 @@
   .dock-stats b{display:block;color:#fff;font-family:Satoshi,sans-serif;font-size:22px}
   .dock-stats div:first-child b{color:var(--sun)}
   .dock-btn{flex:none;background:var(--brand);color:var(--forest);text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px;font-size:15.5px}
+
+  /* contractor portal handoff */
+  .portal-card{border:2px solid var(--brand);margin-bottom:16px}
+  .portal-card .eye-p{font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--brand)}
+  .portal-card .pc-h{font-family:Giften,Georgia,serif;font-weight:400;font-size:26px;margin:4px 0 4px;color:var(--forest2);text-transform:none;letter-spacing:0}
+  .portal-card .pc-p{margin:0;color:var(--mute);font-size:14.5px}
+  .portal-back{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:#fff;font-weight:700;font-size:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:7px 14px;border-radius:999px}
   /* intro splash */
   .intro{position:fixed;inset:0;z-index:60;display:grid;place-items:center;cursor:pointer;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
@@ -307,7 +314,16 @@
 
   <section class="sec" id="quoteSec">
     <div class="sec-h"><div class="num">3</div><div><h2>Request a quote</h2><p>We'll price your material list and get back to you.</p></div></div>
-    <div class="card">
+    <div class="card portal-card" id="portalCard" style="display:none">
+      <div class="eye-p">Contractor Portal</div>
+      <h3 class="pc-h">Add this layout to your order</h3>
+      <p class="pc-p">Your rolls and materials go straight into your contractor cart with your discount applied.</p>
+      <label for="p_product" style="margin-top:12px">Turf product</label>
+      <select id="p_product"><option value="natural">Natural Turf</option><option value="versa">Versa Turf</option><option value="petplay">Pet &amp; Play Turf</option><option value="proputt">Pro Putt Turf</option><option value="shortgame">Short Game Elite Turf</option><option value="sportxt">Sport XT Turf</option><option value="playx">Playground Extreme Turf</option><option value="tennis">Tennis Turf</option></select>
+      <button class="btn" type="button" id="portalSend" style="margin-top:14px">Add to my order <span aria-hidden="true">→</span></button>
+      <div class="msg" id="pmsg"></div>
+    </div>
+    <div class="card" id="quoteCard">
       <form id="quote" novalidate>
         <div class="grid">
           <div><label for="q_name">Name *</label><input id="q_name" autocomplete="name"></div>
@@ -1248,6 +1264,32 @@ renderAreas();
     setTimeout(() => el.remove(), 750); };
   setTimeout(leave, 2950);
   el.addEventListener('click', leave);
+})();
+
+/* ---------- Contractor Portal handoff: layout → contractor cart ---------- */
+(function(){
+  const PORTAL = '../turf-tek-contractors/';
+  let on = false;
+  try { if (new URLSearchParams(location.search).get('from') === 'portal') sessionStorage.setItem('ttFromPortal','1'); on = sessionStorage.getItem('ttFromPortal') === '1'; } catch(e) {}
+  if (!on) return;
+  $('#portalCard').style.display = '';
+  const qc = $('#quoteCard'); if (qc) qc.style.display = 'none';
+  const tr = $('#quoteSec .trust'); if (tr) tr.style.display = 'none';
+  $('#quoteSec .sec-h h2').textContent = 'Send to your order';
+  $('#quoteSec .sec-h p').textContent = 'Ordering through the Turf Tek Contractor Portal.';
+  const hero = $('.hero-in'); if (hero){ const a = document.createElement('a'); a.className = 'portal-back'; a.href = PORTAL + '#shop'; a.textContent = '← Back to Contractor Portal'; hero.appendChild(a); }
+  const dock = $('.dock-btn'); if (dock){ dock.textContent = 'Add to order →'; dock.setAttribute('href', '#quoteSec'); }
+  $('#portalSend').addEventListener('click', () => {
+    const T = totals(), m = $('#pmsg');
+    if (!T.areas.length){ m.textContent = 'Enter at least one area size first.'; m.className = 'msg warn'; m.style.display = 'block'; return; }
+    const sel = $('#p_product');
+    const handoff = {ts:Date.now(), product:sel.value, productName:sel.options[sel.selectedIndex].text,
+      areas:T.areas.map(x => x.a.name), sf:Math.round(T.sf),
+      groups:T.groups.map(g => ({half:!!g.half, len:g.len, n:g.n})),
+      bags:T.bags, tapeRolls:T.tapeRolls, glue:T.glue, staples:T.staples, boards:T.boards, nails:T.nails};
+    try { localStorage.setItem('tt-handoff', JSON.stringify(handoff)); } catch(e) {}
+    location.href = PORTAL + '#import';
+  });
 })();
 </script>
 </body>

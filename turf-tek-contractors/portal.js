@@ -3,7 +3,7 @@
 const $ = (s, el=document) => el.querySelector(s), $$ = (s, el=document) => [...el.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const money = n => '$' + (Math.round(n*100)/100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-const CALC = 'https://thepatrickreardon-sys.github.io/sawmill-layout/turf-calculator/';
+const CALC = '../turf-calculator/?from=portal';
 const SALES = 'quote@turftekusa.com';
 const ROLL_W = 15;
 
@@ -76,11 +76,11 @@ const IC = {
 };
 
 /* ---------- Line items ---------- */
-function turfLine(t, len, rolls){ const sf = ROLL_W * len * rolls; return {k:'t:'+t.id+':'+len, type:'turf', id:t.id, n:t.n, len, rolls, sf, list:sf * t.p, desc:`15′ × ${len}′ × ${rolls} roll${rolls>1?'s':''} · ${sf.toLocaleString()} sq ft`}; }
+function turfLine(t, len, rolls, half){ const w = half ? ROLL_W/2 : ROLL_W, sf = w * len * rolls; return {k:'t:'+t.id+':'+len+(half?':h':''), type:'turf', id:t.id, n:t.n, len, rolls, half:!!half, sf, list:sf * t.p, desc:`${half?'7′6″ half roll':'15′'} × ${len}′ × ${rolls} roll${rolls>1?'s':''} · ${sf.toLocaleString()} sq ft`}; }
 function matLine(m, q){ return {k:'m:'+m.id, type:'mat', id:m.id, n:m.n, q, list:q * m.p, desc:`${q} × ${m.u}`}; }
 const totals = items => { const list = items.reduce((a,b) => a + b.list, 0), off = list * disc(); return {list, off, net:list - off}; };
 function addToCart(line){ const c = cart(), ex = c.find(x => x.k === line.k);
-  if (ex){ if (line.type === 'turf'){ ex.rolls += line.rolls; Object.assign(ex, turfLine(TURF.find(t=>t.id===ex.id), ex.len, ex.rolls)); } else { ex.q += line.q; Object.assign(ex, matLine(MATS.find(m=>m.id===ex.id), ex.q)); } }
+  if (ex){ if (line.type === 'turf'){ ex.rolls += line.rolls; Object.assign(ex, turfLine(TURF.find(t=>t.id===ex.id), ex.len, ex.rolls, ex.half)); } else { ex.q += line.q; Object.assign(ex, matLine(MATS.find(m=>m.id===ex.id), ex.q)); } }
   else c.push(line);
   save(); badge(); toast(`Added ${line.n} to your order`); }
 function badge(){ const n = cart().length, b = $('#cartCnt'); if (b){ b.textContent = n; b.classList.toggle('on', n > 0); } }
@@ -98,6 +98,7 @@ function login(){
     <div><div class="eye">Sign in</div><h2>Welcome back.</h2></div>
     <div class="field"><label for="cid">Contractor ID</label><input class="inp" id="cid" placeholder="TT-0000" autocapitalize="characters"></div>
     <div class="field"><label for="pin">PIN</label><input class="inp" id="pin" type="password" inputmode="numeric" placeholder="••••"></div>
+    ${getHandoff() ? '<div class="hint" style="background:#F7EEDF"><b>Your Turf Calculator layout is waiting.</b> Log in to add it to your order.</div>' : ''}
     <div class="err" id="lerr"></div>
     <button class="btn btn-v" type="submit">Log in →</button>
     <div class="hint"><b>Demo accounts</b> — tap to fill:<br>
@@ -112,7 +113,7 @@ function login(){
     if (id === 'STAFF' && pin === '0000'){ S.session = 'STAFF'; save(); location.hash = '#admin'; return route(); }
     const c = S.contractors.find(x => x.id === id && x.pin === pin);
     if (!c){ $('#lerr').textContent = 'That ID and PIN don\'t match. Check with your Turf Tek rep.'; const f = $('#lf'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); return; }
-    S.session = c.id; save(); location.hash = '#dash'; route(); });
+    S.session = c.id; save(); location.hash = getHandoff() ? '#import' : '#dash'; route(); });
 }
 
 /* ---------- Shell ---------- */
@@ -199,7 +200,7 @@ function cartPage(){
   <div class="grid g2"><div class="grid" style="align-content:start">
     <div class="card"><h2 style="font-size:1.5rem;margin-bottom:6px">Items</h2>${c.map((l,i) => `<div class="line"><div><b>${esc(l.n)}</b><span>${esc(l.desc)}</span></div><div style="text-align:right"><b>${money(l.list*(1-disc()))}</b><span><s>${money(l.list)}</s></span></div><button class="x" data-i="${i}" aria-label="Remove">×</button></div>`).join('')}</div>
     <div class="card grid"><h2 style="font-size:1.5rem">Job details</h2>
-      <div class="grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>Job name</label><input class="inp" id="job" placeholder="e.g. Smith backyard"></div><div class="field"><label>Your PO # (optional)</label><input class="inp" id="po"></div></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>Job name</label><input class="inp" id="job" placeholder="e.g. Smith backyard" value="${esc(S.jobHint || '')}"></div><div class="field"><label>Your PO # (optional)</label><input class="inp" id="po"></div></div>
       <div class="opt"><label><input type="radio" name="dl" value="Delivery" checked><div><b>Deliver to job site</b><span>Truck delivery across the Tri-State</span></div></label><label><input type="radio" name="dl" value="Pickup"><div><b>Pick up in Commack</b><span>6137 Jericho Turnpike</span></div></label></div>
       <div class="grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>Job site address</label><input class="inp" id="addr" placeholder="Street, town"></div><div class="field"><label>Needed by</label><input class="inp" id="when" type="date"></div></div>
       <div class="field"><label>Notes for the warehouse</label><textarea class="inp" id="notes" rows="2" placeholder="Gate code, site access, anything else"></textarea></div>
@@ -221,7 +222,7 @@ function placeOrder(){
   const no = 'TT-' + (24871 + S.orders.length);
   const o = {no, cid:c.id, date:new Date().toISOString().slice(0,10), job, status: pay === 'card' ? 'Paid' : 'Requested', total:Math.round(t.net*100)/100, items:items.map(l => [l.n, l.desc]), pay: pay === 'card' ? 'Paid online (demo)' : 'Invoice after confirmation'};
   const body = [`Contractor order ${no}`, `${c.co} (${c.id}) — ${c.disc}% contractor discount`, `Job: ${job}${$('#po').value ? ' · PO ' + $('#po').value : ''}`, `${dl}${dl==='Delivery' ? ': ' + $('#addr').value : ''}${$('#when').value ? ' · needed by ' + $('#when').value : ''}`, '', ...items.map(l => `• ${l.n} — ${l.desc} — ${money(l.list*(1-disc()))}`), '', `List ${money(t.list)} · Discount −${money(t.off)} · Total ${money(t.net)}`, $('#notes').value ? 'Notes: ' + $('#notes').value : ''].join('\n');
-  S.orders.push(o); S.carts[c.id] = []; save();
+  S.orders.push(o); S.carts[c.id] = []; S.jobHint = ''; save();
   const go = () => {
     const mail = `mailto:${SALES}?subject=${encodeURIComponent('Contractor order ' + no + ' — ' + c.co)}&body=${encodeURIComponent(body)}`;
     const md = modal(`<div class="check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#22372B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -257,6 +258,29 @@ function account(){
     <p class="note">To change your details or PIN, contact your rep. Tiers: Silver 10%, Gold 15%, Platinum 20% (sample).</p></div>`);
 }
 
+/* ---------- Import from Turf Calculator ---------- */
+const getHandoff = () => { try { return JSON.parse(localStorage.getItem('tt-handoff') || 'null'); } catch(e) { return null; } };
+function importPage(){
+  const h = getHandoff();
+  if (!h) return shell('cart', `<div class="ph1"><div><div class="eye">Turf Calculator</div><h1>Nothing to import</h1><p class="mute">Lay out a job in the Turf Calculator and tap “Add to my order”.</p></div><a class="btn btn-v" href="${CALC}">Open Turf Calculator →</a></div>`);
+  const build = pid => { const t = TURF.find(x => x.id === pid) || TURF[0], L = h.groups.map(g => turfLine(t, g.len, g.n, g.half));
+    const m = id => MATS.find(x => x.id === id);
+    if (h.bags) L.push(matLine(m('sand'), h.bags)); if (h.tapeRolls) L.push(matLine(m('tape'), h.tapeRolls)); if (h.glue) L.push(matLine(m('glue'), h.glue));
+    if (h.boards) L.push(matLine(m('board'), h.boards)); if (h.staples) L.push(matLine(m('staples'), Math.ceil(h.staples / 1000))); if (h.nails) L.push(matLine(m('nails'), Math.ceil(h.nails / 50)));
+    return L; };
+  const render = pid => { const L = build(pid), t = totals(L);
+    $('#impLines').innerHTML = L.map(l => `<div class="line" style="grid-template-columns:1fr auto"><div><b>${esc(l.n)}</b><span>${esc(l.desc)}</span></div><div style="text-align:right"><b>${money(l.list*(1-disc()))}</b><span><s>${money(l.list)}</s></span></div></div>`).join('');
+    $('#impSum').innerHTML = `<div><span>List price</span><span>${money(t.list)}</span></div><div class="disc"><span>Your ${me().disc}% discount</span><span>−${money(t.off)}</span></div><div class="tot"><span>Total</span><span>${money(t.net)}</span></div>`; return L; };
+  shell('cart', `<div class="ph1"><div><div class="eye">From the Turf Calculator</div><h1>Your layout is ready to order</h1><p class="mute">${esc(h.areas.join(', '))} · ${h.sf.toLocaleString()} sq ft of turf area. Staples and nails are rounded up to full boxes.</p></div><a class="btn btn-l" href="${CALC}">← Back to layout</a></div>
+  <div class="grid g2"><div class="card"><div class="field" style="max-width:360px;margin-bottom:8px"><label>Turf product</label><select class="inp" id="impProd">${TURF.map(t => `<option value="${t.id}" ${t.id===h.product?'selected':''}>${t.n}</option>`).join('')}</select></div><div id="impLines"></div></div>
+  <div class="card" style="align-self:start"><h2 style="font-size:1.5rem;margin-bottom:14px">Summary</h2><div class="sum" id="impSum"></div>
+    <button class="btn btn-v" id="impAdd" style="width:100%;margin-top:18px">Add all to my cart →</button><button class="btn btn-l" id="impSkip" style="width:100%;margin-top:10px">Discard</button></div></div>`);
+  let L = render(h.product); $('#impProd').addEventListener('change', e => { L = render(e.target.value); });
+  $('#impAdd').addEventListener('click', () => { L.forEach(l => { const c = cart(), ex = c.find(x => x.k === l.k); if (ex){ if (l.type==='turf'){ ex.rolls += l.rolls; Object.assign(ex, turfLine(TURF.find(t=>t.id===ex.id), ex.len, ex.rolls, ex.half)); } else { ex.q += l.q; Object.assign(ex, matLine(MATS.find(m=>m.id===ex.id), ex.q)); } } else c.push(l); });
+    S.jobHint = h.areas.join(' + '); save(); localStorage.removeItem('tt-handoff'); toast('Layout added to your order'); location.hash = '#cart'; });
+  $('#impSkip').addEventListener('click', () => { localStorage.removeItem('tt-handoff'); location.hash = '#shop'; });
+}
+
 /* ---------- Staff back office ---------- */
 function admin(){
   shell('admin', `<div class="ph1"><div><div class="eye">Back office</div><h1>Contractors</h1><p class="mute">Set each contractor's discount and PIN. Changes apply the next time they log in.</p></div><button class="btn btn-v" id="addc">+ Add contractor</button></div>
@@ -289,7 +313,7 @@ function route(){
   if (S.session === 'STAFF'){ document.title = 'Back office | Turf Tek'; return page === 'allorders' ? allOrders() : admin(); }
   if (!me()){ S.session = null; save(); return login(); }
   document.title = 'Contractor Portal | Turf Tek';
-  ({shop:() => shop(sub), cart:cartPage, orders:ordersPage, account}[page] || dash)();
+  ({shop:() => shop(sub), cart:cartPage, orders:ordersPage, account, import:importPage}[page] || dash)();
   window.scrollTo(0,0);
 }
 addEventListener('hashchange', route);
