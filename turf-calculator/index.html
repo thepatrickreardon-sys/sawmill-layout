@@ -4,33 +4,39 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#10261a">
+<meta name="theme-color" content="#22372B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Turf Tek">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>Turf Tek</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Satoshi';src:url('fonts/Satoshi-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('fonts/Satoshi-Medium.woff2') format('woff2');font-weight:500 600;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('fonts/Satoshi-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('fonts/Satoshi-Black.woff2') format('woff2');font-weight:800 900;font-display:swap}
+@font-face{font-family:'Giften';src:url('fonts/Giften.woff') format('woff');font-display:swap}
+</style>
 <style>
   :root{
-    --brand:#86c440; --brand-d:#5f9b25; --sun:#e2e773; --forest:#10261a; --forest2:#1d4424;
-    --green:#3f8f2f; --green-d:#1d4424; --green-l:#eef6e6; --ink:#16221a; --mute:#5f6d62;
-    --line:#e3e9df; --bg:#f1f4ee; --card:#fff; --orange:#e8891c; --red:#c63b2d;
-    --shadow:0 1px 2px rgba(16,38,26,.06),0 6px 20px rgba(16,38,26,.06);
+    --brand:#86C53F; --brand-d:#22372B; --sun:#E2E872; --forest:#14211B; --forest2:#22372B;
+    --green:#86C53F; --green-d:#22372B; --green-l:#F4F8EE; --ink:#22372B; --mute:#4E6357;
+    --line:#E1E8D6; --bg:#F4F8EE; --card:#fff; --orange:#D6A461; --red:#c63b2d;
+    --shadow:0 1px 2px rgba(34,55,43,.06),0 6px 20px rgba(34,55,43,.06);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{scroll-behavior:smooth}
-  body{margin:0;font-family:Barlow,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;padding-bottom:90px}
+  body{margin:0;font-family:Satoshi,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;padding-bottom:90px}
   /* hero */
-  .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:28px 18px 34px;
+  .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:28px 18px 60px;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
-               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%)}
-  .hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+               radial-gradient(120% 90% at 50% 0%,#22372B 0%,var(--forest2) 45%,var(--forest) 100%)}
+  .hero .grass{position:absolute;left:0;bottom:-1px;width:100%;height:44px;display:block;pointer-events:none}
+  @media (prefers-reduced-motion:reduce){.hero .grass rect{filter:none}}
   .hero-in{max-width:760px;margin:0 auto;position:relative}
-  .logo{display:block;width:min(420px,92%);height:auto;margin:0 auto 16px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.25))}
-  .hero h1{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.5px;text-transform:uppercase}
+  .logo{display:block;width:min(420px,92%);height:auto;margin:0 auto 16px}
+  .hero h1{font-family:Giften,Georgia,serif;font-weight:400;font-size:40px;line-height:1.15;margin:0}
   .hero p{margin:10px auto 0;max-width:520px;color:rgba(255,255,255,.78);font-size:15.5px}
   .stepper{display:flex;justify-content:center;gap:6px;list-style:none;padding:0;margin:20px 0 0;flex-wrap:wrap}
   .stepper a{display:flex;align-items:center;gap:7px;color:#fff;text-decoration:none;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);padding:6px 12px 6px 6px;border-radius:999px}
@@ -39,8 +45,8 @@
   /* sections */
   .sec{margin-top:26px;scroll-margin-top:12px}
   .sec-h{display:flex;gap:12px;align-items:flex-start;margin:0 2px 12px}
-  .num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--forest2);color:var(--brand);display:grid;place-items:center;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:20px}
-  .sec-h h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:25px;line-height:1.1;margin:0;text-transform:uppercase;letter-spacing:.3px;color:var(--forest2)}
+  .num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--forest2);color:var(--brand);display:grid;place-items:center;font-family:Satoshi,sans-serif;font-weight:700;font-size:20px}
+  .sec-h h2{font-family:Giften,Georgia,serif;font-weight:400;font-size:27px;line-height:1.2;margin:0;color:var(--forest2)}
   .sec-h p{margin:2px 0 0;font-size:14px;color:var(--mute)}
   .sec-h p b{color:var(--ink)}
   .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
@@ -55,34 +61,34 @@
   .area-head input:focus{border-bottom-color:var(--brand);outline:none}
   .x{flex:none;width:36px;height:36px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--mute);border-radius:10px;cursor:pointer;font-size:20px;line-height:1}
   .x:hover{color:var(--red);border-color:#f0c9c4;background:#fff7f6}
-  .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));background:#f0f3ee;border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
+  .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));background:#F4F8EE;border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
   .seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:none;padding:9px 4px;border-radius:9px;font:inherit;font-weight:600;font-size:14.5px;color:var(--mute);cursor:pointer;transition:all .15s}
   .seg button svg{width:20px;height:16px}
   .seg button.on{background:#fff;color:var(--forest2);box-shadow:0 1px 4px rgba(0,0,0,.1)}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin-bottom:5px}
-  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid #dbe3d7;border-radius:11px;background:#fbfcfa;color:var(--ink);transition:border-color .15s,box-shadow .15s,background .15s}
+  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid #E1E8D6;border-radius:11px;background:#FFFFFF;color:var(--ink);transition:border-color .15s,box-shadow .15s,background .15s}
   select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235f6d62' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px rgba(134,196,64,.2)}
-  input::placeholder,textarea::placeholder{color:#a3ada5}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px rgba(134,197,63,.2)}
+  input::placeholder,textarea::placeholder{color:rgba(34,55,43,.4)}
   .bad{border-color:var(--red)!important;background:#fff6f5!important;box-shadow:0 0 0 4px rgba(198,59,45,.1)!important}
   .hint{font-size:12.5px;color:var(--mute);margin-top:4px}
   .opts{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:14px}
   /* switch */
   .check{display:flex;gap:12px;align-items:center;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;margin:0}
-  .check input{appearance:none;-webkit-appearance:none;flex:none;width:46px;height:28px;padding:0;margin:0;border-radius:999px;background:#d5ddd1;border:none;position:relative;cursor:pointer;transition:background .2s}
+  .check input{appearance:none;-webkit-appearance:none;flex:none;width:46px;height:28px;padding:0;margin:0;border-radius:999px;background:#E1E8D6;border:none;position:relative;cursor:pointer;transition:background .2s}
   .check input:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
   .check input:checked{background:var(--brand)}
   .check input:checked:before{transform:translateX(18px)}
-  .check input:focus{box-shadow:0 0 0 4px rgba(134,196,64,.25)}
+  .check input:focus{box-shadow:0 0 0 4px rgba(134,197,63,.25)}
   /* drawing */
-  .draw{margin-top:16px;background:linear-gradient(#fafcf8,#f3f7f0);border:1px solid var(--line);border-radius:14px;padding:10px 8px 6px}
+  .draw{margin-top:16px;background:linear-gradient(#FFFFFF,#F4F8EE);border:1px solid var(--line);border-radius:14px;padding:10px 8px 6px}
   .draw svg{width:100%;height:auto;display:block;max-height:440px}
   .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;font-size:12px;color:var(--mute);padding:6px 4px 2px}
   .legend i{display:inline-block;width:18px;height:0;border-top:2.5px dashed;vertical-align:middle;margin-right:5px}
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
   .tiles div{background:var(--green-l);border-radius:12px;padding:10px 6px;text-align:center}
-  .tiles b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:24px;line-height:1.05;color:var(--forest2)}
+  .tiles b{display:block;font-family:Satoshi,sans-serif;font-size:24px;line-height:1.05;color:var(--forest2)}
   .tiles span{font-size:12px;color:var(--mute);font-weight:500}
   .tiles.dark div{background:var(--forest2)}
   .tiles.dark b{color:#fff;font-size:28px}
@@ -95,13 +101,13 @@
   details.cuts[open] summary:after{content:"–"}
   .cutlist{margin:0 0 10px;padding:0;list-style:none;font-size:14.5px}
   .cutlist li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
-  .cutlist .pn{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#479a3c;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
-  .cutlist .pn.h{background:#a5d38a;color:var(--forest2)}
+  .cutlist .pn{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#86C53F;color:#fff;font-size:12px;font-weight:700;margin-right:8px}
+  .cutlist .pn.h{background:#CFE4B1;color:var(--forest2)}
   .cutlist b{font-weight:700}
   .err{color:var(--red);font-size:14px;margin-top:12px;background:#fff6f5;border-radius:10px;padding:10px 12px}
-  .empty{margin-top:14px;border:1.5px dashed #d3dccf;border-radius:14px;padding:22px 14px;text-align:center;color:var(--mute);font-size:14px}
+  .empty{margin-top:14px;border:1.5px dashed #E1E8D6;border-radius:14px;padding:22px 14px;text-align:center;color:var(--mute);font-size:14px}
   .empty svg{display:block;margin:0 auto 6px;opacity:.6}
-  .add{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:2px dashed #b9d99a;background:rgba(255,255,255,.6);color:var(--brand-d);border-radius:16px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s}
+  .add{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:2px dashed #CFE4B1;background:rgba(255,255,255,.6);color:var(--brand-d);border-radius:16px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:all .15s}
   .add:hover{background:#fff;border-color:var(--brand)}
   .add span{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:18px;line-height:1}
   .reset{display:block;margin:12px auto 0;background:none;border:none;color:var(--mute);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
@@ -113,31 +119,31 @@
   .rlist .ico{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--green-l)}
   .rlist .what{flex:1;min-width:0;font-weight:600}
   .rlist .what small{display:block;color:var(--mute);font-weight:400;font-size:12.5px}
-  .rlist .qty{font-weight:700;white-space:nowrap;background:#f3f6f1;border-radius:9px;padding:5px 10px;font-size:15px}
+  .rlist .qty{font-weight:700;white-space:nowrap;background:#F4F8EE;border-radius:9px;padding:5px 10px;font-size:15px}
   .rlist .qty.roll{background:var(--forest2);color:#fff}
-  .note{font-size:13px;color:var(--mute);background:#f6f8f4;border-radius:10px;padding:9px 12px;margin-top:10px}
+  .note{font-size:13px;color:var(--mute);background:#F4F8EE;border-radius:10px;padding:9px 12px;margin-top:10px}
   /* quote */
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(180deg,#8fcd48,#73b02f);color:#10261a;font:inherit;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none;box-shadow:0 6px 16px rgba(115,176,47,.35);transition:transform .1s,box-shadow .15s}
-  .btn:active{transform:translateY(1px);box-shadow:0 3px 8px rgba(115,176,47,.3)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border:none;border-radius:13px;background:#86C53F;color:#22372B;font:inherit;font-weight:700;font-size:18px;cursor:pointer;text-align:center;text-decoration:none;box-shadow:0 6px 16px rgba(134,197,63,.35);transition:transform .1s,box-shadow .15s}
+  .btn:active{transform:translateY(1px);box-shadow:0 3px 8px rgba(134,197,63,.3)}
   .btn.alt{background:#fff;color:var(--forest2);border:1.5px solid var(--line);box-shadow:none;margin-top:10px;font-size:15.5px;padding:13px}
   .msg{margin-top:12px;font-size:14px;padding:11px 12px;border-radius:11px;background:var(--green-l);color:var(--forest2);display:none}
   .msg.show{display:block;animation:pop .25s ease-out}
-  .msg.warn{background:#fff4e5;color:#8a4b06}
+  .msg.warn{background:#F7EEDF;color:#8B5B29}
   details.prev{margin-top:16px}
   details.prev summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--mute)}
-  pre{white-space:pre-wrap;font-size:12px;background:#f7f9f6;border:1px solid var(--line);border-radius:12px;padding:12px;max-height:280px;overflow:auto;margin:10px 0 0}
+  pre{white-space:pre-wrap;font-size:12px;background:#F4F8EE;border:1px solid var(--line);border-radius:12px;padding:12px;max-height:280px;overflow:auto;margin:10px 0 0}
   .trust{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--mute);margin:-2px 0 16px}
   .trust span:before{content:"✓ ";color:var(--brand-d);font-weight:700}
   footer{font-size:12px;color:var(--mute);text-align:center;padding:4px 16px 10px}
   footer img{width:90px;opacity:.75;display:block;margin:0 auto 6px}
-  .shape-hint{display:flex;gap:12px;align-items:center;font-size:13px;color:var(--mute);margin:-2px 0 12px;background:#f6f8f4;border-radius:12px;padding:8px 10px}
+  .shape-hint{display:flex;gap:12px;align-items:center;font-size:13px;color:var(--mute);margin:-2px 0 12px;background:#F4F8EE;border-radius:12px;padding:8px 10px}
   .shape-hint svg{width:64px;flex:none}
   .pts{display:grid;gap:8px}
   .pt{display:grid;grid-template-columns:28px 1fr 1fr 40px;gap:8px;align-items:center}
-  .pt .pn{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#1b4d1f;color:#fff;font-size:12.5px;font-weight:700}
+  .pt .pn{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#22372B;color:#fff;font-size:12.5px;font-weight:700}
   .pt-h span{font-size:12.5px;font-weight:600;color:var(--mute)}
   .x:disabled{opacity:.35;cursor:default}
-  .imp{border:1.5px solid #cfe5b8;background:#f7fbf2;border-radius:14px;padding:12px;margin-bottom:12px}
+  .imp{border:1.5px solid #CFE4B1;background:#F4F8EE;border-radius:14px;padding:12px;margin-bottom:12px}
   .imp-h b{display:block;color:var(--forest2);font-size:15px}
   .imp-h span{font-size:13px;color:var(--mute)}
   .imp-b{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
@@ -146,23 +152,23 @@
   .imp-ok{margin-top:10px;font-size:13.5px;color:var(--forest2);font-weight:600;display:grid;gap:6px}
   .imp-ok span{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--mute)}
   .imp-ok select{width:auto;padding:6px 30px 6px 10px;font-size:14px}
-  .imp-ok small{font-weight:400;color:#8a4b06}
+  .imp-ok small{font-weight:400;color:#8B5B29}
   .imp-err:empty{display:none}
   .imp-err{margin-top:10px;color:var(--red);font-size:13.5px}
   .add.sm{margin-top:10px;padding:10px;font-size:14.5px;border-width:1.5px}
   .add.sm span{width:20px;height:20px;font-size:15px}
   /* dock */
-  .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(16,38,26,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(0);transition:transform .25s}
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(34,55,43,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(0);transition:transform .25s}
   .dock.hide{transform:translateY(110%)}
   .dock-in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
   .dock-stats{flex:1;display:flex;gap:16px;color:rgba(255,255,255,.7);font-size:12px;line-height:1.1}
-  .dock-stats b{display:block;color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:22px}
+  .dock-stats b{display:block;color:#fff;font-family:Satoshi,sans-serif;font-size:22px}
   .dock-stats div:first-child b{color:var(--sun)}
   .dock-btn{flex:none;background:var(--brand);color:var(--forest);text-decoration:none;font-weight:700;padding:12px 18px;border-radius:12px;font-size:15.5px}
   /* intro splash */
   .intro{position:fixed;inset:0;z-index:60;display:grid;place-items:center;cursor:pointer;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
-               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%);
+               radial-gradient(120% 90% at 50% 0%,#22372B 0%,var(--forest2) 45%,var(--forest) 100%);
     transition:transform .7s cubic-bezier(.65,0,.25,1)}
   .intro.out{transform:translateY(-100%)}
   .intro:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
@@ -179,7 +185,7 @@
   /* thank-you screen */
   .ty{position:fixed;inset:0;z-index:50;display:none;overflow:auto;color:#fff;text-align:center;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px),
-               radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,var(--forest2) 45%,var(--forest) 100%)}
+               radial-gradient(120% 90% at 50% 0%,#22372B 0%,var(--forest2) 45%,var(--forest) 100%)}
   .ty.show{display:block;animation:tyIn .45s ease-out}
   @keyframes tyIn{from{opacity:0}to{opacity:1}}
   .ty-in{min-height:100%;max-width:520px;margin:0 auto;padding:48px 22px calc(36px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -198,7 +204,7 @@
   @keyframes draw{to{stroke-dashoffset:0}}
   @keyframes grow{to{stroke-dashoffset:0}}
   @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.4deg)}}
-  .ty h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:38px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 0}
+  .ty h2{font-family:Giften,Georgia,serif;font-weight:400;font-size:38px;line-height:1.2;margin:10px 0 0}
   .ty p{color:rgba(255,255,255,.8);font-size:16px;margin:12px 0 0}
   .ty .fade{opacity:0;transform:translateY(8px)}
   .ty.txt .fade{animation:up .5s ease-out forwards}
@@ -224,24 +230,24 @@
   .ty-cap small{font-weight:400;color:rgba(255,255,255,.38);margin-left:8px}
 
   @keyframes up{to{opacity:1;transform:none}}
-  .ty-fail{width:100%;margin-top:20px;background:#e8891c;color:#1a1206;border-radius:16px;padding:16px;text-align:left;
-    box-shadow:0 0 0 0 rgba(232,137,28,.7);animation:failIn .5s cubic-bezier(.2,.9,.3,1.3) both, failPulse 1.4s ease-out .5s 4}
-  .ty-fail-h{display:flex;align-items:center;gap:10px;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:23px;line-height:1.1;text-transform:uppercase}
-  .ty-fail-i{flex:none;width:30px;height:30px;border-radius:50%;background:#1a1206;color:#ffb347;display:grid;place-items:center;font-size:20px;font-family:Barlow,sans-serif;animation:blink .7s ease-in-out .5s 6 alternate}
-  .ty-fail p{margin:8px 0 12px!important;color:#2a1a05!important;font-size:15px!important;font-weight:500}
-  .ty-fail .btn{background:#10261a;color:#fff;box-shadow:none}
+  .ty-fail{width:100%;margin-top:20px;background:#D6A461;color:#22372B;border-radius:16px;padding:16px;text-align:left;
+    box-shadow:0 0 0 0 rgba(214,164,97,.7);animation:failIn .5s cubic-bezier(.2,.9,.3,1.3) both, failPulse 1.4s ease-out .5s 4}
+  .ty-fail-h{display:flex;align-items:center;gap:10px;font-family:Giften,Georgia,serif;font-weight:400;font-size:23px;line-height:1.2;}
+  .ty-fail-i{flex:none;width:30px;height:30px;border-radius:50%;background:#22372B;color:#E2E872;display:grid;place-items:center;font-size:20px;font-family:Satoshi,sans-serif;animation:blink .7s ease-in-out .5s 6 alternate}
+  .ty-fail p{margin:8px 0 12px!important;color:#22372B!important;font-size:15px!important;font-weight:500}
+  .ty-fail .btn{background:#22372B;color:#fff;box-shadow:none}
   @keyframes failIn{0%{opacity:0;transform:scale(.85)}60%{opacity:1;transform:scale(1.04)}80%{transform:scale(.98) rotate(-.6deg)}100%{transform:none}}
-  @keyframes failPulse{0%{box-shadow:0 0 0 0 rgba(232,137,28,.75)}100%{box-shadow:0 0 0 18px rgba(232,137,28,0)}}
-  @keyframes blink{to{background:#fff;color:#e8891c}}
+  @keyframes failPulse{0%{box-shadow:0 0 0 0 rgba(214,164,97,.75)}100%{box-shadow:0 0 0 18px rgba(214,164,97,0)}}
+  @keyframes blink{to{background:#fff;color:#D6A461}}
   .ty-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:22px}
   .ty-sum div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px}
-  .ty-sum b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:26px;line-height:1.05;color:var(--sun)}
+  .ty-sum b{display:block;font-family:Satoshi,sans-serif;font-size:26px;line-height:1.05;color:var(--sun)}
   .ty-sum span{font-size:12px;color:rgba(255,255,255,.7)}
-  .ty-note{font-size:13.5px!important;background:rgba(226,231,115,.12);border-radius:10px;padding:9px 12px;color:#f0f3c0!important}
+  .ty-note{font-size:13.5px!important;background:rgba(226,232,114,.12);border-radius:10px;padding:9px 12px;color:#E2E872!important}
   .ty-btns{display:grid;gap:10px;width:100%;margin-top:24px}
   .ty-btns .btn.alt{margin:0;background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
   @media (prefers-reduced-motion:reduce){.ty *{animation-duration:.01s!important;animation-delay:0s!important}}
-  @media (min-width:700px){.hero{padding:40px 18px 44px}.hero h1{font-size:50px}}
+  @media (min-width:700px){.hero{padding:40px 18px 74px}.hero h1{font-size:50px}}
   @media (max-width:400px){.tiles b{font-size:20px}.tiles.dark b{font-size:23px}.hero h1{font-size:34px}}
 </style>
 </head>
@@ -258,7 +264,7 @@
         </g>
       </mask>
     </defs>
-    <circle class="i-sun" cx="480" cy="216" r="98" fill="#e2e773" clip-path="url(#inClip)"/>
+    <circle class="i-sun" cx="480" cy="216" r="98" fill="#E2E872" clip-path="url(#inClip)"/>
     <g mask="url(#inMask)"><image href="logo.png" x="-3.5" y="-3" width="900" height="345" clip-path="url(#inClip)"/></g>
     <image class="i-logo" href="logo.png" x="-3.5" y="-3" width="900" height="345"/>
   </svg>
@@ -270,6 +276,20 @@
     <p>Lay out your job, get a roll cut list and full material takeoff, then send it to our sales team for pricing.</p>
     <ol class="stepper"><li><a href="#layoutSec"><span>1</span>Layout</a></li><li><a href="#resultsSec"><span>2</span>Rolls &amp; materials</a></li><li><a href="#quoteSec"><span>3</span>Quote</a></li></ol>
   </div>
+  <svg class="grass" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="grassTile" patternUnits="userSpaceOnUse" width="279.6" height="44" y="0"><image href="turf-footer-verdant.png" width="279.6" height="44" preserveAspectRatio="none"/></pattern>
+      <!-- wind: horizontal-only ripple; the solid base doesn't move, only the blades sway -->
+      <filter id="grassWind" x="-3%" y="-30%" width="106%" height="160%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.03" numOctaves="2" seed="4" result="n">
+          <animate attributeName="baseFrequency" dur="7s" repeatCount="indefinite" values="0.011 0.03;0.015 0.034;0.009 0.028;0.011 0.03" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1"/>
+        </feTurbulence>
+        <feColorMatrix in="n" type="matrix" values="1 0 0 0 0  0 0 0 0 .5  0 0 0 0 0  0 0 0 0 1" result="m"/>
+        <feDisplacementMap in="SourceGraphic" in2="m" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+    <rect x="-20" y="0" width="120%" height="44" fill="url(#grassTile)" filter="url(#grassWind)"/>
+  </svg>
 </header>
 
 <main>
@@ -314,65 +334,55 @@
   <div class="ty-stage" id="tyStage" aria-hidden="true">
     <svg id="tyScene" viewBox="64 214 512 320" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <linearGradient id="ttTurf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8cc63f"/><stop offset="1" stop-color="#6aa832"/></linearGradient>
-        <radialGradient id="ttGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e2e773" stop-opacity=".35"/><stop offset="1" stop-color="#e2e773" stop-opacity="0"/></radialGradient>
-        <clipPath id="ttSunClip"><rect x="0" y="-40" width="240" height="179"/></clipPath>
-        <clipPath id="ttDoorClip"><rect x="252" y="332" width="136" height="72"/></clipPath>
+        <linearGradient id="ttTurf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#86C53F"/><stop offset="1" stop-color="#86C53F"/></linearGradient>
+        <radialGradient id="ttGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#E2E872" stop-opacity=".35"/><stop offset="1" stop-color="#E2E872" stop-opacity="0"/></radialGradient>
+                <clipPath id="ttDoorClip"><rect x="252" y="332" width="136" height="72"/></clipPath>
         <clipPath id="ttTurfClip"><rect id="ttTurfRect" x="2520" y="390" width="0" height="70"/></clipPath>
-        <g id="ttMark">
-          <circle cx="100" cy="110" r="52" fill="#e2e773" clip-path="url(#ttSunClip)"/>
-          <path d="M73.5,139 C72,95 85,55 110.6,27.8 C91,58 82.5,98 81.5,139 Z" fill="#86c440"/>
-          <path d="M87,139 C90,80 125,25 180.6,-4 C130,32 101,82 95.5,139 Z" fill="#86c440"/>
-          <path d="M104,139 C106,105 122,76 148.8,58.6 C127,80 115,107 112.5,139 Z" fill="#86c440"/>
-        </g>
       </defs>
-      <g id="ttFar"><path d="M-500 404 L-500 372 C-300 330 -120 340 60 380 C200 336 340 330 520 372 S760 330 900 366 L900 404Z" fill="#1a3f22"/></g>
-      <g id="ttNear"><path d="M-400 404 L-400 386 C-200 360 0 368 160 396 C330 360 470 366 640 392 S900 352 1100 388 L1100 404Z" fill="#163a1f"/></g>
+      <g id="ttFar"><path d="M-500 404 L-500 372 C-300 330 -120 340 60 380 C200 336 340 330 520 372 S760 330 900 366 L900 404Z" fill="#22372B"/></g>
+      <g id="ttNear"><path d="M-400 404 L-400 386 C-200 360 0 368 160 396 C330 360 470 366 640 392 S900 352 1100 388 L1100 404Z" fill="#22372B"/></g>
       <g id="ttTrees"></g>
       <g id="ttWarehouse">
         <rect x="168" y="278" width="304" height="126" fill="#e9e4d9"/>
         <path d="M156 282 L320 236 L484 282Z" fill="#c5c9c4" stroke="#c5c9c4" stroke-width="6" stroke-linejoin="round"/>
         <image href="logo-dark.png" x="261" y="281" width="118" height="45.2"/>
-        <rect x="252" y="332" width="136" height="72" fill="#0b1710"/>
-        <ellipse cx="320" cy="404" rx="58" ry="9" fill="#e2e773" opacity=".22"/>
+        <rect x="252" y="332" width="136" height="72" fill="#14211B"/>
+        <ellipse cx="320" cy="404" rx="58" ry="9" fill="#E2E872" opacity=".22"/>
         <g clip-path="url(#ttDoorClip)"><g id="ttDoor">
           <rect x="252" y="332" width="136" height="72" fill="#a3a9ac"/>
           <g fill="#8c9295"><rect x="252" y="341" width="136" height="2"/><rect x="252" y="352" width="136" height="2"/><rect x="252" y="363" width="136" height="2"/><rect x="252" y="374" width="136" height="2"/><rect x="252" y="385" width="136" height="2"/><rect x="252" y="396" width="136" height="2"/></g>
         </g></g>
         <rect x="246" y="327" width="148" height="6" rx="2" fill="#cfd2cc"/>
-        <rect x="190" y="340" width="40" height="28" rx="3" fill="#cfe4ea"/>
-        <rect x="410" y="340" width="40" height="28" rx="3" fill="#cfe4ea"/>
+        <rect x="190" y="340" width="40" height="28" rx="3" fill="#CFE4B1"/>
+        <rect x="410" y="340" width="40" height="28" rx="3" fill="#CFE4B1"/>
       </g>
-      <rect x="-1000" y="402" width="4200" height="48" fill="#1f4a25"/>
-      <rect x="-1000" y="402" width="4200" height="3" fill="#86c440" opacity=".5"/>
-      <rect x="-1000" y="450" width="4200" height="50" fill="#0c1b12"/>
+      <rect x="-1000" y="402" width="4200" height="48" fill="#22372B"/>
+      <rect x="-1000" y="402" width="4200" height="3" fill="#86C53F" opacity=".5"/>
+      <rect x="-1000" y="450" width="4200" height="50" fill="#14211B"/>
       <g id="ttDash" fill="rgba(255,255,255,.22)"></g>
-      <rect x="-1000" y="500" width="4200" height="80" fill="#132f1b"/>
+      <rect x="-1000" y="500" width="4200" height="80" fill="#14211B"/>
       <g transform="translate(-1270 0)">
         <ellipse cx="2520" cy="350" rx="190" ry="90" fill="url(#ttGlow)"/>
         <rect x="2400" y="330" width="240" height="74" rx="3" fill="#f4efe3"/>
-        <path d="M2384 334 L2520 270 L2656 334Z" fill="#c9765a" stroke="#c9765a" stroke-width="6" stroke-linejoin="round"/>
-        <rect x="2504" y="356" width="32" height="48" rx="3" fill="#7a5a44"/>
-        <rect x="2428" y="350" width="40" height="28" rx="3" fill="#f3e9a0"/>
-        <rect x="2572" y="350" width="40" height="28" rx="3" fill="#f3e9a0"/>
-        <rect x="2320" y="406" width="400" height="42" rx="6" fill="#8a6a4c"/>
+        <path d="M2384 334 L2520 270 L2656 334Z" fill="#D6A461" stroke="#D6A461" stroke-width="6" stroke-linejoin="round"/>
+        <rect x="2504" y="356" width="32" height="48" rx="3" fill="#8B5B29"/>
+        <rect x="2428" y="350" width="40" height="28" rx="3" fill="#E2E872"/>
+        <rect x="2572" y="350" width="40" height="28" rx="3" fill="#E2E872"/>
+        <rect x="2320" y="406" width="400" height="42" rx="6" fill="#8B5B29"/>
         <g clip-path="url(#ttTurfClip)"><rect x="2320" y="406" width="400" height="42" rx="6" fill="url(#ttTurf)"/></g>
-        <g id="ttBlades" fill="#7dbb36"></g>
+        <g id="ttBlades" fill="#86C53F"></g>
       </g>
       <g id="ttTruck">
         <rect x="-108" y="460" width="200" height="9" rx="3" fill="#2a2e33"/>
         <rect x="-112" y="452" width="108" height="8" rx="3" fill="#e4e6e8"/>
         <rect x="40" y="436" width="44" height="34" rx="7" fill="#fbfbf9" stroke="#d9dcdf" stroke-width="1.5"/>
         <rect x="0" y="414" width="46" height="56" rx="8" fill="#fbfbf9" stroke="#d9dcdf" stroke-width="1.5"/>
-        <rect x="24" y="421" width="17" height="16" rx="3" fill="#cfe4ea"/>
-        <use href="#ttMark" transform="translate(-1 441) scale(.09)"/>
-        <text x="11" y="451" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="8.5" fill="#10261a" letter-spacing=".3">TURF TEK</text>
+        <rect x="24" y="421" width="17" height="16" rx="3" fill="#CFE4B1"/>
+        <image href="logo-dark.png" x="2" y="441" width="40" height="15.33"/>
         <rect x="82" y="456" width="5" height="12" rx="2" fill="#bfc3c7"/>
         <g id="ttWheels"></g>
       </g>
-      <g id="ttBub"><g transform="scale(.77) translate(-100 -139)">
-        <use href="#ttMark"/>
-      </g></g>
+      <g id="ttBub"><image href="logo-mark.png" x="-39.5" y="-110" width="101.3" height="110"/></g>
     </svg>
     <svg class="ty-logo" viewBox="-60 -146.75 1020 637.5">
       <defs>
@@ -385,7 +395,7 @@
           </g>
         </mask>
       </defs>
-      <circle class="i-sun" cx="480" cy="216" r="98" fill="#e2e773" clip-path="url(#tyInClip)"/>
+      <circle class="i-sun" cx="480" cy="216" r="98" fill="#E2E872" clip-path="url(#tyInClip)"/>
       <g mask="url(#tyInMask)"><image href="logo.png" x="-3.5" y="-3" width="900" height="345" clip-path="url(#tyInClip)"/></g>
       <image class="i-logo" href="logo.png" x="-3.5" y="-3" width="900" height="345"/>
     </svg>
@@ -639,28 +649,28 @@ function drawSVG(g, lay){
   const st = sw * 2.2;
   s += `<defs><clipPath id="${cid}"><polygon points="${pts}"/></clipPath><pattern id="${cid}t" width="${st*2}" height="${st*2}" patternUnits="userSpaceOnUse"${lay.swap ? ' patternTransform="rotate(90)"' : ''}><rect width="${st*2}" height="${st}" fill="#fff" opacity=".06"/></pattern></defs><g clip-path="url(#${cid})">`;
   lay.pieces.forEach(p => {
-    const r = p.rect, col = p.half ? '#a5d38a' : (p.lane % 2 ? '#5fae4f' : '#479a3c');
+    const r = p.rect, col = p.half ? '#CFE4B1' : (p.lane % 2 ? '#A3D266' : '#86C53F');
     s += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${col}"/>`;
   });
   s += `<rect x="0" y="0" width="${W}" height="${H}" fill="url(#${cid}t)"/>`;
   lay.vLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#fff" stroke-width="${sw*1.3}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
-  lay.hLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#e07b16" stroke-width="${sw*1.6}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
-  s += `</g><polygon points="${pts}" fill="none" stroke="#1b4d1f" stroke-width="${sw*1.4}" stroke-linejoin="round"/>`;
+  lay.hLines.forEach(l => s += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#D6A461" stroke-width="${sw*1.6}" stroke-dasharray="${sw*4} ${sw*3}"/>`);
+  s += `</g><polygon points="${pts}" fill="none" stroke="#22372B" stroke-width="${sw*1.4}" stroke-linejoin="round"/>`;
   lay.pieces.forEach((p, i) => {
     const r = p.rect, t = Math.min(fs * 0.9, Math.min(r.w, r.h) * 0.45);
     if (t < fs * 0.35) return;
-    s += `<text x="${r.x + r.w/2}" y="${r.y + r.h/2}" font-size="${t}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+    s += `<text x="${r.x + r.w/2}" y="${r.y + r.h/2}" font-size="${t}" font-family="Satoshi,sans-serif" font-weight="900" fill="#22372B" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
   });
   if (g.custom && g.poly.length <= 12) g.poly.forEach((p, i) => {
-    s += `<circle cx="${p[0]}" cy="${p[1]}" r="${fs*0.55}" fill="#1b4d1f"/><text x="${p[0]}" y="${p[1]}" font-size="${fs*0.6}" font-family="Barlow,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="${fs*0.55}" fill="#22372B"/><text x="${p[0]}" y="${p[1]}" font-size="${fs*0.6}" font-family="Satoshi,sans-serif" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
   });
-  s += `<text x="${W/2}" y="${-pad*0.38}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle">${fmt(W)}</text>`;
-  s += `<text x="${-pad*0.38}" y="${H/2}" font-size="${fs}" font-family="Barlow,sans-serif" font-weight="600" fill="#1d2a1f" text-anchor="middle" transform="rotate(-90 ${-pad*0.38} ${H/2})">${fmt(H)}</text>`;
+  s += `<text x="${W/2}" y="${-pad*0.38}" font-size="${fs}" font-family="Satoshi,sans-serif" font-weight="600" fill="#22372B" text-anchor="middle">${fmt(W)}</text>`;
+  s += `<text x="${-pad*0.38}" y="${H/2}" font-size="${fs}" font-family="Satoshi,sans-serif" font-weight="600" fill="#22372B" text-anchor="middle" transform="rotate(-90 ${-pad*0.38} ${H/2})">${fmt(H)}</text>`;
   const ay = H + pad*0.55, ax = W/2;
   if (!lay.swap){
-    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run this way ⟷</text>`;
+    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Satoshi,sans-serif" fill="#4E6357" text-anchor="middle">rolls run this way ⟷</text>`;
   } else {
-    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Barlow,sans-serif" fill="#5d6b60" text-anchor="middle">rolls run top to bottom ↕</text>`;
+    s += `<text x="${ax}" y="${ay}" font-size="${fs*0.8}" font-family="Satoshi,sans-serif" fill="#4E6357" text-anchor="middle">rolls run top to bottom ↕</text>`;
   }
   return s + '</svg>';
 }
@@ -823,10 +833,10 @@ function hintBox(svg, text){ return `<div class="shape-hint"><svg viewBox="0 0 7
 function dimsHTML(a){
   if (a.shape === 'rect') return `<div class="grid">${field(a,'L','Length','e.g. 40')}${field(a,'W','Width','e.g. 25\' 6"')}</div>
     <div style="margin-top:12px">${field(a,'r','Rounded corners (radius)','Optional — leave blank for square')}</div>`;
-  if (a.shape === 'L') return hintBox(`<path d="M2 2h66v26H44v16H2z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/>`,
+  if (a.shape === 'L') return hintBox(`<path d="M2 2h66v26H44v16H2z" fill="#F4F8EE" stroke="#22372B" stroke-width="2"/><path d="M44 28h24v16H44z" fill="none" stroke="#D6A461" stroke-width="1.5" stroke-dasharray="3 2"/>`,
       `Enter the full outside size, then the size of the corner piece that's cut out (red).`)
     + `<div class="grid">${field(a,'A','Overall length')}${field(a,'B','Overall width')}${field(a,'c','Cut-out length')}${field(a,'d','Cut-out width')}</div>`;
-  if (a.shape === 'angle') return hintBox(`<path d="M2 4h66v14L2 42z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><path d="M5 6v34M65 6v10" stroke="#c0392b" stroke-width="1.5" marker-end="none"/>`,
+  if (a.shape === 'angle') return hintBox(`<path d="M2 4h66v14L2 42z" fill="#F4F8EE" stroke="#22372B" stroke-width="2"/><path d="M5 6v34M65 6v10" stroke="#D6A461" stroke-width="1.5" marker-end="none"/>`,
       `One long straight side, with a different width at each end (red). Use 0 for a point to make a triangle.`)
     + `<div class="grid">${field(a,'L','Length (straight side)')}<div></div>${field(a,'W1','Width at one end')}${field(a,'W2','Width at other end','0 for a point')}</div>`;
   if (a.shape === 'oval') return `<div class="grid">${field(a,'L','Length','e.g. 30')}${field(a,'W','Width','Same as length for a circle')}</div>`;
@@ -855,7 +865,7 @@ function dimsHTML(a){
   const listed = pts.length > 12
     ? `<details class="cuts"><summary>Show all ${pts.length} points</summary><div class="pts" style="padding-bottom:10px"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div></details>`
     : `<div class="pts"><div class="pt pt-h"><span></span><span>Across</span><span>Up</span><span></span></div>${rows}</div>`;
-  return imp + hintBox(`<path d="M6 40 4 14 26 4l38 10-6 18-22 2-8 6z" fill="#e8f3e6" stroke="#2e7d32" stroke-width="2"/><circle cx="6" cy="40" r="3.5" fill="#c0392b"/><path d="M6 40h22M6 40V20" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="2 2"/>`,
+  return imp + hintBox(`<path d="M6 40 4 14 26 4l38 10-6 18-22 2-8 6z" fill="#F4F8EE" stroke="#22372B" stroke-width="2"/><circle cx="6" cy="40" r="3.5" fill="#D6A461"/><path d="M6 40h22M6 40V20" stroke="#D6A461" stroke-width="1.3" stroke-dasharray="2 2"/>`,
       `Or type them in: pick one corner as your start (0, 0). For every corner, going around the area in order, measure how far <b>across</b> and how far <b>up</b> it is from the start.`)
     + listed + `
        <button class="add sm" type="button" data-ptadd="${a.id}"><span>+</span>Add corner</button>`;
@@ -864,7 +874,7 @@ function dimsHTML(a){
 function cardHTML(a){
   const sh = shapeOf(a.shape);
   return `<div class="card${a.id===justAdded?' new':''}" data-card="${a.id}">
-    <div class="area-head"><div class="area-ico" style="color:#3f8f2f">${sh.ico}</div><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
+    <div class="area-head"><div class="area-ico" style="color:#22372B">${sh.ico}</div><input data-id="${a.id}" data-f="name" value="${esc(a.name)}" aria-label="Area name">
       ${state.areas.length > 1 ? `<button class="x" data-del="${a.id}" aria-label="Remove area" title="Remove area">×</button>` : ''}</div>
     <div class="seg">${SHAPES.map(x => `<button class="${a.shape===x.k?'on':''}" data-shape="${x.k}" data-id="${a.id}">${x.ico}${x.name}</button>`).join('')}</div>
     ${dimsHTML(a)}
@@ -906,12 +916,12 @@ function areaOut(a, r){
   });
   document.querySelectorAll(`input[data-id="${a.id}"][data-pt]`).forEach(inp => inp.classList.toggle('bad', inp.value.trim() !== '' && !(parseLen(inp.value) >= 0)));
   if (!r.g && a.shape === 'custom'){ el.innerHTML = `<div class="empty">Enter at least 3 corners to see your roll layout.</div>`; return; }
-  if (!r.g){ el.innerHTML = `<div class="empty"><svg width="40" height="30" viewBox="0 0 40 30"><rect x="2" y="2" width="36" height="26" rx="3" fill="none" stroke="#86c440" stroke-width="2" stroke-dasharray="4 3"/></svg>Enter the size to see your roll layout.</div>`; return; }
+  if (!r.g){ el.innerHTML = `<div class="empty"><svg width="40" height="30" viewBox="0 0 40 30"><rect x="2" y="2" width="36" height="26" rx="3" fill="none" stroke="#86C53F" stroke-width="2" stroke-dasharray="4 3"/></svg>Enter the size to see your roll layout.</div>`; return; }
   if (r.g.error){ el.innerHTML = `<p class="err">${r.g.error}</p>`; return; }
   const {g, lay} = r;
   const list = lay.pieces.map((p, i) => `<li><span><span class="pn${p.half ? ' h' : ''}">${i+1}</span>${p.half ? 'Half roll' : 'Full roll'}</span><b>${widthLabel(p.half)} × ${p.len}'</b></li>`).join('');
   el.innerHTML = `<div class="draw">${drawSVG(g, lay)}
-      <div class="legend"><span><i style="border-color:#5fae4f"></i>side seam</span>${lay.hLines.length ? '<span><i style="border-color:#e07b16"></i>head seam</span>' : ''}${lay.pieces.some(p=>p.half) ? '<span><b style="display:inline-block;width:12px;height:12px;background:#a5d38a;border-radius:2px;vertical-align:middle"></b> half roll</span>' : ''}</div></div>
+      <div class="legend"><span><i style="border-color:#86C53F"></i>side seam</span>${lay.hLines.length ? '<span><i style="border-color:#D6A461"></i>head seam</span>' : ''}${lay.pieces.some(p=>p.half) ? '<span><b style="display:inline-block;width:12px;height:12px;background:#CFE4B1;border-radius:2px;vertical-align:middle"></b> half roll</span>' : ''}</div></div>
     <div class="tiles"><div><b>${n0(g.sf)}</b><span>sq ft</span></div><div><b>${lay.pieces.length}</b><span>pieces</span></div><div><b>${n0(lay.seamV + lay.seamH)}'</b><span>of seams</span></div></div>
     <details class="cuts"><summary>Cut list for this area</summary><ul class="cutlist">${list}</ul></details>
     <p class="hint">Rolls run ${lay.swap ? 'top to bottom' : 'left to right'} (${fmt(r.runAlong)}). Each piece includes ${fmt(C.END_ALLOWANCE_FT)} extra for trimming.</p>`;
@@ -953,15 +963,15 @@ function update(){
   }
   const waste = T.ordered > 0 ? (T.ordered - T.sf) / T.ordered * 100 : 0;
   const I = {
-    sand:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 19c3-8 6-11 9-11s6 3 9 11z" fill="#d9b86c"/></svg>',
-    tape:'<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#3f8f2f" stroke-width="4"/></svg>',
-    glue:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 8h10v12H7z" fill="#3f8f2f"/><path d="M10 3h4v5h-4z" fill="#86c440"/></svg>',
-    staple:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M5 18V8h14v10" fill="none" stroke="#5f6d62" stroke-width="2.6"/></svg>',
-    board:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="1" fill="#c99a5b"/></svg>',
-    nail:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 5h12M12 5v15l-1.5-2" fill="none" stroke="#5f6d62" stroke-width="2.4" stroke-linecap="round"/></svg>',
-    edge:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M2 15c4-4 7-4 10 0s6 4 10 0" fill="none" stroke="#2f3b31" stroke-width="3" stroke-linecap="round"/></svg>',
-    roll:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="6" width="15" height="12" rx="2" fill="#479a3c"/><ellipse cx="18" cy="12" rx="3" ry="6" fill="#86c440"/><ellipse cx="18" cy="12" rx="1.2" ry="2.4" fill="#1d4424"/></svg>',
-    half:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="15" height="7" rx="1.5" fill="#a5d38a"/><ellipse cx="18" cy="12.5" rx="2" ry="3.5" fill="#86c440"/></svg>'
+    sand:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 19c3-8 6-11 9-11s6 3 9 11z" fill="#D6A461"/></svg>',
+    tape:'<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#22372B" stroke-width="4"/></svg>',
+    glue:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 8h10v12H7z" fill="#22372B"/><path d="M10 3h4v5h-4z" fill="#86C53F"/></svg>',
+    staple:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M5 18V8h14v10" fill="none" stroke="#4E6357" stroke-width="2.6"/></svg>',
+    board:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="1" fill="#8B5B29"/></svg>',
+    nail:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 5h12M12 5v15l-1.5-2" fill="none" stroke="#4E6357" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    edge:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M2 15c4-4 7-4 10 0s6 4 10 0" fill="none" stroke="#22372B" stroke-width="3" stroke-linecap="round"/></svg>',
+    roll:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="6" width="15" height="12" rx="2" fill="#86C53F"/><ellipse cx="18" cy="12" rx="3" ry="6" fill="#86C53F"/><ellipse cx="18" cy="12" rx="1.2" ry="2.4" fill="#22372B"/></svg>',
+    half:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="15" height="7" rx="1.5" fill="#CFE4B1"/><ellipse cx="18" cy="12.5" rx="2" ry="3.5" fill="#86C53F"/></svg>'
   };
   const rows = [];
   rows.push([I.sand, 'Sand infill', `${C.INFILL_LB_PER_SF} lb/sq ft · ${n0(T.infillLb)} lb (${n1(T.infillLb/2000)} tons)`, `${n0(T.bags)} bags`]);
@@ -1084,8 +1094,8 @@ const TA = (() => {
   const q = id => document.getElementById(id);
   const mk = (tag, at, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); parent.appendChild(e); return e; };
   [[60,34,0],[560,42,1],[700,40,1],[880,34,0],[1640,40,1],[1900,32,0],[2150,38,1]].forEach(([x, r, i]) => {
-    mk('rect', {x:x-4, y:404-r, width:8, height:r, rx:3, fill:'#0f2416'}, q('ttTrees'));
-    mk('circle', {cx:x, cy:404-r-r*.8, r, fill:i ? '#2a5e2e' : '#255429'}, q('ttTrees'));
+    mk('rect', {x:x-4, y:404-r, width:8, height:r, rx:3, fill:'#14211B'}, q('ttTrees'));
+    mk('circle', {cx:x, cy:404-r-r*.8, r, fill:i ? '#22372B' : '#22372B'}, q('ttTrees'));
   });
   for (let x = -600; x < 3000; x += 70) mk('rect', {x, y:473, width:34, height:4, rx:2}, q('ttDash'));
   const wheel = (cx, cy, r) => { const g = mk('g', {}, q('ttWheels'));
