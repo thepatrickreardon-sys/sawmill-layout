@@ -65,6 +65,9 @@ h1,h2,h3{font-family:var(--head);font-weight:400;line-height:1.15}
 .side a.nl:hover{background:rgba(255,255,255,.06);color:#fff}
 .side a.nl.on{background:rgba(134,197,63,.16);color:#fff}
 .side a.nl svg{width:20px;height:20px;flex:none}
+.side a.nl img.blades{width:28px;height:28px;margin:-4px -4px -4px -4px;flex:none;object-fit:contain;transition:transform .35s var(--ease)}
+.side a.nl:hover img.blades,.side a.nl.on img.blades{transform:rotate(-6deg) scale(1.08)}
+.qa .ic img.blades{width:36px;height:36px;object-fit:contain}
 .side .cnt{margin-left:auto;background:var(--vf);color:var(--ds);font-size:.75rem;font-weight:900;border-radius:99px;padding:1px 8px;transform:scale(0);transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
 .side .cnt.on{transform:scale(1)}
 .side .who{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding:16px 8px 0;font-size:.85rem;color:var(--mist)}
@@ -292,6 +295,6 @@ h1,h2,h3{font-family:var(--head);font-weight:400;line-height:1.15}
 <div class="demo-bar"><span class="long">DEMO — sample prices and demo accounts only. Not a secure system; nothing is ordered or charged.</span><span class="short">DEMO · sample prices · nothing is ordered</span></div>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
-<script src="portal.js?v=5"></script>
+<script src="portal.js?v=7"></script>
 </body>
 </html>
