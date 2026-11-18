@@ -205,3 +205,37 @@ const FAQ = [
 ];
 
 const BLOG = ['The Hamptons Homeowner\'s Guide to Artificial Turf: Cost, Quality, and What to Expect','How to Plan a Commercial Artificial Turf Installation for Schools, Parks, and Municipalities','How to Build a Bocce Ball Court With Artificial Turf (And Why It\'s Worth It)','Artificial Turf vs. Pavers vs. Sod: A Side-by-Side Cost Breakdown for Northeast Homeowners','Artificial Turf for Tennis Courts in Connecticut and Westchester: What You Need to Know','Artificial Turf for Backyard Sport Courts: Installation Guide for Long Island Homeowners','Artificial Turf Around Pool Areas: What Long Island and Westchester Homeowners Need to Know','Is There a Difference Between Indoor and Outdoor Artificial Turf?','How to Maintain Safe Artificial Turf for Athletic Performance'];
+
+/* ---------- Photo mapping: each page uses photos from its own page on turftekusa.com ---------- */
+const HERO_IMG = {home:'791208166.jpeg', commercial:'311010559.jpg', 'commercial-athletics':'182588432.jpg', 'sport-fields':'281474505.jpg', 'indoor-facilities':'915345495.JPG', courts:'727955445.jpg', 'poured-in-place':'925498609.jpeg', nextgen:'791567293.jpg', 'shade-structures':'270028125.png', bocce:'212788797.jpg', residential:'928866855.jpg', 'residential-athletics':'522792381.jpg', 'residential-fields':'705336922.jpg', 'residential-putting':'125467009.jpg', 'residential-tennis':'572162228.jpeg', 'residential-courts':'828405892.jpg', 'residential-playgrounds':'558616876.jpg', 'residential-landscape':'588254182.jpg', products:'693438316.jpg', 'our-work':'830226485.jpg', faqs:'328279861.jpg', testimonials:'328279861.jpg', westchester:'169256312.jpg', fairfield:'485659919.jpg', contact:'791208166.jpeg', financing:'928866855.jpg', 'long-island':'662703951.jpg', blog:'693438316.jpg'};
+const GALLERY = {
+ 'commercial-landscape':['366008809.jpg','264979413.JPG','429302248.jpg'], 'commercial-pet-areas':['622951490.JPG','526485578.jpg','358435774.jpg'],
+ 'commercial-playgrounds':['680538549.jpg','301509175.jpg','361233569.jpg'], 'shade-structures':['270028125.png','345344623.png','180434283.png'],
+ rooftops:['762962447.jpg','536502890.jpg','547013128.jpg'], 'poured-in-place':['925498609.jpeg','393775450.jpg','237480290.jpg'],
+ nextgen:['791567293.jpg','281474505.jpg','789975031.jpg'], 'putting-greens':['898489545.jpg','935640717.jpg','698907285.jpg'],
+ 'tennis-courts':['227455193.jpg','452688757.jpg','798249348.jpg'], 'sport-fields':['281474505.jpg','261109816.jpg','789975031.jpg'],
+ baseball:['971477859.jpg','405431814.jpg','878538747.jpg'], 'indoor-facilities':['915345495.JPG','813824772.jpg','812084459.jpg'],
+ bocce:['212788797.jpg','534772564.jpg','824218355.jpg'], courts:['727955445.jpg','828405892.jpg','360920952.jpg'],
+ 'residential-landscape':['588254182.jpg','693438316.jpg','485659919.jpg'], 'residential-playgrounds':['558616876.jpg','446661099.jpg','560723484.jpg'],
+ 'residential-pet-areas':['570219223.jpg','405855600.JPG','653543848.JPG'], 'residential-putting':['125467009.jpg','190028750.jpg','576911689.jpg'],
+ 'residential-fields':['705336922.jpg','737654442.jpg','297742444.jpg'], 'residential-tennis':['572162228.jpeg','538468641.jpg','982384019.jpeg'],
+ 'residential-courts':['828405892.jpg','727955445.jpg','360920952.jpg'], 'long-island':['662703951.jpg','791208166.jpeg','928866855.jpg'],
+ westchester:['169256312.jpg','328279861.jpg','478605502.jpg'], fairfield:['485659919.jpg','693438316.jpg','126975679.jpg']
+};
+Object.entries(HERO_IMG).forEach(([k,v]) => { if (PAGES[k]) PAGES[k].hero.img = v; });
+Object.entries(GALLERY).forEach(([k,v]) => { if (PAGES[k]) PAGES[k].gal = v; });
+/* feature photos that showed crews instead of the subject */
+PAGES['residential-landscape'].feat = [['Safe, soft and family approved','Built for kids, pets and backyard parties.','693438316.jpg']];
+PAGES['residential-pet-areas'].feat = [['Give your pets a better backyard','Designed for the way dogs actually play.','405855600.JPG']];
+PAGES['commercial-pet-areas'].feat = [['Designed for zoomies','Turf stands up exceptionally well to running, digging and play, and our drainage keeps every area clean and ready to use.','526485578.jpg']];
+PAGES['commercial-playgrounds'].feat = [['Safety first on all playgrounds','IPEMA-certified playground grass, installed by crews that include Certified Playground Safety Inspectors.','301509175.jpg']];
+PAGES['commercial-landscape'].feat = [['Smart solutions for modern commercial spaces','Turf Tek USA offers premium commercial turf systems built to handle heavy foot traffic while keeping a natural look and feel — synthetic turf delivers significant operational efficiencies for property managers.','264979413.JPG']];
+/* projects + blog photos matched to their subject */
+WORK.splice(0, WORK.length,
+ ['Apartment Complex Amenities','Pickleball court, bocce court with turf, yoga area, lawns and a dog park.','223000002.jpg'],
+ ['Baseball Fields','Infield and outfield turf for all-weather play.','405431814.jpg'],
+ ['Residential Landscape','A full backyard lawn that stays green all year.','588254182.jpg'],
+ ['Residential Field','A backyard multi-sport field for everyday training.','705336922.jpg'],
+ ['Residential Putting Green','A home green that rolls true.','125467009.jpg'],
+ ['Commercial Multi-Sport Field','A durable field for school and community use.','281474505.jpg']);
+const BLOG_IMG = ['662703951.jpg','478605502.jpg','212788797.jpg','328279861.jpg','227455193.jpg','727955445.jpg','169256312.jpg','915345495.JPG','261109816.jpg'];

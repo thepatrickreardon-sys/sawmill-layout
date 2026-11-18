@@ -55,7 +55,7 @@ const hero = (k, d) => `<header class="hero ${d.home ? '' : 'sub'}"><div class="
   <h1 class="in" style="margin-top:12px">${esc(d.hero.h)} <span class="acc">${esc(d.hero.acc)}</span></h1>
   <p class="lead in">${esc(d.hero.p)}</p>
   <div class="ctas in"><a class="btn btn-v" href="#contact">Get a free estimate ${arrow}</a>${d.home ? `<a class="btn btn-o" href="#our-work">See our work</a>` : `<a class="btn btn-o" href="tel:6316515777">Call (631) 651-5777</a>`}</div>
-</div>${d.home ? '<div class="scroll-cue" aria-hidden="true"></div>' : ''}${grass('grassW')}</header>`;
+</div>${d.home ? '<div class="scroll-cue" aria-hidden="true"></div>' : ''}${grass('grassV')}</header>`;
 const kidImg = k => (P(k).hero || {}).img || I.a;
 const tile = (k, i) => { const d = P(k); return `<a class="tile rv" style="--d:${i%3}" href="#${k}"><div class="ph" ${bg(kidImg(k))}></div><span class="go">→</span><div class="tx">${d.icon ? `<img class="ic" src="assets/icons/${d.icon}" alt="">` : ''}<h3>${esc(d.nav)}</h3><p>${esc(d.hero.p)}</p></div></a>`; };
 const quote = q => q ? `<section style="padding-top:0"><div class="wrap"><div class="quote rv"><div class="stars">★★★★★</div><blockquote>“${esc(q[0])}”</blockquote><cite>— ${esc(q[1])}</cite></div></div></section>` : '';
@@ -94,7 +94,7 @@ function home(){
     <div class="shead"><div class="rv"><div class="eye">Serving the Tri-State area</div><h2>Local crews. Our own crews.</h2></div><p class="mute rv">Showroom in Commack, NY. Installing across Long Island, Westchester and Fairfield County.</p></div>
     <div class="areas">${['long-island','westchester','fairfield'].map((k,i) => `<a class="area rv" style="--d:${i}" href="#${k}"><h3>${label(k)}</h3><p>${esc(P(k).hero.p)}</p><span class="link">Learn more</span></a>`).join('')}</div>
   </div></section>
-  <section class="tint"><div class="wrap"><div class="split rev"><div class="media rv-img"><div class="ph" ${bg(I.b)}></div></div>
+  <section class="tint"><div class="wrap"><div class="split rev"><div class="media rv-img"><div class="ph" ${bg('693438316.jpg')}></div></div>
     <div><div class="eye rv">For contractors & DIY</div><h2 class="rv" style="--d:1">Estimate your turf job in minutes.</h2><p class="mute rv" style="--d:2">Lay out your area, get a roll cut list and full material takeoff — then send it to our sales team for pricing.</p><p class="rv" style="--d:3;margin-top:24px"><a class="btn btn-v" href="${CALC}" target="_blank" rel="noopener">Open the Turf Calculator ${arrow}</a></p></div></div></div></section>`
   + cta();
 }
@@ -105,6 +105,7 @@ function service(k){
   h += `<section><div class="wrap"><div class="split"><div><div class="eye rv">${esc(d.hero.eye)}</div><h2 class="rv" style="--d:1">${(d.parent && d.parent!=='about') ? esc(d.nav)+', done right.' : 'The Turf Tek difference.'}</h2><p class="mute rv" style="--d:2;font-size:1.08rem">${esc(d.intro || '')}</p><p class="rv" style="--d:3;margin-top:26px"><a class="btn btn-v" href="#contact">Get a free estimate ${arrow}</a></p></div>
     <div class="card rv" style="--d:2;padding:32px">${why()}</div></div></div></section>`;
   if (d.list) h += `<section class="tint"><div class="wrap"><div class="shead"><div class="rv"><div class="eye">Benefits</div><h2>Why it works.</h2></div></div><div class="cards">${d.list.map((l,i) => `<div class="card rv" style="--d:${i%4}"><div class="ck"></div><p>${esc(l)}</p></div>`).join('')}</div></div></section>`;
+  if (d.gal) h += `<section style="padding-top:${d.list?'0':'0'};${d.list?'background:var(--tint)':''}"><div class="wrap"><div class="gal">${d.gal.map((g,i) => `<button class="gi rv-img" style="--d:${i}" data-img="${img(g)}" aria-label="View photo"><div class="ph" ${bg(g)}></div></button>`).join('')}</div></div></section>`;
   (d.feat || []).forEach((f,i) => { h += `<section><div class="wrap"><div class="split ${i%2?'':'rev'}"><div class="media rv-img"><div class="ph" ${bg(f[2])}></div></div><div><div class="eye rv">Turf Tek USA</div><h2 class="rv" style="--d:1">${esc(f[0])}</h2><p class="mute rv" style="--d:2;font-size:1.08rem">${esc(f[1])}</p><p class="rv" style="--d:3;margin-top:22px"><a class="link" href="#our-work">See finished projects</a></p></div></div></div></section>`; });
   if (d.area) h += `<section style="padding-top:0"><div class="wrap"><div class="shead"><div class="rv"><div class="eye">What we install here</div><h2>Popular in ${esc(label(k))}.</h2></div></div><div class="tiles">${['residential-landscape','residential-pet-areas','residential-putting','commercial-landscape','commercial-playgrounds','sport-fields'].map(tile).join('')}</div></div></section>`;
   if (d.fine) h += `<section style="padding-top:0"><div class="wrap"><div class="band fb rv"><div><h2>12 months special financing.</h2><p>No interest if paid in full within 12 months.</p></div><div class="act"><a class="btn btn-d" href="https://www.turftekusa.com/financing" target="_blank" rel="noopener">Apply now ↗</a></div></div><p class="mute rv" style="font-size:.8rem;margin-top:18px;max-width:860px">${esc(d.fine)}</p></div></section>`;
@@ -140,13 +141,13 @@ function faq(){
 }
 
 function blog(){
-  const d = P('blog'), ims = [I.rland1,I.commercial,I.d,I.rland2,I.tennis1,I.a,I.roof1,I.c,I.b];
+  const d = P('blog'), ims = BLOG_IMG;
   return hero('blog', d) + `<section><div class="wrap"><div class="posts">${BLOG.map((t,i) => `<a class="post rv" style="--d:${i%3}" href="https://www.turftekusa.com/about/blog" target="_blank" rel="noopener"><div class="ph" ${bg(ims[i%ims.length])}></div><div class="tx"><div class="eye">Article</div><h3>${esc(t)}</h3><span class="link" style="align-self:flex-start;margin-top:auto">Read article</span></div></a>`).join('')}</div></div></section>` + cta();
 }
 
 function contact(){
   const d = P('contact');
-  return hero('contact', d) + `<section><div class="wrap"><div class="split">
+  return hero('contact', d) + `<div class="wrap"><a class="calc-bubble" href="${CALC}" target="_blank" rel="noopener"><span class="cb-ic" aria-hidden="true">📐</span><span><b>Do you know your dimensions?</b>Try our Turf Calculator — lay out your area, get a full material list, and send it straight to us.</span><span class="btn btn-v">Try it ${arrow}</span></a></div><section style="padding-top:60px"><div class="wrap"><div class="split">
     <div><div class="eye rv">Talk to a specialist</div><h2 class="rv" style="--d:1">Tell us about your project.</h2><p class="mute rv" style="--d:2">To learn more about our premium synthetic grass systems and get a free estimate, contact us today.</p>
       <ul class="checks rv" style="--d:3"><li><b>Call</b>&nbsp;<a class="link" href="tel:6316515777">(631) 651-5777</a></li><li><b>Visit</b>&nbsp;6137 Jericho Turnpike, Commack, NY 11725</li><li>Serving Long Island, Westchester and Fairfield County</li></ul></div>
     <form class="form rv" id="estForm" style="--d:2"><div class="row"><input required placeholder="First name"><input required placeholder="Last name"></div><div class="row"><input required type="tel" placeholder="Phone"><input type="email" placeholder="Email"></div><input placeholder="Project address or town"><select><option>Residential lawn</option><option>Pet area</option><option>Playground</option><option>Putting green</option><option>Sports field / court</option><option>Commercial landscape</option><option>Rooftop</option><option>Something else</option></select><textarea rows="4" placeholder="Tell us about your space"></textarea><button class="btn btn-v" type="submit">Request my free estimate ${arrow}</button><div class="ok">Thanks! In the live site this sends to the Turf Tek sales team. (Concept only — nothing was sent.)</div></form>
@@ -209,6 +210,8 @@ function wire(){
   // product filter
   $$('#chips .chip', view).forEach(c => c.addEventListener('click', () => { $$('#chips .chip', view).forEach(x => x.classList.toggle('on', x === c)); const f = c.dataset.f;
     $$('.prod', view).forEach(p => { const show = f === 'all' || p.dataset.c === f; if (show){ p.classList.remove('hide'); p.animate && !RM && p.animate([{opacity:0, transform:'translateY(14px) scale(.98)'},{opacity:1, transform:'none'}], {duration:450, easing:'cubic-bezier(.22,.8,.24,1)'}); } else p.classList.add('hide'); }); }));
+  // photo lightbox
+  $$('.gi', view).forEach(b => b.addEventListener('click', () => { const lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = `<img src="${b.dataset.img}" alt=""><button aria-label="Close">×</button>`; document.body.appendChild(lb); requestAnimationFrame(() => lb.classList.add('on')); const close = () => { lb.classList.remove('on'); setTimeout(() => lb.remove(), 400); }; lb.addEventListener('click', close); addEventListener('keydown', function k(e){ if (e.key==='Escape'){ close(); removeEventListener('keydown', k); } }); }));
   // contact form (concept)
   const f = $('#estForm', view); f && f.addEventListener('submit', e => { e.preventDefault(); f.classList.add('sent'); });
 }
