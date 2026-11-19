@@ -277,13 +277,13 @@
     baseball: [baseball, 1.15],
     'tennis-courts': [tennis, 1.0], 'residential-tennis': [tennis, 1.0],
     'shade-structures': [shade, 1.3],
-    'putting-greens': [putting, 1.05], 'residential-putting': [putting, 1.05],
+    'putting-greens': [putting, 1.05, true], 'residential-putting': [putting, 1.05, true],
     bocce: [bocce, 1.0]
   };
 
   /* ---------- player ---------- */
   const OPEN = .38, CLOSE = .36, NAV_LEAD = .34;
-  let raf, t0, scene, dur, target, ox, oy, rMax, navigated;
+  let raf, t0, scene, dur, noLogo, target, ox, oy, rMax, navigated;
   function frame(now) {
     const t = (now - t0) / 1000, end = OPEN * .6 + dur;
     let r;
@@ -293,13 +293,13 @@
     el.style.clipPath = `circle(${Math.max(0, r).toFixed(1)}px at ${ox}px ${oy}px)`;
     ctx.clearRect(0, 0, W, H);
     scene(cl((t - OPEN * .6) / dur));
-    lg.style.opacity = (seg(t, OPEN * .5, OPEN) * (1 - seg(t, end - .15, end))).toFixed(3);
+    lg.style.opacity = noLogo ? 0 : (seg(t, OPEN * .5, OPEN) * (1 - seg(t, end - .15, end))).toFixed(3);
     if (t >= end - NAV_LEAD && !navigated) { navigated = true; location.hash = target; }
     if (t >= end + CLOSE) return finish();
     raf = requestAnimationFrame(frame);
   }
   function play(k, x, y) {
-    size(); [scene, dur] = SCENES[k]; target = k; navigated = false; ox = x; oy = y;
+    size(); [scene, dur, noLogo] = SCENES[k]; target = k; navigated = false; ox = x; oy = y;
     rMax = Math.hypot(Math.max(x, W - x), Math.max(y, H - y));
     el.style.clipPath = `circle(0px at ${x}px ${y}px)`; el.style.display = 'block';
     t0 = performance.now(); raf = requestAnimationFrame(frame);
