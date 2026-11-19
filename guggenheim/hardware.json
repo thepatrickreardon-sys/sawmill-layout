@@ -173,8 +173,22 @@
 "qty": 2,
 "where": [
 {
-"label": "See the site plan",
-"holes": []
+"label": "On the 72\" deck (posts 180C3, 204C1, 192C2, 192C1)",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1"
+]
+},
+{
+"label": "On the 120\" deck (posts 200S1, 200S2, 200S3, 196C1)",
+"holes": [
+"200S1",
+"200S2",
+"200S3",
+"196C1"
+]
 }
 ],
 "check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
@@ -238,8 +252,13 @@
 "qty": 1,
 "where": [
 {
-"label": "See the site plan",
-"holes": []
+"label": "On the 72\" deck (posts 180C3, 204C1, 192C2, 192C1)",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1"
+]
 }
 ],
 "check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
@@ -989,10 +1008,19 @@
 }
 ],
 "notes": [],
-"qty": 1,
+"qty": 2,
 "where": [
 {
-"label": "Where it goes",
+"label": "On the 72\" tower roof (posts 180C3, 204C1, 192C2, 192C1)",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1"
+]
+},
+{
+"label": "On the 120\" tower roof (posts 200S1, 200S2, 200S3)",
 "holes": [
 "200S1",
 "200S2",
@@ -1035,10 +1063,19 @@
 }
 ],
 "notes": [],
-"qty": 1,
+"qty": 2,
 "where": [
 {
-"label": "Where it goes",
+"label": "On the 72\" tower roof (posts 180C3, 204C1, 192C2, 192C1)",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1"
+]
+},
+{
+"label": "On the 120\" tower roof (posts 200S1, 200S2, 200S3)",
 "holes": [
 "200S1",
 "200S2",
@@ -1081,10 +1118,19 @@
 }
 ],
 "notes": [],
-"qty": 1,
+"qty": 2,
 "where": [
 {
-"label": "Where it goes",
+"label": "On the 72\" tower roof (posts 180C3, 204C1, 192C2, 192C1)",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1"
+]
+},
+{
+"label": "On the 120\" tower roof (posts 200S1, 200S2, 200S3)",
 "holes": [
 "200S1",
 "200S2",
@@ -1178,10 +1224,19 @@
 }
 ],
 "notes": [],
-"qty": 1,
+"qty": 2,
 "where": [
 {
-"label": "Where it goes",
+"label": "On the 72\" tower roof (posts 180C3, 204C1, 192C2, 192C1)",
+"holes": [
+"180C3",
+"204C1",
+"192C2",
+"192C1"
+]
+},
+{
+"label": "On the 120\" tower roof (posts 200S1, 200S2, 200S3)",
 "holes": [
 "200S1",
 "200S2",
@@ -2749,8 +2804,13 @@
 "qty": 1,
 "where": [
 {
-"label": "See the site plan",
-"holes": []
+"label": "On the 120\" deck (posts 200S1, 200S2, 200S3, 196C1)",
+"holes": [
+"200S1",
+"200S2",
+"200S3",
+"196C1"
+]
 }
 ],
 "check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
@@ -2811,8 +2871,13 @@
 "qty": 1,
 "where": [
 {
-"label": "See the site plan",
-"holes": []
+"label": "On the 120\" deck (posts 200S1, 200S2, 200S3, 196C1)",
+"holes": [
+"200S1",
+"200S2",
+"200S3",
+"196C1"
+]
 }
 ],
 "check": "Counts read from the drawing callouts (Burke's parts list doesn't break out the bag). Check each pile against its detail.",
