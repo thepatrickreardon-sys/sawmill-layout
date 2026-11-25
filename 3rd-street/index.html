@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v25</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v26</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -3786,4 +3786,4 @@ details.scsec[open]>summary{border-bottom:1px solid var(--line)}
 <style id="scanbtncss">.scanbtn{background:var(--forest2)!important;color:var(--sun)!important;border:0!important;border-radius:99px!important;min-height:36px;padding:0 12px!important;font-weight:700}</style>
 <script id="scanbtn">(function(){ document.head.appendChild(document.getElementById('scanbtncss')); const h=document.querySelector('.hpbar h2'); if(!h) return;
   const b=document.createElement('a'); b.className='scanbtn btn'; b.href='scan/'; b.textContent='🧊 3D scan'; b.style.cssText='display:inline-flex;align-items:center;text-decoration:none;font-size:14px';
-  h.after(b); })();</script></body></html>
+  h.after(b); const g=document.createElement('a'); g.className='scanbtn btn'; g.href='grade/'; g.textContent='⛰ 3D grade'; g.style.cssText=b.style.cssText; b.after(g); })();</script></body></html>

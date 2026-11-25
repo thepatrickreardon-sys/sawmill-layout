@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#10261a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>3rd Street 3D grade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#86c440;--sun:#e2e773;--forest:#10261a;--forest2:#1d4424;
+  --field:radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,#1d4424 45%,#10261a 100%);
+  --stripes:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#dfe8dc;font-family:Barlow,system-ui,sans-serif;overscroll-behavior:none;touch-action:none}
+canvas{display:block;position:fixed;inset:0;width:100vw;height:100vh;touch-action:none}
+.bar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:var(--stripes),var(--field);color:#fff;box-shadow:0 4px 18px rgba(16,38,26,.3)}
+.bar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
+.bar h1{margin:0;font:700 19px/1.05 "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;flex:1;min-width:0}
+.bar h1 small{display:block;font:500 12px Barlow,sans-serif;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.7);margin-top:2px}
+button{font:700 14px Barlow,sans-serif;border-radius:10px;min-height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;-webkit-user-select:none;user-select:none}
+button:active{transform:scale(.96)}
+button.sun{background:var(--sun);color:var(--forest);border-color:var(--sun)}
+.ctl{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:5;display:grid;gap:8px;justify-items:center;padding:0 10px}
+.seg{display:inline-flex;background:rgba(16,38,26,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;min-height:36px;padding:0 12px}
+.seg button[aria-pressed="true"]{background:var(--sun);color:var(--forest)}
+.seg .lbl{color:rgba(255,255,255,.6);font-size:12px;font-weight:600;align-self:center;padding:0 6px 0 8px}
+.read{position:fixed;left:50%;top:calc(74px + env(safe-area-inset-top));transform:translateX(-50%);z-index:4;background:rgba(16,38,26,.92);color:#fff;font-size:14px;font-weight:600;padding:9px 14px;border-radius:14px;text-align:center;max-width:calc(100vw - 24px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.read b{color:var(--sun);font:700 22px "Barlow Condensed",sans-serif;letter-spacing:.02em}
+.legend{position:fixed;right:10px;top:calc(130px + env(safe-area-inset-top));z-index:4;background:rgba(255,255,255,.9);border-radius:12px;padding:8px 10px;font-size:12px;font-weight:600;color:#16221a;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.legend .ramp{width:14px;height:120px;border-radius:4px;margin:4px auto}
+.legend div{text-align:center}
+</style></head><body>
+<div class="bar"><button id="back">‹ Back</button><h1>3D grade + layout<small>Burke plan on your Mosier heights · Nov 25</small></h1><button class="sun" id="reset">Reset</button></div>
+<div class="read" id="read">Drag to spin · pinch to zoom · tap the ground for its height</div>
+<div class="legend" id="legend" hidden><div id="lgHi"></div><div class="ramp" style="background:linear-gradient(#e57373,#ffb74d,#fff176,#9ccc65,#2e7d32)"></div><div id="lgLo"></div></div>
+<div class="ctl">
+  <div class="seg" id="mode"><button data-m="plan" aria-pressed="true">Plan drawing</button><button data-m="grade">Grade colors</button></div>
+  <div class="seg" id="ex"><span class="lbl">Height ×</span><button data-x="1">1</button><button data-x="3" aria-pressed="true">3</button><button data-x="6">6</button></div>
+</div>
+<script src="data.js"></script>
+<script type="importmap">{"imports":{"three":"../scan/three.module.js","three/addons/":"../scan/addons/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const G=window.GRADE, FT=12;
+const fi=i=>{ const s=i<0?'-':'+'; i=Math.abs(Math.round(i)); return i<12?`${s}${i}"`:`${s}${Math.floor(i/12)}'-${i%12}"`; };
+const fd=i=>{ i=Math.round(i); return `${Math.floor(i/12)}'-${i%12}"`; };
+// ---- heights: inverse-distance from the Mosier walk (inches) ----
+const W=G.walk; const Z0=0;
+function zAt(x,y){ let a=0,b=0; for(const p of W){ const d2=(p[0]-x)**2+(p[1]-y)**2; if(d2<1) return p[2]; const w=1/(d2*d2); a+=w*p[2]; b+=w; } return a/b; }
+const inPoly=(x,y,P)=>{ let c=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const [xi,yi]=P[i],[xj,yj]=P[j]; if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) c=!c; } return c; };
+const WP=W.map(p=>[p[0],p[1]]);
+let zs=W.map(p=>p[2]); const ZMIN=Math.min(...zs), ZMAX=Math.max(...zs);
+// ---- scene ----
+const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
+document.body.prepend(renderer.domElement);
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0xdfe8dc); scene.fog=new THREE.Fog(0xdfe8dc,180,420);
+const cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.5,1500);
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b7f5e,1.15)); const sun=new THREE.DirectionalLight(0xffffff,1.3); sun.position.set(-60,120,80); scene.add(sun);
+const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.dampingFactor=.08; ctl.maxPolarAngle=Math.PI*0.48; ctl.minDistance=8; ctl.maxDistance=260; ctl.rotateSpeed=.7;
+let EX=3; const root=new THREE.Group(); scene.add(root);
+// plan (x,y in inches, z in inches) -> world (feet), y up, plan-up = -Z
+const V=(x,y,z,lift=0)=>new THREE.Vector3(x/FT,(z-ZMIN)/FT*EX+lift,-y/FT);
+// ---- terrain mesh ----
+const xs=W.map(p=>p[0]).concat(G.poly.map(p=>p[0])), ys=W.map(p=>p[1]).concat(G.poly.map(p=>p[1]));
+const X0=Math.min(...xs)-36, X1=Math.max(...xs)+36, Y0=Math.min(...ys)-36, Y1=Math.max(...ys)+36, STEP=12;
+const NX=Math.ceil((X1-X0)/STEP)+1, NY=Math.ceil((Y1-Y0)/STEP)+1;
+const ZG=new Float32Array(NX*NY); for(let j=0;j<NY;j++) for(let i=0;i<NX;i++) ZG[j*NX+i]=zAt(X0+i*STEP,Y0+j*STEP);
+const S=G.sheet; const uvOf=(x,y)=>[(S.o[0]+(x-S.L)*S.k)/S.w, 1-(S.o[1]+(S.T-y)*S.k)/S.h];
+const pos=new Float32Array(NX*NY*3), uv=new Float32Array(NX*NY*2), col=new Float32Array(NX*NY*3);
+const ramp=[[0,[.18,.49,.2]],[.3,[.61,.8,.4]],[.55,[1,.95,.46]],[.8,[1,.72,.3]],[1,[.9,.45,.45]]];
+const cmap=t=>{ for(let i=1;i<ramp.length;i++) if(t<=ramp[i][0]){ const [a,ca]=ramp[i-1],[b,cb]=ramp[i]; const k=(t-a)/(b-a); return ca.map((v,n)=>v+(cb[n]-v)*k); } return ramp[ramp.length-1][1]; };
+for(let j=0;j<NY;j++) for(let i=0;i<NX;i++){ const n=j*NX+i, x=X0+i*STEP, y=Y0+j*STEP, z=ZG[n]; const [u,v]=uvOf(x,y); uv[2*n]=u; uv[2*n+1]=v;
+  const t=(z-ZMIN)/(ZMAX-ZMIN||1); let c=cmap(Math.max(0,Math.min(1,t))); const band=((z-ZMIN)/3)%1; if(band<.12) c=c.map(v=>v*.72); col.set(c,3*n); }
+const idx=[]; const inside=(x,y)=>inPoly(x,y,WP)||inPoly(x,y,G.poly);
+for(let j=0;j<NY-1;j++) for(let i=0;i<NX-1;i++){ const cx=X0+(i+.5)*STEP, cy=Y0+(j+.5)*STEP; if(!inside(cx,cy)) continue; const a=j*NX+i,b=a+1,c=a+NX,d=c+1; idx.push(a,c,b,b,c,d); }
+const geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(pos,3)); geo.setAttribute('uv',new THREE.BufferAttribute(uv,2)); geo.setAttribute('color',new THREE.BufferAttribute(col,3)); geo.setIndex(idx);
+const tex=new THREE.TextureLoader().load(S.src,()=>{}); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=8;
+const matPlan=new THREE.MeshLambertMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:.22,side:THREE.DoubleSide});
+const matGrade=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide});
+const ground=new THREE.Mesh(geo,matPlan); root.add(ground);
+// skirt under the site so it reads as a slab of ground
+const base=new THREE.Mesh(new THREE.CircleGeometry(Math.hypot(X1-X0,Y1-Y0)/FT*0.62,64),new THREE.MeshLambertMaterial({color:0xd3ddcf})); base.rotation.x=-Math.PI/2; base.position.set((X0+X1)/2/FT,-0.2,-(Y0+Y1)/2/FT); root.add(base);
+// ---- lines, posts, labels (rebuilt on height change) ----
+const deco=new THREE.Group(); root.add(deco);
+function tube(pts,color,r){ const curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',0); return new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(8,pts.length*2),r,6,false),new THREE.MeshLambertMaterial({color})); }
+function edgePts(P,closed,step=12){ const out=[]; const n=P.length; for(let i=0;i<(closed?n:n-1);i++){ const a=P[i],b=P[(i+1)%n]; const L=Math.hypot(b[0]-a[0],b[1]-a[1]); const m=Math.max(1,Math.ceil(L/step)); for(let k=0;k<m;k++){ const x=a[0]+(b[0]-a[0])*k/m, y=a[1]+(b[1]-a[1])*k/m; out.push([x,y]); } } if(closed) out.push(P[0]); else out.push(P[n-1]); return out; }
+function label(text,sub,color='#10261a'){ const c=document.createElement('canvas'); const s=2; c.width=360*s; c.height=(sub?116:76)*s; const g=c.getContext('2d'); g.scale(s,s);
+  g.fillStyle='rgba(255,255,255,.94)'; const r=16, w=360, h=sub?116:76; g.beginPath(); g.roundRect(4,4,w-8,h-8,r); g.fill(); g.strokeStyle=color; g.lineWidth=4; g.stroke();
+  g.fillStyle=color; g.font='700 40px "Barlow Condensed", sans-serif'; g.textAlign='center'; g.fillText(text,w/2,50); if(sub){ g.font='600 26px Barlow, sans-serif'; g.fillStyle='#4b5a4e'; g.fillText(sub,w/2,92); }
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,sizeAttenuation:false})); const sw=Math.min(.2,80/innerHeight); sp.scale.set(sw,sw*c.height/c.width,1); sp.renderOrder=10; return sp; }
+function build(){
+  for(let n=0;n<NX*NY;n++){ const i=n%NX, j=(n/NX)|0; const v=V(X0+i*STEP,Y0+j*STEP,ZG[n]); pos.set([v.x,v.y,v.z],3*n); }
+  geo.attributes.position.needsUpdate=true; geo.computeVertexNormals(); geo.computeBoundingSphere();
+  deco.clear();
+  deco.add(tube(edgePts(G.poly,true).map(([x,y])=>V(x,y,zAt(x,y),.12)),0x1d4424,.22));
+  deco.add(tube(W.concat([W[0]]).map(p=>V(p[0],p[1],p[2],.1)),0xff6a1a,.16));
+  const dot=new THREE.SphereGeometry(.35,12,8), dm=new THREE.MeshLambertMaterial({color:0xff6a1a});
+  W.forEach(p=>{ const m=new THREE.Mesh(dot,dm); m.position.copy(V(p[0],p[1],p[2],.12)); deco.add(m); });
+  const pg=new THREE.CylinderGeometry(.22,.22,2.2,10), pm=new THREE.MeshLambertMaterial({color:0x10261a}), fm=new THREE.MeshLambertMaterial({color:0x3f8418});
+  G.holes.forEach(h=>{ const m=new THREE.Mesh(h.post?pg:new THREE.CylinderGeometry(.3,.3,.5,10),h.post?pm:fm); const v=V(h.x,h.y,zAt(h.x,h.y)); m.position.set(v.x,v.y+(h.post?1.1:.25),v.z); m.userData.h=h; deco.add(m); });
+  Object.entries(G.corners).forEach(([name,i])=>{ const p=W[i]; const sp=label(fi(p[2]),name); const v=V(p[0],p[1],p[2]); sp.position.set(v.x,v.y+4.5,v.z); deco.add(sp); });
+}
+build();
+// ---- views ----
+const C0=new THREE.Vector3((X0+X1)/2/FT,((ZMAX-ZMIN)/FT*EX)/2,-(Y0+Y1)/2/FT);
+function reset(){ const R=Math.hypot(X1-X0,Y1-Y0)/2/FT; const vf=cam.fov*Math.PI/180, hf=2*Math.atan(Math.tan(vf/2)*cam.aspect); const d=R/Math.sin(Math.min(vf,hf)/2)*0.9;
+  const dir=new THREE.Vector3(0.3,0.78,0.6).normalize(); ctl.target.copy(C0); cam.position.copy(C0).addScaledVector(dir,d); ctl.maxDistance=d*2.2; ctl.update(); }
+reset(); document.getElementById('reset').onclick=reset;
+document.getElementById('back').onclick=()=>{ if(history.length>1) history.back(); else location.href='../#home'; };
+const legend=document.getElementById('legend'); document.getElementById('lgHi').textContent=fi(ZMAX); document.getElementById('lgLo').textContent=fi(ZMIN);
+document.getElementById('mode').onclick=e=>{ const b=e.target.closest('[data-m]'); if(!b) return; document.querySelectorAll('#mode button').forEach(x=>x.setAttribute('aria-pressed',x===b)); const g=b.dataset.m==='grade'; ground.material=g?matGrade:matPlan; legend.hidden=!g; };
+document.getElementById('ex').onclick=e=>{ const b=e.target.closest('[data-x]'); if(!b) return; document.querySelectorAll('#ex button').forEach(x=>x.setAttribute('aria-pressed',x===b)); EX=+b.dataset.x; build(); };
+// ---- tap for height ----
+const ray=new THREE.Raycaster(), ndc=new THREE.Vector2(); let down=null; const read=document.getElementById('read');
+renderer.domElement.addEventListener('pointerdown',e=>{ down=[e.clientX,e.clientY]; });
+renderer.domElement.addEventListener('pointerup',e=>{ if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>8) return; ndc.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); ray.setFromCamera(ndc,cam);
+  const hit=ray.intersectObjects([ground,...deco.children.filter(o=>o.userData.h)],false)[0]; if(!hit) return;
+  if(hit.object.userData.h){ const h=hit.object.userData.h; read.innerHTML=`Hole ${h.h} · ${h.d}<br><b>${fi(zAt(h.x,h.y))}</b> vs your start point`; return; }
+  const x=hit.point.x*FT, y=-hit.point.z*FT, z=zAt(x,y); const inL=inPoly(x,y,G.poly);
+  read.innerHTML=`<b>${fi(z)}</b> vs your start point<br>${fd(x-G.poly[0][0])} from the left edge, ${fd(G.poly[0][1]-y)} down from the top${inL?'':' (outside the plan border)'}`; });
+addEventListener('resize',()=>{ cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); build(); });
+renderer.setAnimationLoop(()=>{ ctl.update(); renderer.render(scene,cam); window.__ready=true; });
+</script>
+</body></html>
