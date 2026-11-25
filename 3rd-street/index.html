@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v19</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v20</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -3422,4 +3422,85 @@ body.measuring #elrow,body.measuring #eBar,body.measuring #holeInfo,body.measuri
 })();</script><style id="nozoom">html,body{touch-action:pan-x pan-y}</style><script>/* no page zoom: only the maps and sheet viewer zoom (they have their own pinch) */
 document.head.appendChild(document.getElementById('nozoom'));
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
-document.addEventListener('dblclick',e=>{ if(!e.target.closest('.mapbox,.hpbox,#vBody,#bdMap,svg')) e.preventDefault(); },{passive:false});</script></body></html>
+document.addEventListener('dblclick',e=>{ if(!e.target.closest('.mapbox,.hpbox,#vBody,#bdMap,svg')) e.preventDefault(); },{passive:false});</script><style id="shotdragcss">
+.sdtag{position:absolute;z-index:6;pointer-events:none;transform:translate(-50%,-130%);background:var(--forest2);color:var(--sun);font:700 26px/1 var(--display);padding:6px 10px;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.3);white-space:nowrap}
+.sdtag small{display:block;font:600 11px/1.2 var(--body);color:#fff;opacity:.85;margin-top:3px}
+#sdDist{font-family:var(--display);font-size:22px;font-weight:700}
+#sCard{max-height:calc(100% - 16px);overflow:auto}
+#sCard .mrow{min-width:0}
+#sCard .field{min-width:0;display:grid}
+#sCard input{width:100%;box-sizing:border-box;min-width:0}
+</style>
+<script>/* Elevation shots: press a corner and drag along the border line; the distance from the corner
+   shows in feet-inches while you drag, and the shot goes where you let go. */
+(function(){
+  document.head.appendChild(document.getElementById('shotdragcss'));
+  const svg=document.getElementById('plan'); if(!svg||typeof ES==='undefined') return;
+  const box=svg.closest('.mapbox'), NS='http://www.w3.org/2000/svg';
+  const V=(typeof FPOLY!=='undefined'&&FPOLY)?FPOLY.map(([x,y])=>({x,y})):[{x:FP.L,y:FP.T},{x:FP.R,y:FP.T},{x:FP.R,y:FP.B},{x:FP.L,y:FP.B}];
+  const xs=V.map(p=>p.x), ys=V.map(p=>p.y), X0=Math.min(...xs), X1=Math.max(...xs), Y0=Math.min(...ys), Y1=Math.max(...ys);
+  const n=V.length, area=V.reduce((s,p,i)=>{const q=V[(i+1)%n];return s+p.x*q.y-q.x*p.y},0);
+  const cname=i=>{ const p=V[i], a=V[(i-1+n)%n], b=V[(i+1)%n], cr=(p.x-a.x)*(b.y-p.y)-(p.y-a.y)*(b.x-p.x);
+    if(cr*area<0) return 'inside corner';
+    const h=p.x===X0?'left':p.x===X1?'right':'', v=p.y===Y1?'top':p.y===Y0?'bottom':'';
+    return (v&&h?v+'-'+h:(v||h||'border'))+' corner'; };
+  const sname=(a,b)=>{ if(a.y===b.y) return a.y===Y1?'top line':a.y===Y0?'bottom line':'inside line (across)';
+    if(a.x===b.x) return a.x===X0?'left line':a.x===X1?'right line':'inside line (up and down)'; return 'border line'; };
+  const edgeOf=(a,b)=>a.y===b.y&&a.y===FP.T?'T':a.y===b.y&&a.y===FP.B?'B':a.x===b.x&&a.x===FP.L?'L':a.x===b.x&&a.x===FP.R?'R':null;
+  const toScr=(x,y)=>{ const m=svg.getScreenCTM(), pt=svg.createSVGPoint(); pt.x=mx(x); pt.y=my(y); return pt.matrixTransform(m); };
+  const toIn=(cx,cy)=>{ const m=svg.getScreenCTM(), pt=svg.createSVGPoint(); pt.x=cx; pt.y=cy; const s=pt.matrixTransform(m.inverse()); return {x:s.x*12,y:-s.y*12}; };
+  const on=()=>ES.on&&EL.on&&!document.querySelector('[data-view=map]').hidden;
+
+  // corner handles while adding shots
+  function handles(){ if(!on()) return; const g=document.createElementNS(NS,'g'); g.setAttribute('pointer-events','none');
+    V.forEach(p=>{ const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',mx(p.x)); c.setAttribute('cy',my(p.y)); c.setAttribute('r',1.3);
+      c.setAttribute('fill','rgba(226,231,115,.6)'); c.setAttribute('stroke','#1d4424'); c.setAttribute('stroke-width',0.22); g.appendChild(c); });
+    svg.appendChild(g); }
+  const _dm=window.drawMap; if(typeof _dm==='function') window.drawMap=function(){ const r=_dm.apply(this,arguments); try{ handles(); }catch(_){} return r; };
+
+  // drag
+  let D=null, guide=null, tag=null;
+  const clearGuide=()=>{ guide&&guide.remove(); tag&&tag.remove(); guide=tag=null; };
+  function pick(cx,cy){ const P=toIn(cx,cy), c=V[D.i]; let best=null;
+    [ (D.i-1+n)%n, (D.i+1)%n ].forEach(j=>{ const b=V[j], vx=b.x-c.x, vy=b.y-c.y, L=Math.hypot(vx,vy); if(!L) return;
+      let t=((P.x-c.x)*vx+(P.y-c.y)*vy)/(L*L); t=Math.max(0,Math.min(1,t)); let d=Math.round(t*L); d=Math.min(d,Math.round(L));
+      const q={x:c.x+vx/L*d,y:c.y+vy/L*d}, s=toScr(q.x,q.y), off=Math.hypot(s.x-cx,s.y-cy);
+      if(!best||off<best.off) best={j,d,q,off,L}; });
+    return best; }
+  function show(b){ clearGuide(); const c=V[D.i];
+    guide=document.createElementNS(NS,'g'); guide.setAttribute('pointer-events','none');
+    const l=document.createElementNS(NS,'line'); l.setAttribute('x1',mx(c.x)); l.setAttribute('y1',my(c.y)); l.setAttribute('x2',mx(b.q.x)); l.setAttribute('y2',my(b.q.y));
+    l.setAttribute('stroke','#86c440'); l.setAttribute('stroke-width',0.5); l.setAttribute('stroke-linecap','round'); guide.appendChild(l);
+    const k=document.createElementNS(NS,'circle'); k.setAttribute('cx',mx(b.q.x)); k.setAttribute('cy',my(b.q.y)); k.setAttribute('r',0.7); k.setAttribute('fill','#1d4424'); k.setAttribute('stroke','#e2e773'); k.setAttribute('stroke-width',0.25); guide.appendChild(k);
+    svg.appendChild(guide);
+    const s=toScr(b.q.x,b.q.y), r=box.getBoundingClientRect();
+    tag=document.createElement('div'); tag.className='sdtag'; tag.innerHTML=`${ftin(b.d,1)}<small>from the ${cname(D.i)} · ${sname(V[D.i],V[b.j])}</small>`;
+    tag.style.left=Math.max(70,Math.min(r.width-70,s.x-r.left))+'px'; tag.style.top=(s.y-r.top)+'px'; box.appendChild(tag); }
+  box.addEventListener('pointerdown',e=>{ if(!on()||D||e.target.closest('button,.mcard,.bubble')) return; let bi=-1,bd=30;
+    V.forEach((p,i)=>{ const s=toScr(p.x,p.y), d=Math.hypot(s.x-e.clientX,s.y-e.clientY); if(d<bd){bd=d;bi=i;} });
+    if(bi<0) return; e.stopPropagation(); e.preventDefault(); try{ box.setPointerCapture(e.pointerId); }catch(_){}
+    D={i:bi,id:e.pointerId,b:{j:(bi+1)%n,d:0,q:{...V[bi]}}}; show(D.b); },true);
+  box.addEventListener('pointermove',e=>{ if(!D||e.pointerId!==D.id) return; e.stopPropagation(); e.preventDefault(); const b=pick(e.clientX,e.clientY); if(b){ D.b=b; show(b); } },true);
+  const end=e=>{ if(!D||e.pointerId!==D.id) return; e.stopPropagation(); const b=D.b, i=D.i; D=null; clearGuide();
+    if(e.type==='pointercancel') return;
+    const a=V[i], c=V[b.j], f={k:nextFk(),x:Math.round(b.q.x),y:Math.round(b.q.y),z:null,edge:b.d===0?(edgeOf(a,V[(i+1)%n])||edgeOf(V[(i-1+n)%n],a)):edgeOf(a,c),
+      from:{i,j:b.j,d:b.d,c:cname(i),along:sname(a,c)}};
+    openSCard(f,true); };
+  box.addEventListener('pointerup',end,true); box.addEventListener('pointercancel',end,true);
+
+  // card: say where it is from the corner, and let the distance be typed in
+  const _fw=window.fsWhere; window.fsWhere=function(f){ if(f&&f.from) return `${ftin(f.from.d,1)} from the ${f.from.c}, along the ${f.from.along}`; return _fw(f); };
+  const _os=window.openSCard; window.openSCard=function(f,isNew){ _os(f,isNew); if(!f.from) return;
+    const c=document.getElementById('sCard'), row=document.createElement('div'); row.className='mrow';
+    const L=Math.round(Math.hypot(V[f.from.j].x-V[f.from.i].x,V[f.from.j].y-V[f.from.i].y));
+    row.innerHTML=`<label class="field" style="flex:1"><span class="lbl">Distance from the ${f.from.c} (feet-inches)</span><input id="sdDist" inputmode="text" value="${ftin(f.from.d,1)}"></label>`;
+    c.insertBefore(row,c.children[1]);
+    const inp=row.querySelector('input');
+    inp.addEventListener('change',()=>{ const v=parseZ(inp.value); if(!isFinite(v)||v<0||v>L){ inp.style.outline='2px solid var(--bad)'; return; } inp.style.outline='';
+      const a=V[f.from.i], b=V[f.from.j]; f.from.d=Math.round(v); f.x=Math.round(a.x+(b.x-a.x)/L*f.from.d); f.y=Math.round(a.y+(b.y-a.y)/L*f.from.d);
+      inp.value=ftin(f.from.d,1); const w=c.querySelector('.mrow .small'); if(w) w.textContent=fsWhere(f); }); };
+
+  const _rf=window.renderFS; window.renderFS=function(){ _rf(); if(ES.on){ const h=document.getElementById('fsHint'); h.textContent='Press a corner (yellow circle) and drag along the line: the distance shows as you go, and the shot goes where you let go. Or tap any spot on the map.'; }
+    try{ drawMap(); }catch(_){} };
+})();</script>
+</body></html>
