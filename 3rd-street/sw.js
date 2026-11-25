@@ -1,4 +1,4 @@
-const V='thirdst-v15';
+const V='thirdst-v16';
 const CORE=['./','index.html','docs-text.json','hardware.json','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png','icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
@@ -16,6 +16,8 @@ self.addEventListener('fetch',e=>{
     e.respondWith(fetch(r).then(res=>{ if(res.ok){const cp=res.clone(); caches.open(V).then(c=>c.put(r,cp));} return res; }).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match('index.html'))));
     return;
   }
+  // the 3D scan is big: keep it in its own cache so app updates don't re-download it
+  if(u.origin===location.origin && u.pathname.includes('/scan/')){ e.respondWith(caches.match(r).then(m=>m||fetch(r).then(res=>{ if(res.ok){const cp=res.clone(); caches.open('thirdst-scan').then(c=>c.put(r,cp));} return res; }))); return; }
   // cache first for sheets, icons, fonts
   e.respondWith(caches.match(r).then(m=>m||fetch(r).then(res=>{ if(res.ok||res.type==='opaque'){const cp=res.clone(); caches.open(V).then(c=>c.put(r,cp));} return res; })));
 });
