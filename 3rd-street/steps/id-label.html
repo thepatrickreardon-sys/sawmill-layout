@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#e8590c">
+<title>Structure ID labels (×2) · Step by step</title>
+<style>
+:root{--bg:#eef2f4;--panel:#fff;--ink:#15212b;--muted:#5b6b78;--line:#d3dce2;--paint:#e8590c;--paintsoft:#fff0e6;--steel:#1f5f8b;--steelsoft:#e6f0f7;--warn:#a86500;--warnbg:#fbefd9;--bad:#b42318;--badbg:#fbe4e1;--good:#1e7d45;--goodbg:#e3f3e9;
+--display:"Satoshi",system-ui,sans-serif;--body:"Satoshi",system-ui,sans-serif;--panel:#16212a;--ink:#e6edf2;--muted:#93a4b1;--line:#293844;--paint:#ff7a2e;--paintsoft:#3a2414;--steel:#6fb3e6;--steelsoft:#14283a;--warn:#f0a63a;--warnbg:#3a2a10;--bad:#ff7466;--badbg:#3d1915;--good:#4cc47e;--goodbg:#163626;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 var(--body)}
+header{position:sticky;top:0;z-index:5;background:var(--paint);color:#fff;padding:10px 14px calc(10px) 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:15px;border:1.5px solid rgba(255,255,255,.7);border-radius:8px;padding:5px 10px;white-space:nowrap}
+header h1{font:700 22px/1.1 var(--display);margin:0;flex:1;letter-spacing:.3px}
+header .prog{font:700 15px var(--display);background:rgba(0,0,0,.2);border-radius:20px;padding:4px 10px;white-space:nowrap}
+main{max-width:720px;margin:0 auto;padding:12px 12px 80px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)}
+h2{font:700 20px var(--display);text-transform:uppercase;letter-spacing:.6px;color:var(--steel);margin:22px 4px 8px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.step.done{opacity:.55}
+.step.done .num{background:var(--good)}
+.top{display:flex;gap:12px;padding:12px 14px 6px;align-items:flex-start}
+.num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--paint);color:#fff;font:700 22px/40px var(--display);text-align:center;border:0;cursor:pointer}
+.what{font-weight:700;font-size:18px;padding-top:7px}
+.body{padding:0 14px 12px 66px}
+.hw{list-style:none;margin:6px 0 0;padding:0;font-size:15px}
+.hw li{padding:5px 0;border-top:1px dashed var(--line)}
+.hw li:first-child{border-top:0}
+.hw .q{display:inline-block;min-width:0;font-weight:700;color:var(--steel)}
+.pn{color:var(--muted);font-size:13px}
+.note{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--warnbg);color:var(--warn);font-size:15px;font-weight:700}
+.note.bad{background:var(--badbg);color:var(--bad)}
+.tip{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--steelsoft);color:var(--steel);font-size:15px}
+figure{margin:0;background:#fff;border-top:1px solid var(--line);padding:8px;text-align:center}
+figure img{max-width:100%;height:auto;max-height:340px;cursor:zoom-in}
+figcaption{font:700 14px var(--display);color:#5b6b78;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.figs{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:620px){.figs.two{grid-template-columns:1fr 1fr}}
+#zoom{position:fixed;inset:0;background:#fff;z-index:20;overflow:auto;display:none}
+#zoom.on{display:block}
+#zoom img{width:200%;max-width:none;display:block}
+#zoom button{position:fixed;top:10px;right:10px;font:700 17px var(--body);background:var(--paint);color:#fff;border:0;border-radius:10px;padding:10px 16px}
+.reset{display:block;margin:20px auto;font:15px var(--body);background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 14px}
+.tools{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--goodbg);color:var(--good);font-size:15px}.tools b{display:block;font:700 13px var(--display);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}.tools ul{margin:0;padding-left:18px}
+</style></head><body>
+<header><a href="../#docs">‹ App</a><h1>Structure ID labels (×2) · step by step</h1><span class="prog" id="prog"></span></header>
+<main>
+<div class="intro">Burke 690-1000. Metal ID labels riveted to posts. Bag 036-2157 per label (2 rivets). Packet pages 127–128. <b>Tap the orange number</b> to check a step off. <b>Tap a drawing</b> to blow it up. The green box under each step is the tools for that step.</div>
+<div id="list"></div>
+<button class="reset" id="reset">Clear all check marks</button>
+</main>
+<div id="zoom"><button id="zclose">Close</button><img alt=""></div>
+<script>
+const D='';
+const S=[
+{
+"n": 1,
+"t": "Find the post from the site plan",
+"figs": [
+[
+"id-label/p127-s1.jpg",
+"Label and rivets"
+]
+],
+"tip": "3/16\" holes are pre-drilled. Clear paint if needed.",
+"tools": [
+"Drill with 3/16\" bit (only to clear paint)"
+]
+},
+{
+"n": 2,
+"t": "Rivet one side",
+"figs": [
+[
+"id-label/p127-s2.jpg",
+"Step 2"
+]
+],
+"hw": [
+[
+"2×",
+"Domed Head 1/8\" Aluminum Rivet",
+"019-0024"
+]
+],
+"tip": "Text facing up.",
+"tools": [
+"Rivet tool (not included)"
+]
+},
+{
+"n": 3,
+"t": "Push the other side tight, rivet it",
+"figs": [
+[
+"id-label/p127-s3.jpg",
+"Step 3"
+]
+],
+"tools": [
+"Rivet tool"
+]
+}
+];
+const KEY='3rd-id-label-steps-done';
+let done={}; try{done=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+  let h='';
+  for(const s of S){
+    if(s.sec){h+=`<h2>${esc(s.sec)}</h2>`;continue;}
+    const id=String(s.n);
+    const figs=(s.figs||[]).map(([f,c])=>[f,c]);
+    h+=`<section class="step${done[id]?' done':''}" data-id="${esc(id)}"><div class="top"><button class="num" aria-label="Check off step ${esc(id)}">${done[id]?'✓':esc(id)}</button><div class="what">${esc(s.t)}${s.d?` <span class="pn">· Detail ${s.d.join(' & ')}</span>`:''}</div></div>`;
+    if(s.hw||s.notes||s.tip||s.tools){h+='<div class="body">';
+      if(s.hw) h+='<ul class="hw">'+s.hw.map(([q,w,p])=>`<li>${q?`<span class="q">${esc(q)}</span> `:''}${esc(w)}${p?` <span class="pn">${esc(p)}</span>`:''}</li>`).join('')+'</ul>';
+      for(const [t,c] of (s.notes||[])) h+=`<div class="note ${c||''}">⚠ ${esc(t)}</div>`;
+      if(s.tip) h+=`<div class="tip">${esc(s.tip)}</div>`;
+      if(s.tools) h+=`<div class="tools"><b>🔧 Tools</b><ul>${s.tools.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`;
+      h+='</div>';}
+    if(figs.length) h+=`<div class="figs${figs.length>1?' two':''}">`+figs.map(([src,c])=>`<figure><figcaption>${esc(c)}</figcaption><img src="${src}" alt="${esc(c)}" loading="lazy"></figure>`).join('')+'</div>';
+    h+='</section>';
+  }
+  document.getElementById('list').innerHTML=h;
+  const steps=S.filter(s=>!s.sec), n=steps.filter(s=>done[String(s.n)]).length;
+  document.getElementById('prog').textContent=n+' / '+steps.length;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.num'); if(b){const id=b.closest('.step').dataset.id; done[id]=!done[id]; if(!done[id]) delete done[id]; try{localStorage.setItem(KEY,JSON.stringify(done))}catch(_){} render(); return;}
+  const im=e.target.closest('figure img'); if(im){const z=document.getElementById('zoom'); z.querySelector('img').src=im.src; z.classList.add('on'); z.scrollTo(0,0); return;}
+});
+document.getElementById('zclose').onclick=()=>document.getElementById('zoom').classList.remove('on');
+document.getElementById('reset').onclick=()=>{ if(confirm('Clear all check marks?')){done={}; try{localStorage.removeItem(KEY)}catch(_){} render();} };
+render();
+</script>
+</body></html>

@@ -1,4 +1,4 @@
-const V='thirdst-v25';
+const V='thirdst-v26';
 const CORE=['./','index.html','docs-text.json','hardware.json','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png','icon-maskable-512.png','../brand/turf-tek-logo-white.png','../brand/fonts/Satoshi-Regular.woff2','../brand/fonts/Satoshi-Medium.woff2','../brand/fonts/Satoshi-Bold.woff2','../brand/fonts/Satoshi-Black.woff2','../brand/fonts/Giften.woff'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
