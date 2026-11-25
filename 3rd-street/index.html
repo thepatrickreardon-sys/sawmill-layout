@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v24</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v25</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -3670,7 +3670,8 @@ details.scsec[open]>summary{border-bottom:1px solid var(--line)}
      ['s1','Delivery schedule','Materials, concrete, equipment'],
      ['s2','Inspections','Footing inspection before the pour? Final inspection date?'],
      ['s3','Weather plan','Rain days, cold-weather concrete (blankets, accelerator)'],
-     ['s4','Other trades','Landscapers, concrete, fencing, electric: who is on site when']]},
+     ['s4','Other trades','Landscapers, concrete, fencing, electric: who is on site when'],
+     ['s5','Lodging','Hotel for far jobs']]},
    {id:'contacts',t:'Contacts',info:1,contact:1,items:[
      ['p0','GC / site super','Name, phone, email'],
      ['p1','Owner / park contact','Name, phone, email'],
@@ -3686,10 +3687,12 @@ details.scsec[open]>summary{border-bottom:1px solid var(--line)}
      ['x3','Final safety inspection','Use zones, surfacing depth, hardware tight, no entrapments'],
      ['x4','Manuals and warranty handoff','']]},
    {id:'tools',t:'Tools to bring',items:V.tools.map((t,i)=>['t'+i,t,''])}];
+  const DEF={"c0": [3, "Tape, Nov 25: left 80' (plan 63'), bottom of leg 30' (27'-8\"), leg 40'-9\" (30'), right 35' (33'), inside line 48' (50'-5\"), top 77'-5\" (78'-1\"). Top is 8\" short of the plan. Re-tape the top and the inside line, plus the full width about 33' down. Moasure walk agrees on the left and the leg."], "c2": [1, "Moasure walk Nov 25. Heights look good. Enough material on site; may rip down a bit if needed, no major yardage."], "c3": [1, "Greenport Village ripped out more than needed. They backfill after the borders are in."], "c4": [1, "Solid dirt with some rocks. Fine for digging."], "c8": [1, "4th Street, open gate, 122½\" wide (10'-2½\")."], "c9": [0, "Water: fire department spigot, or a Village water tank (see Site info). Power: not checked yet."], "c11": [1, "3D scan (Plan → 3D scan) and Moasure walk, Nov 25."], "i0": [1, "Fire department spigot, or Greenport Village drops off a water tank and their guy runs it with a pump."], "i2": [1, "4th Street, open gate, 122½\" wide (10'-2½\")."], "i5": [3, "No dumpster. Pile spoils on site, then haul out or have Dom pick it up. Decide with the office."], "i7": [3, "Need a porta potty. None on site."], "i14": [1, "Solid dirt with some rocks. Fine for digging."], "d4": [0, "Greenport Village installs the surfacing (we just get it delivered here) and the borders. Borders wait until Patrick's lines are up. Village backfills after the borders."], "s4": [1, "Greenport Village: borders (after our lines are up), backfill, surfacing install."], "s5": [3, "Consider a hotel. Long drive out to Greenport."]}, DEFV='nov25a';
   const ITEMS={}; SEC.forEach(s=>s.items.forEach(it=>ITEMS[it[0]]={k:it[0],t:it[1],d:it[2],sec:s}));
   const SKEY='sitechk';
   let ST=store.get(SKEY,null);
   if(!ST){ ST={}; const old=store.get('visit',{}); Object.keys(old).forEach(k=>{ if(old[k]&&ITEMS[k]) ST[k]={s:1}; }); store.set(SKEY,ST); }
+  if(store.get('scDef',null)!==DEFV){ Object.keys(DEF).forEach(k=>{ if(!ITEMS[k]) return; const o=ST[k]||(ST[k]={}); if(!o.s&&!(o.n&&o.n.trim())){ o.s=DEF[k][0]; o.n=DEF[k][1]; } }); store.set('scDef',DEFV); store.set(SKEY,ST); }
   const save=()=>{ store.set(SKEY,ST); try{ renderInfo(); }catch(_){} };
   const g=k=>ST[k]||(ST[k]={}); const sOf=k=>{ const o=ST[k]||{}; if(o.s) return o.s; if(ITEMS[k].sec.info&&o.n&&o.n.trim()) return 1; return 0; };
 
