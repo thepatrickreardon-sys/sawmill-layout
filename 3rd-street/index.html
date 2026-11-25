@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v26</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v27</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -3215,7 +3215,11 @@ elevRefresh();
   if(location.hash==='#build') requestAnimationFrame(()=>{ lastW=W(); fitV(); renderAllB(); });
 })();
 </script>
-<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script><style id="uipolish">
+<script>/* updates: check every time the app is opened, and reload once when a new version takes over */
+if('serviceWorker' in navigator){ const had=!!navigator.serviceWorker.controller; let rl=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!had||rl) return; rl=true; location.reload(); });
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(reg=>{ reg.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') reg.update().catch(()=>{}); }); }).catch(()=>{})); }</script><style id="uipolish">
 /* UI polish (Nov 2026) */
 .subnav .seg.wide{overflow-x:auto;scrollbar-width:none}
 .subnav .seg.wide::-webkit-scrollbar{display:none}

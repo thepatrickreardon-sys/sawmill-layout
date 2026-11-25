@@ -2009,7 +2009,11 @@ fillSelects(); fit(); renderTapes(); renderPoles(); renderPoints(); route(); set
   if(location.hash==='#build') requestAnimationFrame(()=>{ lastW=W(); fitV(); renderAllB(); });
 })();
 </script>
-<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script><script>/* field mode: shrink the big tape numbers so they always fit the screen */
+<script>/* updates: check every time the app is opened, and reload once when a new version takes over */
+if('serviceWorker' in navigator){ const had=!!navigator.serviceWorker.controller; let rl=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!had||rl) return; rl=true; location.reload(); });
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(reg=>{ reg.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') reg.update().catch(()=>{}); }); }).catch(()=>{})); }</script><script>/* field mode: shrink the big tape numbers so they always fit the screen */
 (function(){const a=document.getElementById('fTa'),b=document.getElementById('fTb');if(!a||!b)return;
 let raf=0;function fit(){cancelAnimationFrame(raf);[a,b].forEach(e=>e.style.fontSize='');raf=requestAnimationFrame(()=>{
  const W=Math.min(document.documentElement.clientWidth,(a.closest('.fmode')||document.body).clientWidth)-20;let k=1;
