@@ -822,7 +822,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v29</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v30</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -3618,6 +3618,9 @@ details.scsec[open]>summary{border-bottom:1px solid var(--line)}
 .sirow b{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;padding-top:1px}
 .sirow a{color:var(--forest2);font-weight:700}
 .sirow.bad b{color:var(--bad)}
+details.sigrp{border-top:1px solid var(--line)}
+details.sigrp>summary{padding:11px 0;font-weight:700;font-size:15px;color:var(--forest2);cursor:pointer}
+details.sigrp[open]>summary{padding-bottom:4px}
 .sicnt{color:var(--muted);font-size:13px}
 .scview{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.92);display:grid;place-items:center}
 .scview img{max-width:100%;max-height:82vh}
@@ -3681,10 +3684,9 @@ details.scsec[open]>summary{border-bottom:1px solid var(--line)}
      ['p4','Concrete supplier',''],
      ['p5','Rental company',''],
      ['p6','Inspector','']]},
-   {id:'sup',t:'Suppliers near the site',info:1,contact:1,items:[
-     ['r0','Ready-mix: 1st choice',''],['r1','Ready-mix: 2nd choice',''],['r2','Ready-mix: 3rd choice',''],
-     ['g0','Stone: 1st choice',''],['g1','Stone: 2nd choice',''],
-     ['k0','Dumpster: 1st choice',''],['k1','Dumpster: 2nd choice',''],['k2','Dumpster: 3rd choice','']]},
+   {id:'mix',t:'Ready-mix concrete',info:1,contact:1,grp:1,items:[['r0','1st choice',''],['r1','2nd choice',''],['r2','3rd choice','']]},
+   {id:'stone',t:'Stone',info:1,contact:1,grp:1,items:[['g0','1st choice',''],['g1','2nd choice','']]},
+   {id:'dump',t:'Dumpsters',info:1,contact:1,grp:1,items:[['k0','1st choice',''],['k1','2nd choice',''],['k2','3rd choice','']]},
    {id:'close',t:'Changes & closeout',items:[
      ['x0','Change order process','Who approves changes and how they get written up'],
      ['x1','Existing damage photographed','Curbs, sidewalk, fence, lawn, trees before you start'],
@@ -3780,9 +3782,10 @@ details.scsec[open]>summary{border-bottom:1px solid var(--line)}
   if(plan) plan.insertAdjacentHTML('afterend',`<div class="card" id="siteInfo"><div class="sih"><h2>Site info</h2><span class="sicnt" id="siCnt"></span><button class="mbtn" id="siEdit">Edit</button></div><div id="siBody"></div></div>`);
   function linkify(t){ return esc(t).replace(/(\+?1?[ .-]?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4})/g,m=>`<a href="tel:${m.replace(/[^\d+]/g,'')}">${m}</a>`).replace(/([\w.+-]+@[\w-]+\.[\w.]+)/g,m=>`<a href="mailto:${m}">${m}</a>`).replace(/\n/g,'<br>'); }
   window.renderInfo=renderInfo; function renderInfo(){ const b=document.getElementById('siBody'); if(!b) return;
-    const rows=[]; SEC.filter(s=>s.info).forEach(s=>s.items.forEach(([k])=>{ const o=ST[k]||{}; if(o.n&&o.n.trim()) rows.push(`<div class="sirow ${sOf(k)===3?'bad':''}"><b>${esc(ITEMS[k].t)}</b><div>${linkify(o.n.trim())}</div></div>`); }));
+    const rows=[]; SEC.filter(s=>s.info&&!s.grp).forEach(s=>s.items.forEach(([k])=>{ const o=ST[k]||{}; if(o.n&&o.n.trim()) rows.push(`<div class="sirow ${sOf(k)===3?'bad':''}"><b>${esc(ITEMS[k].t)}</b><div>${linkify(o.n.trim())}</div></div>`); }));
     const bad=Object.values(ITEMS).filter(it=>sOf(it.k)===3&&!it.sec.info).map(it=>`<div class="sirow bad"><b>⚠ ${esc(it.t)}</b><div>${linkify((ST[it.k].n||'Problem').trim())}</div></div>`);
-    b.innerHTML=bad.join('')+rows.join('')||`<p class="muted small" style="margin:0">Water, access, gate code, staging, contacts and more. Fill them in under Notes → Site check and they show here.</p>`;
+    const grps=SEC.filter(s=>s.grp).map(s=>{ const r=s.items.map(([k])=>{ const o=ST[k]||{}; return o.n&&o.n.trim()?`<div class="sirow"><b>${esc(ITEMS[k].t)}</b><div>${linkify(o.n.trim())}</div></div>`:''; }).join(''); return r?`<details class="sigrp"><summary>${esc(s.t)}</summary>${r}</details>`:''; }).join('');
+    b.innerHTML=bad.join('')+rows.join('')+grps||`<p class="muted small" style="margin:0">Water, access, gate code, staging, contacts and more. Fill them in under Notes → Site check and they show here.</p>`;
     let n=0,d=0; Object.values(ITEMS).forEach(it=>{ n++; const s=sOf(it.k); if(s===1||s===2) d++; }); document.getElementById('siCnt').textContent=`${d} of ${n} checked`; }
   document.getElementById('siEdit')&&(document.getElementById('siEdit').onclick=()=>{ location.hash='site'; });
   // old first-day card is part of Site check now
