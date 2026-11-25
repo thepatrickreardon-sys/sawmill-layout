@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v22</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v23</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -3405,7 +3405,7 @@ details.laydet .ptable td:nth-child(2){min-width:150px}
     const card=box.closest('.hplan'), hh=document.querySelector('header').offsetHeight, nav=document.querySelector('nav.tabs'), nh=nav?nav.offsetHeight:0;
     const extra=card.offsetHeight-box.offsetHeight;
     box.style.setProperty('height',Math.max(320,innerHeight-hh-nh-extra-28)+'px','important'); };
-  if(!/^#doc=/.test(location.hash)){ history.replaceState(null,'','#home'); try{ route(); }catch(_){} }
+  const sent=/[?&](site|plan)=/.test(location.search)||((document.getElementById('bdBan')||{}).innerHTML||'').trim(); if(!/^#doc=/.test(location.hash)&&!sent){ history.replaceState(null,'','#home'); try{ route(); }catch(_){} }
   const fitAll=()=>{ try{ document.getElementById('hpZfit').click(); }catch(_){} const inn=document.getElementById('hpIn'); if(innerWidth<=720&&inn&&!box.classList.contains('iso3')){ const want=Math.ceil(inn.offsetHeight)+2, cur=box.offsetHeight; if(want<cur) box.style.setProperty('height',want+'px','important'); } };
   size(); requestAnimationFrame(()=>{ size(); fitAll(); setTimeout(fitAll,250); });
   addEventListener('resize',()=>{ size(); fitAll(); });
@@ -3574,4 +3574,210 @@ main{gap:12px!important}
   (opts||list).before(d);
   [opts,leg,list,tail&&tail.tagName==='P'?tail:null].forEach(x=>x&&body.appendChild(x));
   d.appendChild(body);
-})();</script></body></html>
+})();</script><style id="sitecss">
+.sc-top{display:grid;gap:10px}
+.sc-prog{display:flex;align-items:center;gap:10px}
+.sc-prog .bar{flex:1;height:8px;border-radius:99px;background:#e4ebe0;overflow:hidden}
+.sc-prog .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--sun));border-radius:99px}
+.sc-act{display:flex;gap:8px;flex-wrap:wrap}
+.sc-act button{flex:1 1 auto}
+.sc-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.sc-legend span{display:inline-flex;align-items:center;gap:5px}
+details.scsec{padding:0}
+details.scsec>summary{padding:14px 16px;display:flex;align-items:center;gap:8px}
+details.scsec>summary .n{margin-left:auto;margin-right:8px;font:600 12.5px var(--body);color:var(--muted)}
+details.scsec>summary .n.bad{color:var(--bad)}
+details.scsec[open]>summary{border-bottom:1px solid var(--line)}
+.scl{list-style:none;margin:0;padding:4px 0}
+.sci{display:grid;grid-template-columns:44px 1fr auto;gap:2px 8px;align-items:start;padding:10px 12px 10px 8px;border-bottom:1px solid var(--line)}
+.sci:last-child{border-bottom:0}
+.scst{width:36px;height:36px;border-radius:50%;border:2px solid #c9d3c4;background:#fff;display:grid;place-items:center;font-size:17px;font-weight:800;padding:0;min-height:0;color:#fff;margin-top:1px}
+.scst[data-s="1"]{background:var(--good);border-color:var(--good)}
+.scst[data-s="2"]{background:#9aa59c;border-color:#9aa59c;font-size:11px}
+.scst[data-s="3"]{background:var(--bad);border-color:var(--bad)}
+.sct b{display:block;font-size:15.5px;line-height:1.25}
+.sct span{display:block;font-size:13px;color:var(--muted);line-height:1.35;margin-top:2px}
+.sci.s2 .sct b{color:var(--muted);text-decoration:line-through}
+.scph{min-height:36px;min-width:40px;padding:0 8px;font-size:17px;border-radius:10px;background:var(--green-l);border:0}
+.scph b{font:700 11px var(--body);margin-left:2px}
+.scnote{grid-column:2 / 4;width:100%;box-sizing:border-box;min-height:42px;font:15px var(--body);padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fbfcfa;resize:vertical}
+.scnote:placeholder-shown{background:#fff}
+.scpics{grid-column:2 / 4;display:flex;gap:6px;flex-wrap:wrap}
+.scpics img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.scaddn{grid-column:2 / 4;justify-self:start;background:none;border:0;padding:2px 0;min-height:0;color:var(--forest2);font-weight:700;font-size:13px;text-decoration:underline}
+.scbad{border:2px solid var(--bad)!important}
+.scbad h3{margin:0 0 6px;color:var(--bad);font:700 18px var(--display);text-transform:uppercase;letter-spacing:.04em}
+.scbad li{margin:4px 0}
+/* Site info on the Plan page */
+#siteInfo h2{margin:0}
+#siteInfo .sih{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#siteInfo .sih button{margin-left:auto}
+.sirow{display:grid;grid-template-columns:118px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14.5px}
+.sirow:first-of-type{border-top:0}
+.sirow b{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;padding-top:1px}
+.sirow a{color:var(--forest2);font-weight:700}
+.sirow.bad b{color:var(--bad)}
+.sicnt{color:var(--muted);font-size:13px}
+.scview{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.92);display:grid;place-items:center}
+.scview img{max-width:100%;max-height:82vh}
+.scview .row{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));display:flex;gap:10px}
+.scban{background:var(--sun);color:var(--forest);border-radius:14px;padding:12px 14px;display:grid;gap:8px}
+.scban .r{display:flex;gap:8px}
+</style>
+<script id="sitecheck">/* ---------- PRE-CONSTRUCTION SITE CHECK ----------
+   Patrick's pre-construction list (docs, site info, equipment, schedule, contacts, closeout)
+   plus the first-day site walk. Tap the circle: done / N/A / problem. Notes and photos per item.
+   Site info shows on the Plan page. Send to crew = link that loads the same answers. */
+(function(){
+  const J=JOB, V=J.visit||{checks:[],tools:[]}, NH=(DATA.holes||[]).length;
+  const SEC=[
+   {id:'docs',t:'Plans & documents',items:[
+     ['d0','Scale drawing','Paper copy in the truck and the PDF on your phone'],
+     ['d1','Site plan','Paper and PDF'],
+     ['d2','Coordinate points','Footing XY table, paper and PDF'],
+     ['d3','Install documents','Paper and PDF (also under Docs in this app)'],
+     ['d4','Final scope of work','No contradictions between plan, scope and install sheets. Note what can be changed and what can\'t.'],
+     ['d5','Footings and concrete',`${NH} holes in this app. Note bags or yards needed and who supplies the concrete.`],
+     ['d6','Materials ordered and confirmed','Confirmation number and delivery date'],
+     ['d7','Delivery checked against packing list','Count boxes and hardware. Note anything short or damaged.'],
+     ['d8','Permits and approvals','Copies on hand']]},
+   {id:'walk',t:'Site walk',items:V.checks.map((c,i)=>['c'+i,c[0],c[1]])},
+   {id:'info',t:'Site info',info:1,items:[
+     ['i0','Water','Where the water is: spigot, hydrant, building. Key or hose needed?'],
+     ['i1','Power','Outlet location, or bring a generator'],
+     ['i2','Site access','Which gate or entrance, gate width, truck route, soft ground'],
+     ['i3','Gate or lock code',''],
+     ['i4','Staging and storage','Where materials and boxes sit'],
+     ['i5','Dumpster and spoils','Where the dumpster, dirt and RCA go'],
+     ['i6','Crew parking',''],
+     ['i7','Bathroom',''],
+     ['i8','Work hours and noise','Start time, school hours, quiet times'],
+     ['i9','Sign-in and site rules','School or park sign-in, badges, GC safety orientation'],
+     ['i10','Site security','Fencing, locks, who closes up at night'],
+     ['i11','Traffic control','Near a road or parking lot? Cones, flagger, signs'],
+     ['i12','811 ticket','Ticket number and expiration date'],
+     ['i13','Overhead lines and irrigation','Wires over the work area, sprinkler heads, valve boxes'],
+     ['i14','Soil','Soil report if any, and what your test hole showed'],
+     ['i15','Nearest hospital','Name and address of the closest ER or urgent care']]},
+   {id:'equip',t:'Equipment & safety',items:[
+     ['e0','Equipment and rentals','Auger, skid steer, lift, mixer. Who brings what.'],
+     ['e1','Rental return dates','So nothing runs extra days'],
+     ['e2','Ground protection','Mats or plywood for soft ground and lawn'],
+     ['e3','PPE','Hard hats, vests, glasses, gloves, ear protection, boots'],
+     ['e4','First aid and emergency plan','Kit on the truck, emergency contacts, site address for 911']]},
+   {id:'sched',t:'Schedule & coordination',items:[
+     ['s0','Days and man-hours','Your estimate (Build days helps)'],
+     ['s1','Delivery schedule','Materials, concrete, equipment'],
+     ['s2','Inspections','Footing inspection before the pour? Final inspection date?'],
+     ['s3','Weather plan','Rain days, cold-weather concrete (blankets, accelerator)'],
+     ['s4','Other trades','Landscapers, concrete, fencing, electric: who is on site when']]},
+   {id:'contacts',t:'Contacts',info:1,contact:1,items:[
+     ['p0','GC / site super','Name, phone, email'],
+     ['p1','Owner / park contact','Name, phone, email'],
+     ['p2','Turf Tek office',''],
+     ['p3','Manufacturer rep',''],
+     ['p4','Concrete supplier',''],
+     ['p5','Rental company',''],
+     ['p6','Inspector','']]},
+   {id:'close',t:'Changes & closeout',items:[
+     ['x0','Change order process','Who approves changes and how they get written up'],
+     ['x1','Existing damage photographed','Curbs, sidewalk, fence, lawn, trees before you start'],
+     ['x2','Punch list and closeout','Final walk with the GC or owner'],
+     ['x3','Final safety inspection','Use zones, surfacing depth, hardware tight, no entrapments'],
+     ['x4','Manuals and warranty handoff','']]},
+   {id:'tools',t:'Tools to bring',items:V.tools.map((t,i)=>['t'+i,t,''])}];
+  const ITEMS={}; SEC.forEach(s=>s.items.forEach(it=>ITEMS[it[0]]={k:it[0],t:it[1],d:it[2],sec:s}));
+  const SKEY='sitechk';
+  let ST=store.get(SKEY,null);
+  if(!ST){ ST={}; const old=store.get('visit',{}); Object.keys(old).forEach(k=>{ if(old[k]&&ITEMS[k]) ST[k]={s:1}; }); store.set(SKEY,ST); }
+  const save=()=>{ store.set(SKEY,ST); try{ renderInfo(); }catch(_){} };
+  const g=k=>ST[k]||(ST[k]={}); const sOf=k=>{ const o=ST[k]||{}; if(o.s) return o.s; if(ITEMS[k].sec.info&&o.n&&o.n.trim()) return 1; return 0; };
+
+  // ---- photos (kept on this phone) ----
+  const PDB=()=>new Promise((res,rej)=>{ const r=indexedDB.open('trd_site',1); r.onupgradeneeded=()=>r.result.createObjectStore('ph'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); });
+  async function phPut(id,blob){ const d=await PDB(); await new Promise((res,rej)=>{ const tx=d.transaction('ph','readwrite'); tx.objectStore('ph').put(blob,id); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); d.close(); }
+  async function phGet(id){ const d=await PDB(); const v=await new Promise(res=>{ const q=d.transaction('ph').objectStore('ph').get(id); q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); }); d.close(); return v; }
+  async function phDel(id){ const d=await PDB(); await new Promise(res=>{ const tx=d.transaction('ph','readwrite'); tx.objectStore('ph').delete(id); tx.oncomplete=res; tx.onerror=res; }); d.close(); }
+  function shrink(file){ return new Promise(res=>{ const img=new Image(), u=URL.createObjectURL(file); img.onload=()=>{ const m=1600, k=Math.min(1,m/Math.max(img.width,img.height)), c=document.createElement('canvas'); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k); c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u); c.toBlob(b=>res(b||file),'image/jpeg',.82); }; img.onerror=()=>{ URL.revokeObjectURL(u); res(file); }; img.src=u; }); }
+  const urls={};
+  async function thumbs(k,el){ const ids=(ST[k]&&ST[k].p)||[]; el.innerHTML=''; for(const id of ids){ let u=urls[id]; if(!u){ const b=await phGet(id); if(!b) continue; u=urls[id]=URL.createObjectURL(b); } const im=document.createElement('img'); im.src=u; im.dataset.pid=id; im.dataset.k=k; el.appendChild(im); } }
+
+  // ---- the view ----
+  document.querySelector('section[data-view=notes]').insertAdjacentHTML('afterend',`<section data-view="site" hidden>
+    <div id="scBan"></div>
+    <div class="card sc-top"><h2 style="margin:0">Pre-construction check</h2>
+      <div class="sc-prog"><div class="bar"><i id="scBar"></i></div><span class="small muted" id="scCount"></span></div>
+      <div class="sc-legend"><span><i class="scst" data-s="1" style="width:18px;height:18px;font-size:10px">✓</i>Done</span><span><i class="scst" data-s="2" style="width:18px;height:18px;font-size:7px">N/A</i>Not needed</span><span><i class="scst" data-s="3" style="width:18px;height:18px;font-size:10px">!</i>Problem</span><span>Tap the circle to change it</span></div>
+      <div class="sc-act"><button class="primary" id="scShare">📤 Send to crew</button><button id="scCopy">Copy as text</button></div></div>
+    <div class="card scbad" id="scBad" hidden></div>
+    <div id="scList"></div>
+    <div class="card"><button class="vreset" id="scClear">Clear all checks</button><p class="small muted" style="margin:8px 0 0">Saved on this phone. Photos stay on this phone; Send to crew sends the checks and notes.</p></div>
+  </section>`);
+  GROUPS.notes.push('site'); if(!TABS.includes('site')) TABS.push('site');
+  PARENT.site='notes'; KIDS.notes=['notes','site','build']; KLAB.site='Site check'; SUBLAB.site='Site check';
+  const list=document.getElementById('scList'), open=store.get('scOpen',{docs:1});
+  const glyph=s=>s===1?'✓':s===2?'N/A':s===3?'!':'';
+  function itemHTML(it){ const o=ST[it.k]||{}, s=sOf(it.k), sec=it.sec, showNote=sec.info||o.n||o.showN;
+    return `<li class="sci s${s}" data-k="${it.k}">
+      <button class="scst" data-s="${s}" data-cyc="${it.k}" aria-label="Status">${glyph(s)}</button>
+      <div class="sct"><b>${esc(it.t)}</b>${it.d?`<span>${esc(it.d)}</span>`:''}</div>
+      <button class="scph" data-ph="${it.k}" aria-label="Add photo">📷${(o.p||[]).length?`<b>${o.p.length}</b>`:''}</button>
+      ${showNote?`<textarea class="scnote" rows="1" data-note="${it.k}" placeholder="${sec.contact?'Name, phone, email':sec.info?'Where / what':'Note'}">${esc(o.n||'')}</textarea>`:`<button class="scaddn" data-addn="${it.k}">+ Note</button>`}
+      <div class="scpics" data-pics="${it.k}"></div></li>`; }
+  function secCount(s){ let d=0,b=0; s.items.forEach(([k])=>{ const v=sOf(k); if(v===1||v===2) d++; if(v===3) b++; }); return {d,b,n:s.items.length}; }
+  function render(){
+    list.innerHTML=SEC.filter(s=>s.items.length).map(s=>{ const c=secCount(s); return `<details class="card scsec" data-sec="${s.id}" ${open[s.id]?'open':''}><summary><span>${esc(s.t)}</span><span class="n ${c.b?'bad':''}">${c.b?c.b+' problem'+(c.b>1?'s':'')+' · ':''}${c.d}/${c.n}</span></summary><ul class="scl">${s.items.map(([k])=>itemHTML(ITEMS[k])).join('')}</ul></details>`; }).join('');
+    list.querySelectorAll('[data-pics]').forEach(el=>thumbs(el.dataset.pics,el));
+    list.querySelectorAll('textarea.scnote').forEach(grow);
+    head(); }
+  function head(){ let n=0,d=0; const bad=[]; Object.values(ITEMS).forEach(it=>{ n++; const s=sOf(it.k); if(s===1||s===2) d++; if(s===3) bad.push(it); });
+    document.getElementById('scBar').style.width=(n?d/n*100:0)+'%'; document.getElementById('scCount').textContent=`${d} of ${n}`;
+    const bb=document.getElementById('scBad'); bb.hidden=!bad.length; bb.innerHTML=bad.length?`<h3>Needs attention</h3><ul style="margin:0;padding-left:18px">${bad.map(it=>`<li><b>${esc(it.t)}</b>${ST[it.k]&&ST[it.k].n?` – ${esc(ST[it.k].n)}`:''}</li>`).join('')}</ul>`:''; }
+  function grow(t){ t.style.height='auto'; t.style.height=Math.min(200,t.scrollHeight+2)+'px'; }
+  function refreshItem(k){ const li=list.querySelector(`li[data-k="${k}"]`); if(!li) return; const tmp=document.createElement('div'); tmp.innerHTML=itemHTML(ITEMS[k]); const nl=tmp.firstElementChild; li.replaceWith(nl); thumbs(k,nl.querySelector('[data-pics]')); const t=nl.querySelector('textarea'); if(t) grow(t);
+    const sec=nl.closest('details'), s=ITEMS[k].sec, c=secCount(s), n=sec.querySelector('summary .n'); n.className='n'+(c.b?' bad':''); n.textContent=`${c.b?c.b+' problem'+(c.b>1?'s':'')+' · ':''}${c.d}/${c.n}`; head(); }
+  list.addEventListener('toggle',e=>{ const d=e.target; if(d.dataset&&d.dataset.sec){ open[d.dataset.sec]=d.open?1:0; store.set('scOpen',open); } },true);
+  const picker=document.createElement('input'); picker.type='file'; picker.accept='image/*'; picker.multiple=true; picker.hidden=true; document.body.appendChild(picker); let pickK=null;
+  picker.addEventListener('change',async()=>{ const k=pickK; if(!k) return; const o=g(k); o.p=o.p||[]; for(const f of picker.files){ const id=k+':'+Date.now()+':'+Math.random().toString(36).slice(2,6); try{ await phPut(id,await shrink(f)); o.p.push(id); }catch(e){ alert('Could not save the photo on this phone.'); } } picker.value=''; save(); refreshItem(k); });
+  list.addEventListener('click',e=>{ let b;
+    if(b=e.target.closest('[data-cyc]')){ const k=b.dataset.cyc, o=g(k), cur=sOf(k); o.s=(cur+1)%4; save(); refreshItem(k); try{ navigator.vibrate&&navigator.vibrate(8); }catch(_){} return; }
+    if(b=e.target.closest('[data-ph]')){ pickK=b.dataset.ph; picker.click(); return; }
+    if(b=e.target.closest('[data-addn]')){ const k=b.dataset.addn; g(k).showN=1; refreshItem(k); const t=list.querySelector(`textarea[data-note="${k}"]`); t&&t.focus(); return; }
+    if(b=e.target.closest('img[data-pid]')) viewPic(b.dataset.k,b.dataset.pid); });
+  list.addEventListener('input',e=>{ const t=e.target.closest('textarea[data-note]'); if(!t) return; const o=g(t.dataset.note); o.n=t.value; grow(t); clearTimeout(t._t); t._t=setTimeout(()=>{ save(); head(); },300); });
+  list.addEventListener('change',e=>{ const t=e.target.closest('textarea[data-note]'); if(t){ save(); refreshItem(t.dataset.note); } });
+  function viewPic(k,id){ const v=document.createElement('div'); v.className='scview'; v.innerHTML=`<img src="${urls[id]}"><div class="row"><button id="scPDel">Delete photo</button><button class="primary" id="scPX">Close</button></div>`; document.body.appendChild(v);
+    v.onclick=async e=>{ if(e.target.id==='scPDel'){ if(!confirm('Delete this photo?')) return; const o=g(k); o.p=(o.p||[]).filter(x=>x!==id); await phDel(id); save(); refreshItem(k); v.remove(); } else if(e.target.id==='scPX'||e.target===v) v.remove(); }; }
+  document.getElementById('scClear').onclick=()=>{ if(!confirm('Clear every check and note? Photos stay.')) return; Object.values(ST).forEach(o=>{ delete o.s; delete o.n; }); save(); render(); };
+
+  // ---- text + link for the crew ----
+  function text(){ const L=[`${J.name||J.short} – pre-construction check`];
+    SEC.forEach(s=>{ const rows=s.items.map(([k])=>{ const it=ITEMS[k], st=sOf(k), o=ST[k]||{}; if(!st&&!(o.n&&o.n.trim())) return null; return `${st===1?'✓':st===2?'N/A':st===3?'⚠':'•'} ${it.t}${o.n&&o.n.trim()?': '+o.n.trim().replace(/\n+/g,'; '):''}`; }).filter(Boolean); if(rows.length) L.push('', s.t.toUpperCase(), ...rows); });
+    return L.join('\n'); }
+  function link(){ const packed={}; Object.keys(ST).forEach(k=>{ const o=ST[k]; if(!ITEMS[k]) return; const s=sOf(k), n=(o.n||'').trim(); if(s||n) packed[k]=[s,n]; });
+    return location.origin+location.pathname+'?site='+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(packed))))); }
+  document.getElementById('scShare').onclick=async()=>{ const t=text(), u=link();
+    try{ if(navigator.share){ await navigator.share({title:`${J.short||''} site check`,text:t+'\n\nOpen to load it in the app:',url:u}); return; } }catch(e){ if(e&&e.name==='AbortError') return; }
+    try{ await navigator.clipboard.writeText(t+'\n\n'+u); window.appToast&&appToast('Copied. Paste it in a text.'); }catch(e){ prompt('Copy this link',u); } };
+  document.getElementById('scCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(text()); window.appToast&&appToast('Copied'); }catch(e){ prompt('Copy',text()); } };
+  try{ const q=new URLSearchParams(location.search).get('site'); if(q){ const got=JSON.parse(decodeURIComponent(escape(atob(q)))); history.replaceState(null,'',location.pathname+'#site');
+    const n=Object.keys(got).length, ban=document.getElementById('scBan');
+    ban.innerHTML=`<div class="scban card"><b>A site check was sent to you (${n} item${n===1?'':'s'} filled in).</b><div class="r"><button class="primary" data-l>Load it</button><button data-x>Keep mine</button></div></div>`;
+    ban.onclick=e=>{ if(e.target.closest('[data-l]')){ Object.keys(got).forEach(k=>{ if(!ITEMS[k]) return; const o=g(k); o.s=got[k][0]||0; o.n=got[k][1]||''; }); save(); render(); ban.innerHTML=''; window.appToast&&appToast('Site check loaded'); } else if(e.target.closest('[data-x]')) ban.innerHTML=''; };
+    setTimeout(()=>{ location.hash='site'; try{ route(); }catch(_){} },50); } }catch(e){}
+
+  // ---- Site info card on the Plan page ----
+  const plan=document.querySelector('section[data-view=home] .hplan');
+  if(plan) plan.insertAdjacentHTML('afterend',`<div class="card" id="siteInfo"><div class="sih"><h2>Site info</h2><span class="sicnt" id="siCnt"></span><button class="mbtn" id="siEdit">Edit</button></div><div id="siBody"></div></div>`);
+  function linkify(t){ return esc(t).replace(/(\+?1?[ .-]?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4})/g,m=>`<a href="tel:${m.replace(/[^\d+]/g,'')}">${m}</a>`).replace(/([\w.+-]+@[\w-]+\.[\w.]+)/g,m=>`<a href="mailto:${m}">${m}</a>`).replace(/\n/g,'<br>'); }
+  window.renderInfo=renderInfo; function renderInfo(){ const b=document.getElementById('siBody'); if(!b) return;
+    const rows=[]; SEC.filter(s=>s.info).forEach(s=>s.items.forEach(([k])=>{ const o=ST[k]||{}; if(o.n&&o.n.trim()) rows.push(`<div class="sirow ${sOf(k)===3?'bad':''}"><b>${esc(ITEMS[k].t)}</b><div>${linkify(o.n.trim())}</div></div>`); }));
+    const bad=Object.values(ITEMS).filter(it=>sOf(it.k)===3&&!it.sec.info).map(it=>`<div class="sirow bad"><b>⚠ ${esc(it.t)}</b><div>${linkify((ST[it.k].n||'Problem').trim())}</div></div>`);
+    b.innerHTML=bad.join('')+rows.join('')||`<p class="muted small" style="margin:0">Water, access, gate code, staging, contacts and more. Fill them in under Notes → Site check and they show here.</p>`;
+    let n=0,d=0; Object.values(ITEMS).forEach(it=>{ n++; const s=sOf(it.k); if(s===1||s===2) d++; }); document.getElementById('siCnt').textContent=`${d} of ${n} checked`; }
+  document.getElementById('siEdit')&&(document.getElementById('siEdit').onclick=()=>{ location.hash='site'; });
+  // old first-day card is part of Site check now
+  const oldV=document.getElementById('hVisitCard'); if(oldV) oldV.hidden=true;
+  render(); renderInfo();
+})();</script>
+</body></html>
