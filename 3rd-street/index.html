@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v14</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v15</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -2107,7 +2107,7 @@ document.getElementById('mBtn').onclick=()=>{ MS.on=!MS.on; MS.pts=[]; document.
   document.getElementById('hpZfit').onclick=()=>setZ(1);
   draw();
   // phone: start zoomed so the plan fills the box height, centred on the structure
-  const startFit=()=>{ if(V3H) return; const r=box.getBoundingClientRect(); const fill=r.height*(CROP[2]/CROP[3])/r.width; if(fill>1.15){ setZ(fill); const xs=poles.map(p=>p.l), ys=poles.map(p=>p.t); const cx=(Math.min(...xs)+Math.max(...xs))/200, cy=(Math.min(...ys)+Math.max(...ys))/200; box.scrollLeft=cx*inn.offsetWidth-r.width/2; box.scrollTop=cy*inn.offsetHeight-r.height/2; } };
+  const startFit=window.hpStartFit=()=>{ if(V3H) return; const r=box.getBoundingClientRect(); const fill=r.height*(CROP[2]/CROP[3])/r.width; if(fill>1.15){ setZ(fill); const xs=poles.map(p=>p.l), ys=poles.map(p=>p.t); const cx=(Math.min(...xs)+Math.max(...xs))/200, cy=(Math.min(...ys)+Math.max(...ys))/200; box.scrollLeft=cx*inn.offsetWidth-r.width/2; box.scrollTop=cy*inn.offsetHeight-r.height/2; } };
   requestAnimationFrame(startFit);
   // Plan / 3D (Burke's isometric sheet): tap a part to open its install sheets
   { const sw=document.getElementById('hpV3'); if(ISOH){ sw.hidden=false;
@@ -3259,7 +3259,7 @@ header{background:var(--stripes),var(--field)!important;color:#fff;border-bottom
 header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
 header .bar{padding-block:10px 8px}
 header .tmark{width:44px;height:auto;flex:none;margin:-4px -2px -2px -6px;overflow:visible}
-header h1{font-size:21px;letter-spacing:.04em;text-transform:uppercase;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header h1{font-size:clamp(16px,4.9vw,21px);letter-spacing:.035em;text-transform:uppercase;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 header h1 span{color:#fff}
 header h1 span+span{color:var(--sun)}
 header .job{color:rgba(255,255,255,.72)!important;font-size:12.5px;margin-top:2px}
@@ -3396,4 +3396,15 @@ details.laydet .ptable td:nth-child(2){min-width:150px}
   if(v&&ns){ const cards=[...ns.children].filter(x=>x.classList.contains('card')&&x!==v); const last=cards[cards.length-1]; if(last) last.after(v); }
   try{ measFit(false); }catch(_){}
   if(location.hash==='#map') try{ route(); }catch(_){}
+})();</script><script id="openplan">/* always open on the Plan, plan filling the screen */
+(function(){
+  const box=document.getElementById('hpBox'); if(!box) return;
+  const size=()=>{ if(innerWidth>720||box.classList.contains('iso3')){ box.style.removeProperty('height'); return; }
+    const card=box.closest('.hplan'), hh=document.querySelector('header').offsetHeight, nav=document.querySelector('nav.tabs'), nh=nav?nav.offsetHeight:0;
+    const extra=card.offsetHeight-box.offsetHeight;
+    box.style.setProperty('height',Math.max(320,innerHeight-hh-nh-extra-28)+'px','important'); };
+  if(!/^#doc=/.test(location.hash)){ history.replaceState(null,'','#home'); try{ route(); }catch(_){} }
+  size(); requestAnimationFrame(()=>{ size(); try{ window.hpStartFit&&window.hpStartFit(); }catch(_){} });
+  addEventListener('resize',size);
+  addEventListener('hashchange',()=>{ if(location.hash==='#home'||location.hash==='') requestAnimationFrame(size); });
 })();</script></body></html>
