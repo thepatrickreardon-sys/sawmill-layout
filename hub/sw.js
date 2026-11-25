@@ -1,5 +1,5 @@
-const V='hub-v5';
-const CORE=['./','index.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'];
+const V='hub-v6';
+const CORE=['./','index.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','../brand/turf-tek-logo-white.png','../brand/fonts/Satoshi-Regular.woff2','../brand/fonts/Satoshi-Medium.woff2','../brand/fonts/Satoshi-Bold.woff2','../brand/fonts/Satoshi-Black.woff2','../brand/fonts/Giften.woff'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{for(const k of await caches.keys()) if(k!==V&&k.startsWith('hub-v')) await caches.delete(k); await self.clients.claim();})());});
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;

@@ -2,32 +2,31 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#10261a">
+<meta name="theme-color" content="#14211B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>3rd Street 3D scan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style id="ttfonts">@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Regular.woff2') format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Medium.woff2') format('woff2');font-weight:500 600;font-display:swap}@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Bold.woff2') format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Black.woff2') format('woff2');font-weight:800 900;font-display:swap}@font-face{font-family:'Giften';src:url('../../brand/fonts/Giften.woff') format('woff');font-weight:400;font-display:swap}</style>
 <style>
-:root{--brand:#86c440;--sun:#e2e773;--forest:#10261a;--forest2:#1d4424;
-  --field:radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,#1d4424 45%,#10261a 100%);
+:root{--brand:#86C53F;--sun:#E2E872;--forest:#14211B;--forest2:#22372B;
+  --field:radial-gradient(120% 90% at 50% 0%,#2F4A3A 0%,#22372B 45%,#14211B 100%);
   --stripes:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:#cfd8cc;font-family:Barlow,system-ui,sans-serif;overscroll-behavior:none;touch-action:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#cfd8cc;font-family:"Satoshi",system-ui,sans-serif;overscroll-behavior:none;touch-action:none}
 canvas{display:block;position:fixed;inset:0;width:100vw;height:100vh;touch-action:none}
-.bar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:var(--stripes),var(--field);color:#fff;box-shadow:0 4px 18px rgba(16,38,26,.3)}
+.bar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:var(--stripes),var(--field);color:#fff;box-shadow:0 4px 18px rgba(20,33,27,.3)}
 .bar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
-.bar h1{margin:0;font:700 19px/1.05 "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;flex:1;min-width:0}
-.bar h1 small{display:block;font:500 12px Barlow,sans-serif;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.7);margin-top:2px}
-button{font:700 14px Barlow,sans-serif;border-radius:10px;min-height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;-webkit-user-select:none;user-select:none}
+.bar h1{margin:0;font:700 19px/1.05 "Satoshi",sans-serif;letter-spacing:.05em;text-transform:uppercase;flex:1;min-width:0}
+.bar h1 small{display:block;font:500 12px "Satoshi",sans-serif;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.7);margin-top:2px}
+button{font:700 14px "Satoshi",sans-serif;border-radius:10px;min-height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;-webkit-user-select:none;user-select:none}
 button:active{transform:scale(.96)}
 button.sun{background:var(--sun);color:var(--forest);border-color:var(--sun)}
 .views{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));z-index:5;display:flex;justify-content:center;gap:8px;padding:0 12px;flex-wrap:wrap}
-.views button{background:rgba(16,38,26,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.views button{background:rgba(20,33,27,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .views button[aria-pressed="true"]{background:var(--sun);color:var(--forest)}
-.hint{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);z-index:4;background:rgba(16,38,26,.85);color:#fff;font-size:13px;font-weight:600;padding:8px 14px;border-radius:99px;white-space:nowrap;transition:opacity .4s;pointer-events:none}
+.hint{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);z-index:4;background:rgba(20,33,27,.85);color:#fff;font-size:13px;font-weight:600;padding:8px 14px;border-radius:99px;white-space:nowrap;transition:opacity .4s;pointer-events:none}
 .load{position:fixed;inset:0;z-index:6;display:grid;place-items:center;background:var(--stripes),var(--field);color:#fff;text-align:center;transition:opacity .5s}
-.load b{font:700 26px "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.load b{font:700 26px "Satoshi",sans-serif;letter-spacing:.05em;text-transform:uppercase}
 .load .pb{width:220px;height:8px;border-radius:99px;background:rgba(255,255,255,.15);margin:14px auto 8px;overflow:hidden}
 .load .pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--sun));transition:width .2s}
 .load p{margin:0;color:rgba(255,255,255,.7);font-size:13px}

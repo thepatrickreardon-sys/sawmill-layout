@@ -2,33 +2,32 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#10261a">
+<meta name="theme-color" content="#14211B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>3rd Street 3D grade</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style id="ttfonts">@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Regular.woff2') format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Medium.woff2') format('woff2');font-weight:500 600;font-display:swap}@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Bold.woff2') format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'Satoshi';src:url('../../brand/fonts/Satoshi-Black.woff2') format('woff2');font-weight:800 900;font-display:swap}@font-face{font-family:'Giften';src:url('../../brand/fonts/Giften.woff') format('woff');font-weight:400;font-display:swap}</style>
 <style>
-:root{--brand:#86c440;--sun:#e2e773;--forest:#10261a;--forest2:#1d4424;
-  --field:radial-gradient(120% 90% at 50% 0%,#2a5a2c 0%,#1d4424 45%,#10261a 100%);
+:root{--brand:#86C53F;--sun:#E2E872;--forest:#14211B;--forest2:#22372B;
+  --field:radial-gradient(120% 90% at 50% 0%,#2F4A3A 0%,#22372B 45%,#14211B 100%);
   --stripes:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 38px,rgba(0,0,0,.04) 38px 76px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:#dfe8dc;font-family:Barlow,system-ui,sans-serif;overscroll-behavior:none;touch-action:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#dfe8dc;font-family:"Satoshi",system-ui,sans-serif;overscroll-behavior:none;touch-action:none}
 canvas{display:block;position:fixed;inset:0;width:100vw;height:100vh;touch-action:none}
-.bar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:var(--stripes),var(--field);color:#fff;box-shadow:0 4px 18px rgba(16,38,26,.3)}
+.bar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:var(--stripes),var(--field);color:#fff;box-shadow:0 4px 18px rgba(20,33,27,.3)}
 .bar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--brand),var(--sun),var(--brand))}
-.bar h1{margin:0;font:700 19px/1.05 "Barlow Condensed",sans-serif;letter-spacing:.05em;text-transform:uppercase;flex:1;min-width:0}
-.bar h1 small{display:block;font:500 12px Barlow,sans-serif;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.7);margin-top:2px}
-button{font:700 14px Barlow,sans-serif;border-radius:10px;min-height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;-webkit-user-select:none;user-select:none}
+.bar h1{margin:0;font:700 19px/1.05 "Satoshi",sans-serif;letter-spacing:.05em;text-transform:uppercase;flex:1;min-width:0}
+.bar h1 small{display:block;font:500 12px "Satoshi",sans-serif;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.7);margin-top:2px}
+button{font:700 14px "Satoshi",sans-serif;border-radius:10px;min-height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;-webkit-user-select:none;user-select:none}
 button:active{transform:scale(.96)}
 button.sun{background:var(--sun);color:var(--forest);border-color:var(--sun)}
 .ctl{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:5;display:grid;gap:8px;justify-items:center;padding:0 10px}
-.seg{display:inline-flex;background:rgba(16,38,26,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;padding:3px;gap:2px}
+.seg{display:inline-flex;background:rgba(20,33,27,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;padding:3px;gap:2px}
 .seg button{border:0;background:transparent;min-height:36px;padding:0 12px}
 .seg button[aria-pressed="true"]{background:var(--sun);color:var(--forest)}
 .seg .lbl{color:rgba(255,255,255,.6);font-size:12px;font-weight:600;align-self:center;padding:0 6px 0 8px}
-.read{position:fixed;left:50%;top:calc(74px + env(safe-area-inset-top));transform:translateX(-50%);z-index:4;background:rgba(16,38,26,.92);color:#fff;font-size:14px;font-weight:600;padding:9px 14px;border-radius:14px;text-align:center;max-width:calc(100vw - 24px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
-.read b{color:var(--sun);font:700 22px "Barlow Condensed",sans-serif;letter-spacing:.02em}
+.read{position:fixed;left:50%;top:calc(74px + env(safe-area-inset-top));transform:translateX(-50%);z-index:4;background:rgba(20,33,27,.92);color:#fff;font-size:14px;font-weight:600;padding:9px 14px;border-radius:14px;text-align:center;max-width:calc(100vw - 24px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.read b{color:var(--sun);font:700 22px "Satoshi",sans-serif;letter-spacing:.02em}
 .legend{position:fixed;right:10px;top:calc(130px + env(safe-area-inset-top));z-index:4;background:rgba(255,255,255,.9);border-radius:12px;padding:8px 10px;font-size:12px;font-weight:600;color:#16221a;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 .legend .ramp{width:14px;height:120px;border-radius:4px;margin:4px auto}
 .legend div{text-align:center}
@@ -88,9 +87,9 @@ const base=new THREE.Mesh(new THREE.CircleGeometry(Math.hypot(X1-X0,Y1-Y0)/FT*0.
 const deco=new THREE.Group(); root.add(deco);
 function tube(pts,color,r){ const curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',0); return new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(8,pts.length*2),r,6,false),new THREE.MeshLambertMaterial({color})); }
 function edgePts(P,closed,step=12){ const out=[]; const n=P.length; for(let i=0;i<(closed?n:n-1);i++){ const a=P[i],b=P[(i+1)%n]; const L=Math.hypot(b[0]-a[0],b[1]-a[1]); const m=Math.max(1,Math.ceil(L/step)); for(let k=0;k<m;k++){ const x=a[0]+(b[0]-a[0])*k/m, y=a[1]+(b[1]-a[1])*k/m; out.push([x,y]); } } if(closed) out.push(P[0]); else out.push(P[n-1]); return out; }
-function label(text,sub,color='#10261a'){ const c=document.createElement('canvas'); const s=2; c.width=360*s; c.height=(sub?116:76)*s; const g=c.getContext('2d'); g.scale(s,s);
+function label(text,sub,color='#14211B'){ const c=document.createElement('canvas'); const s=2; c.width=360*s; c.height=(sub?116:76)*s; const g=c.getContext('2d'); g.scale(s,s);
   g.fillStyle='rgba(255,255,255,.94)'; const r=16, w=360, h=sub?116:76; g.beginPath(); g.roundRect(4,4,w-8,h-8,r); g.fill(); g.strokeStyle=color; g.lineWidth=4; g.stroke();
-  g.fillStyle=color; g.font='700 40px "Barlow Condensed", sans-serif'; g.textAlign='center'; g.fillText(text,w/2,50); if(sub){ g.font='600 26px Barlow, sans-serif'; g.fillStyle='#4b5a4e'; g.fillText(sub,w/2,92); }
+  g.fillStyle=color; g.font='700 40px "Satoshi", sans-serif'; g.textAlign='center'; g.fillText(text,w/2,50); if(sub){ g.font='600 26px "Satoshi", sans-serif'; g.fillStyle='#4b5a4e'; g.fillText(sub,w/2,92); }
   const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,sizeAttenuation:false})); const sw=Math.min(.2,80/innerHeight); sp.scale.set(sw,sw*c.height/c.width,1); sp.renderOrder=10; return sp; }
 function build(){
   for(let n=0;n<NX*NY;n++){ const i=n%NX, j=(n/NX)|0; const v=V(X0+i*STEP,Y0+j*STEP,ZG[n]); pos.set([v.x,v.y,v.z],3*n); }
