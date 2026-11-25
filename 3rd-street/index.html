@@ -823,7 +823,7 @@ body.mapview main{padding-bottom:calc(var(--tabh,0px) + 4px)}
     <p id="noteMsg" class="small" style="margin:8px 0 0"></p>
     <div class="nlist" id="noteList"></div>
   </div>
-  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v21</span></p>
+  <p class="small muted" style="text-align:center;margin:4px 0 16px"><span id="nSaved" data-notr></span><span data-notr>App v22</span></p>
 </section>
 </main>
 <div class="fmode sun" id="fmode" hidden role="dialog" aria-modal="true" aria-label="Field mode">
@@ -2523,7 +2523,7 @@ function route(){ let t=location.hash.slice(1); if(t==='more') t='hardware';
   if(t==='offset') renderOffset();
   if(t==='notes') renderNotes();
   posBubbles();
-  if(jump) setTimeout(()=>{ const sec=document.querySelector(`section[data-view=${jump}]`); const d=sec&&sec.querySelector('details'); if(d) d.open=true; if(sec) sec.scrollIntoView({block:'start'}); },60); }
+  if(jump) setTimeout(()=>{ const sec=document.querySelector(`section[data-view=${jump}]`); const d=sec&&(sec.querySelector('#tlDet')||sec.querySelector('details')); if(d) d.open=true; if(sec) sec.scrollIntoView({block:'start'}); },60); }
 window.addEventListener('hashchange',route);window.addEventListener('hashchange',()=>setTimeout(()=>{try{posShotTags()}catch(e){}},60));window.addEventListener('resize',()=>{try{posShotTags()}catch(e){}});
 const LAST={}; Object.keys(GROUPS).forEach(g=>{ try{ const v=store.get('last_'+g,null); if(groupOf(v)===g) LAST[g]=v; }catch(e){} });
 document.getElementById('subseg').addEventListener('click',e=>{ const b=e.target.closest('[data-sub]'); if(b){ const v=b.dataset.sub; location.hash=KLAST[v]&&TABS.includes(KLAST[v])?KLAST[v]:v; route(); } });
@@ -3557,10 +3557,21 @@ main{gap:12px!important}
   const lab={home:es?'Mapas':'Maps',docs:es?'Docs':'Docs',notes:es?'Notas':'Notes'};
   document.querySelectorAll('nav.tabs a[data-tab]').forEach(a=>{ const s=a.querySelector('span'); if(s&&lab[a.dataset.tab]){ s.textContent=lab[a.dataset.tab]; s.setAttribute('data-notr',''); } });
   const hd=document.querySelector('header'); let tk=0;
-  addEventListener('scroll',()=>{ if(tk) return; tk=requestAnimationFrame(()=>{ tk=0; hd.classList.toggle('scrolled',scrollY>24); }); },{passive:true});
+  addEventListener('scroll',()=>{ if(tk) return; tk=requestAnimationFrame(()=>{ tk=0; const y=scrollY; if(!hd.classList.contains('scrolled')&&y>56) hd.classList.add('scrolled'); else if(hd.classList.contains('scrolled')&&y<6) hd.classList.remove('scrolled'); }); },{passive:true});
   const buzz=()=>{ try{ navigator.vibrate&&navigator.vibrate(8); }catch(_){} };
   document.addEventListener('click',e=>{ if(e.target.closest('nav.tabs a,.seg button,[data-done],#fNext,.chk')) buzz(); },true);
   window.appToast=function(t){ let el=document.querySelector('.aftoast'); if(!el){ el=document.createElement('div'); el.className='aftoast'; document.body.appendChild(el); }
     el.textContent=t; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),1600); };
 })();</script>
-</body></html>
+<script id="tapefold">/* Layout: the tape list stays folded until you open it */
+(function(){
+  const sec=document.querySelector('section[data-view=tapes]'), list=document.getElementById('tapeList'); if(!sec||!list) return;
+  const d=document.createElement('details'); d.className='card opts laydet'; d.id='tlDet';
+  const n=(typeof DATA!=='undefined'&&DATA.holes)?DATA.holes.length:'';
+  d.innerHTML=`<summary><span>Tape list</span><span class="muted small" style="margin-left:auto;margin-right:8px">${n} holes</span></summary>`;
+  const body=document.createElement('div'); body.className='laybody';
+  const opts=document.getElementById('opts'), leg=sec.querySelector(':scope > .legend'), tail=list.nextElementSibling;
+  (opts||list).before(d);
+  [opts,leg,list,tail&&tail.tagName==='P'?tail:null].forEach(x=>x&&body.appendChild(x));
+  d.appendChild(body);
+})();</script></body></html>
