@@ -31,12 +31,17 @@ button.sun{background:var(--sun);color:var(--forest);border-color:var(--sun)}
 .legend{position:fixed;right:10px;top:calc(130px + env(safe-area-inset-top));z-index:4;background:rgba(255,255,255,.9);border-radius:12px;padding:8px 10px;font-size:12px;font-weight:600;color:#16221a;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 .legend .ramp{width:14px;height:120px;border-radius:4px;margin:4px auto}
 .legend div{text-align:center}
+.fg{position:fixed;left:10px;top:calc(176px + env(safe-area-inset-top));z-index:4;background:rgba(20,33,27,.92);color:#fff;border-radius:12px;padding:8px 10px;font-size:12px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2);line-height:1.35}
+.fg h2{margin:0 0 4px;font:700 12px "Satoshi",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--sun)}
+.fg .r{display:grid;grid-template-columns:auto auto auto;gap:0 10px}.fg .r span:nth-child(3n+2){color:var(--sun)}.fg .r span:nth-child(3n){color:rgba(255,255,255,.75)}
 </style></head><body>
 <div class="bar"><button id="back">‹ Back</button><h1>3D grade + layout<small>Burke plan on your Mosier heights · Nov 25</small></h1><button class="sun" id="reset">Reset</button></div>
 <div class="read" id="read">Drag to spin · pinch to zoom · tap the ground for its height</div>
 <div class="legend" id="legend" hidden><div id="lgHi"></div><div class="ramp" style="background:linear-gradient(#e57373,#ffb74d,#fff176,#9ccc65,#2e7d32)"></div><div id="lgLo"></div></div>
+<div class="fg" id="fg"><h2>Finish grade · 9" Fibar</h2><div class="r" id="fgRows"></div></div>
 <div class="ctl">
   <div class="seg" id="mode"><button data-m="plan" aria-pressed="true">Plan drawing</button><button data-m="grade">Grade colors</button></div>
+  <div class="seg" id="fgt"><span class="lbl">Finish grade</span><button data-f="1" aria-pressed="true">Show</button><button data-f="0">Hide</button></div>
   <div class="seg" id="ex"><span class="lbl">Height ×</span><button data-x="1">1</button><button data-x="3" aria-pressed="true">3</button><button data-x="6">6</button></div>
 </div>
 <script src="data.js"></script>
@@ -52,6 +57,15 @@ const W=G.walk; const Z0=0;
 function zAt(x,y){ let a=0,b=0; for(const p of W){ const d2=(p[0]-x)**2+(p[1]-y)**2; if(d2<1) return p[2]; const w=1/(d2*d2); a+=w*p[2]; b+=w; } return a/b; }
 const inPoly=(x,y,P)=>{ let c=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const [xi,yi]=P[i],[xj,yj]=P[j]; if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) c=!c; } return c; };
 const WP=W.map(p=>[p[0],p[1]]);
+const fq=i=>{ const s=i<0?'−':'+'; const q=Math.round(Math.abs(i)*4); const w=Math.floor(q/4), r=q%4; return s+(w||!r?w:'')+['','¼','½','¾'][r]+'"'; };
+// finished grade per area = average of the Mosier walk points around it; dig = finish − 9" of Fibar
+const FIB=9;
+const AREAS=[
+ {n:'Swings',c:0xc9873f,poly:[[108,531],[713,531],[713,135],[108,135]],pick:(x,y)=>x>=100},
+ {n:'Spinner',c:0x8e6bbf,poly:[[-224,531],[108,531],[108,250],[-224,250]],pick:(x,y)=>x<100&&y>=250},
+ {n:'Playground',c:0x3c8fb0,poly:[[-224,250],[108,250],[108,-225],[-224,-225]],pick:(x,y)=>x<100&&y<250}];
+AREAS.forEach(a=>{ const z=W.slice(0,-1).filter(p=>a.pick(p[0],p[1])).map(p=>p[2]); a.fin=z.reduce((s,v)=>s+v,0)/z.length; a.dig=a.fin-FIB; a.np=z.length; });
+const areaAt=(x,y)=>AREAS.find(a=>inPoly(x,y,a.poly));
 let zs=W.map(p=>p[2]); const ZMIN=Math.min(...zs), ZMAX=Math.max(...zs);
 // ---- scene ----
 const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
@@ -60,7 +74,7 @@ const scene=new THREE.Scene(); scene.background=new THREE.Color(0xdfe8dc); scene
 const cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.5,1500);
 scene.add(new THREE.HemisphereLight(0xffffff,0x6b7f5e,1.15)); const sun=new THREE.DirectionalLight(0xffffff,1.3); sun.position.set(-60,120,80); scene.add(sun);
 const ctl=new OrbitControls(cam,renderer.domElement); ctl.enableDamping=true; ctl.dampingFactor=.08; ctl.maxPolarAngle=Math.PI*0.48; ctl.minDistance=8; ctl.maxDistance=260; ctl.rotateSpeed=.7;
-let EX=3; const root=new THREE.Group(); scene.add(root);
+let EX=3, SHOWF=true; const root=new THREE.Group(); scene.add(root);
 // plan (x,y in inches, z in inches) -> world (feet), y up, plan-up = -Z
 const V=(x,y,z,lift=0)=>new THREE.Vector3(x/FT,(z-ZMIN)/FT*EX+lift,-y/FT);
 // ---- terrain mesh ----
@@ -101,6 +115,10 @@ function build(){
   W.forEach(p=>{ const m=new THREE.Mesh(dot,dm); m.position.copy(V(p[0],p[1],p[2],.12)); deco.add(m); });
   const pg=new THREE.CylinderGeometry(.22,.22,2.2,10), pm=new THREE.MeshLambertMaterial({color:0x10261a}), fm=new THREE.MeshLambertMaterial({color:0x3f8418});
   G.holes.forEach(h=>{ const m=new THREE.Mesh(h.post?pg:new THREE.CylinderGeometry(.3,.3,.5,10),h.post?pm:fm); const v=V(h.x,h.y,zAt(h.x,h.y)); m.position.set(v.x,v.y+(h.post?1.1:.25),v.z); m.userData.h=h; deco.add(m); });
+  if(SHOWF) AREAS.forEach(a=>{ const sh=new THREE.Shape(a.poly.map(([x,y])=>new THREE.Vector2(x/FT,y/FT))); const g=new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI/2);
+    const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:a.c,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false})); m.position.y=(a.fin-ZMIN)/FT*EX; m.renderOrder=5; deco.add(m);
+    const e=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(a.poly.map(([x,y])=>V(x,y,a.fin))),new THREE.LineBasicMaterial({color:a.c})); deco.add(e);
+    const cx=a.poly.reduce((s,p)=>s+p[0],0)/4, cy=a.poly.reduce((s,p)=>s+p[1],0)/4; const sp=label(a.n+' '+fq(a.fin),'dig to '+fq(a.dig),'#'+a.c.toString(16).padStart(6,'0')); const v=V(cx,cy,a.fin); sp.position.set(v.x,v.y+2.5,v.z); deco.add(sp); });
   Object.entries(G.corners).forEach(([name,i])=>{ const p=W[i]; const sp=label(fi(p[2]),name); const v=V(p[0],p[1],p[2]); sp.position.set(v.x,v.y+4.5,v.z); deco.add(sp); });
 }
 build();
@@ -110,6 +128,8 @@ function reset(){ const R=Math.hypot(X1-X0,Y1-Y0)/2/FT; const vf=cam.fov*Math.PI
   const dir=new THREE.Vector3(0.3,0.78,0.6).normalize(); ctl.target.copy(C0); cam.position.copy(C0).addScaledVector(dir,d); ctl.maxDistance=d*2.2; ctl.update(); }
 reset(); document.getElementById('reset').onclick=reset;
 document.getElementById('back').onclick=()=>{ if(history.length>1) history.back(); else location.href='../#home'; };
+document.getElementById('fgRows').innerHTML=AREAS.map(a=>`<span>${a.n}</span><span>${fq(a.fin)}</span><span>dig ${fq(a.dig)}</span>`).join('');
+document.getElementById('fgt').onclick=e=>{ const b=e.target.closest('[data-f]'); if(!b) return; document.querySelectorAll('#fgt button').forEach(x=>x.setAttribute('aria-pressed',x===b)); SHOWF=b.dataset.f==='1'; document.getElementById('fg').hidden=!SHOWF; build(); };
 const legend=document.getElementById('legend'); document.getElementById('lgHi').textContent=fi(ZMAX); document.getElementById('lgLo').textContent=fi(ZMIN);
 document.getElementById('mode').onclick=e=>{ const b=e.target.closest('[data-m]'); if(!b) return; document.querySelectorAll('#mode button').forEach(x=>x.setAttribute('aria-pressed',x===b)); const g=b.dataset.m==='grade'; ground.material=g?matGrade:matPlan; legend.hidden=!g; };
 document.getElementById('ex').onclick=e=>{ const b=e.target.closest('[data-x]'); if(!b) return; document.querySelectorAll('#ex button').forEach(x=>x.setAttribute('aria-pressed',x===b)); EX=+b.dataset.x; build(); };
@@ -120,7 +140,8 @@ renderer.domElement.addEventListener('pointerup',e=>{ if(!down||Math.hypot(e.cli
   const hit=ray.intersectObjects([ground,...deco.children.filter(o=>o.userData.h)],false)[0]; if(!hit) return;
   if(hit.object.userData.h){ const h=hit.object.userData.h; read.innerHTML=`Hole ${h.h} · ${h.d}<br><b>${fi(zAt(h.x,h.y))}</b> vs your start point`; return; }
   const x=hit.point.x*FT, y=-hit.point.z*FT, z=zAt(x,y); const inL=inPoly(x,y,G.poly);
-  read.innerHTML=`<b>${fi(z)}</b> vs your start point<br>${fd(x-G.poly[0][0])} from the left edge, ${fd(G.poly[0][1]-y)} down from the top${inL?'':' (outside the plan border)'}`; });
+  const A=inL&&areaAt(x,y); const cut=A?z-A.dig:0;
+  read.innerHTML=`<b>${fi(z)}</b> vs your start point<br>${fd(x-G.poly[0][0])} from the left edge, ${fd(G.poly[0][1]-y)} down from the top${inL?'':' (outside the plan border)'}`+(A?`<br>${A.n}: finish ${fq(A.fin)} · ${cut>=0?'dig '+fq(cut).slice(1)+' here':'fill '+fq(-cut).slice(1)+' here'}`:''); });
 addEventListener('resize',()=>{ cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); build(); });
 renderer.setAnimationLoop(()=>{ ctl.update(); renderer.render(scene,cam); window.__ready=true; });
 </script>
